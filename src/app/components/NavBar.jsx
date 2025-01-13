@@ -7,14 +7,14 @@ export default function NavBar() {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     return (
-        <div className="flex items-center justify-center m-3">
-            <nav className="flex items-center justify-around lg:w-1/3 w-full border rounded-xl p-2 bg-gray-50 shadow-lg">
+        <header className="flex items-center justify-center m-3">
+            <nav className="flex items-center justify-around lg:w-1/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
                 <div className="flex items-center gap-4">
                     <a href="/" className="flex justify-center">
-                        <Image src='/assets/logo.png' alt="Logo" width={16} height={100} />
+                        <Image src="/assets/logo.png" alt="Logo" width={46} height={100} />
                     </a>
-                    <a href="/" className="lg:block hidden">
-                        <h1 className="text-cyan-900 font-bold">Echo</h1>
+                    <a href="/" className="hidden lg:block">
+                        <h1 className="text-cyan-900 font-bold text-lg">Echo</h1>
                     </a>
                 </div>
                 <div>
@@ -37,6 +37,6 @@ export default function NavBar() {
                     )}
                 </div>
             </nav>
-        </div>
+        </header>
     );
 }

@@ -7,10 +7,9 @@ export default {
   ],
   theme: {
     extend: {
-      colors: {
-        background: "var(--background)",
-        foreground: "var(--foreground)",
-      },
+      fontFamily: {
+        handwriting: ["sophie", "sophie"]
+      }
     },
   },
   plugins: [],

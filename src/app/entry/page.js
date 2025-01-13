@@ -1,0 +1,103 @@
+'use client';
+
+import React, { useState } from 'react';
+import axios from 'axios';
+import Box from '@mui/material/Box';
+import Modal from '@mui/material/Modal';
+import Image from 'next/image';
+
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '1px solid #000',
+    boxShadow: 30,
+    p: 4,
+    borderRadius: '15px',
+};
+
+const Entry = () => {
+    const dateandtime = new Date().toLocaleString();
+    const [open, setOpen] = useState(false);
+    const [journalEntry, setJournalEntry] = useState('');
+    const [mood, setMood] = useState(null);
+    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false);
+
+    const handleOpen = async () => {
+        setOpen(true);
+
+        if (!journalEntry.trim()) {
+            setError('Please write something before submitting.');
+            return;
+        }
+
+        setLoading(true);
+        setError(null);
+
+        try {
+            const response = await axios.post('/api/mood', {
+                content: journalEntry,
+            });
+
+            setMood(response.data.mood);
+        } catch (err) {
+            setError(err.response?.data?.error || 'An error occurred while analyzing your mood.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    const handleClose = () => {
+        setOpen(false);
+        setMood(null);
+        setError(null);
+    };
+
+    return (
+        <div className="flex flex-col items-center justify-center h-screen">
+            <h1 className="text-7xl font-handwriting mb-6 text-gray-800">Journal Entry</h1>
+            <div className="w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
+                <p className="text-lg text-gray-700 mb-4">{dateandtime}</p>
+                <textarea
+                    className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting text-6xl overflow-auto focus:outline-none"
+                    placeholder="How was your day? What's on your mind? Jot down your thoughts here..."
+                    value={journalEntry}
+                    onChange={(e) => setJournalEntry(e.target.value)}
+                ></textarea>
+                {error && <p className="text-red-600 mt-2">{error}</p>}
+                <button
+                    className="mt-4 px-6 py-2 bg-black/40 text-white font-semibold rounded-lg hover:bg-black transition duration-300"
+                    onClick={handleOpen}
+                    disabled={loading}
+                >
+                    {loading ? 'Analyzing...' : 'Enter Entry'}
+                </button>
+                <Modal open={open} onClose={handleClose}>
+                    <Box sx={style}>
+                        <div className="flex justify-center flex-col items-center">
+                            <Image src="/assets/logo.png" alt="Logo" width={96} height={96} className="object-contain mb-4" />
+                            {loading ? (
+                                <p className="text-xl font-semibold text-gray-800">Analyzing your mood...</p>
+                            ) : mood ? (
+                                <p className="text-xl font-semibold text-gray-800">
+                                    Echo thinks you're feeling <span className="text-blue-600">{mood}</span>.
+                                </p>
+                            ) : (
+                                <p className="text-xl font-semibold text-red-600">Failed to analyze mood.</p>
+                            )}
+                            <p className="text-lg text-gray-600">
+                                Echo can listen to you and help you feel better. <a href="" className="text-blue-600">Click here</a>
+                            </p>
+                        </div>
+                    </Box>
+                </Modal>
+            </div>
+        </div>
+    );
+};
+
+export default Entry;
