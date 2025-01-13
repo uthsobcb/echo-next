@@ -2,39 +2,41 @@
 
 import React, { useState } from 'react';
 
-export default function Login() {
+export default function Register() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [name, setName] = useState('');
     const [error, setError] = useState(null);
+    const [success, setSuccess] = useState(null);
     const [loading, setLoading] = useState(false);
 
-    const handleLogin = async (e) => {
+    const handleRegister = async (e) => {
         e.preventDefault();
-        setError(null); // Clear any previous error
+        setError(null);
+        setSuccess(null);
         setLoading(true);
 
         try {
-            const response = await fetch('/api/auth/login', {
+            const response = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ email, password }),
+                body: JSON.stringify({ name, email, password }),
             });
 
             const data = await response.json();
 
             if (!response.ok) {
-                setError(data.error || 'Failed to log in.');
+                setError(data.error || 'Failed to register.');
                 setLoading(false);
                 return;
             }
 
-            // Save JWT to localStorage or cookies
-            localStorage.setItem('token', data.token);
-
-            // Redirect to another page (e.g., dashboard or home)
-            window.location.href = '/entry';
+            setSuccess('Registration successful! You can now log in.');
+            setEmail('');
+            setPassword('');
+            setName('');
         } catch (err) {
             setError('Something went wrong. Please try again.');
         } finally {
@@ -44,16 +46,32 @@ export default function Login() {
 
     return (
         <div>
-            <form onSubmit={handleLogin} className="p-12">
+            <form onSubmit={handleRegister} className="p-12">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
                     <div className="w-full bg-white rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0">
                         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
                             <p className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
-                                Login
+                                Register
                             </p>
                             {error && (
                                 <div className="text-red-500 text-sm">{error}</div>
                             )}
+                            {success && (
+                                <div className="text-green-500 text-sm">{success}</div>
+                            )}
+                            <div>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Name
+                                </label>
+                                <input
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+                                    placeholder="John Doe"
+                                    type="text"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    required
+                                />
+                            </div>
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-900">
                                     Email
@@ -80,26 +98,13 @@ export default function Login() {
                                     required
                                 />
                             </div>
-                            <div className="flex items-start">
-                                <div className="ml-3 text-sm">
-                                    <label className="font-light text-gray-500">
-                                        <a
-                                            href="/forgot-password"
-                                            className="font-medium text-primary-600 hover:underline text-primary-500"
-                                        >
-                                            Forgot Password
-                                        </a>
-                                        ?
-                                    </label>
-                                </div>
-                            </div>
 
                             <button
                                 className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-blue-800 text-white"
                                 type="submit"
                                 disabled={loading}
                             >
-                                {loading ? 'Logging in...' : 'Login!'}
+                                {loading ? 'Registering...' : 'Register'}
                             </button>
                         </div>
                     </div>
