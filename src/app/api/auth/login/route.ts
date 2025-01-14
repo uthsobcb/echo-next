@@ -2,17 +2,8 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { connectToDatabase } from "@/app/lib/mongodb";
-import mongoose from "mongoose";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";
-
-const userSchema = new mongoose.Schema({
-    name: { type: String },
-    email: { type: String },
-    password: { type: String },
-});
-
-const User = mongoose.models.User || mongoose.model("User", userSchema);
 
 export async function POST(req: Request) {
     try {
