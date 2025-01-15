@@ -1,48 +1,38 @@
 'use client';
 
-import React, { useState } from 'react';
+import Link from "next/link";
+import React, { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import axios from "axios";
 
-export default function Register() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [name, setName] = useState('');
-    const [error, setError] = useState(null);
-    const [success, setSuccess] = useState(null);
-    const [loading, setLoading] = useState(false);
+// export default function Register() {
+//     const [email, setEmail] = useState('');
+//     const [password, setPassword] = useState('');
+//     const [name, setName] = useState('');
+//     const [error, setError] = useState(null);
+//     const [success, setSuccess] = useState(null);
+//     const [loading, setLoading] = useState(false);
 
-    const handleRegister = async (e) => {
-        e.preventDefault();
-        setError(null);
-        setSuccess(null);
-        setLoading(true);
+export default function SignupPage() {
+    const router = useRouter();
+    const [user, setUser] = React.useState({
+        email: "",
+        password: "",
+        username: "",
+    })
 
+
+    const onSignup = async () => {
         try {
-            const response = await fetch('/api/auth/register', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ name, email, password }),
-            });
+            const response = await axios.post("/api/users/signup", user);
+            router.push("/login");
 
-            const data = await response.json();
-
-            if (!response.ok) {
-                setError(data.error || 'Failed to register.');
-                setLoading(false);
-                return;
-            }
-
-            setSuccess('Registration successful! You can now log in.');
-            setEmail('');
-            setPassword('');
-            setName('');
-        } catch (err) {
-            setError('Something went wrong. Please try again.');
-        } finally {
-            setLoading(false);
+        } catch (error) {
+            console.log("Signup failed", error.message);
         }
-    };
+    }
+
+
 
     return (
         <div>
@@ -67,7 +57,7 @@ export default function Register() {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                                     placeholder="John Doe"
                                     type="text"
-                                    value={name}
+                                    value={user.name}
                                     onChange={(e) => setName(e.target.value)}
                                     required
                                 />
@@ -79,9 +69,9 @@ export default function Register() {
                                 <input
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                                     placeholder="pico@mail.com"
+                                    value={user.email}
+                                    onChange={(e) => setUser({ ...user, email: e.target.value })}
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
                                     required
                                 />
                             </div>
@@ -103,6 +93,7 @@ export default function Register() {
                                 className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-blue-800 text-white"
                                 type="submit"
                                 disabled={loading}
+                                onClick={onSignup}
                             >
                                 {loading ? 'Registering...' : 'Register'}
                             </button>
@@ -113,3 +104,4 @@ export default function Register() {
         </div>
     );
 }
+

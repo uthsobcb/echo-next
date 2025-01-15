@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
-import { connectToDatabase } from "@/app/lib/mongodb";
+import { connect } from "../../../lib/mongodb";
+import User from "../../../models/User";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
@@ -14,7 +15,7 @@ export async function POST(req: Request) {
         }
 
         // Connect to MongoDB
-        await connectToDatabase();
+        await connect();
 
         // Find the user
         const user = await User.findOne({ email });
