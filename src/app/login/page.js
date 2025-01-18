@@ -2,49 +2,38 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { login } from '../action';
+import { useRouter } from "next/navigation";
+
 export default function Login() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+    // const [email, setEmail] = useState('');
+    // const [password, setPassword] = useState('');
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const router = useRouter();
 
-    const handleLogin = async (e) => {
+    async function onSubmit(e) {
+
         e.preventDefault();
-        setError(null); // Clear any previous error
-        setLoading(true);
 
         try {
-            const response = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ email, password }),
-            });
+            const formData = new FormData(e.currentTarget);
 
-            const data = await response.json();
+            const response = await login(formData);
 
-            if (!response.ok) {
-                setError(data.error || 'Failed to log in.');
-                setLoading(false);
-                return;
+            if (!!response.error) {
+                console.log(response.error);
+            } else {
+                router.push("/entry");
             }
-
-            // Save JWT to localStorage or cookies
-            localStorage.setItem('token', data.token);
-
-            // Redirect to another page (e.g., dashboard or home)
-            window.location.href = '/entry';
-        } catch (err) {
-            setError('Something went wrong. Please try again.');
-        } finally {
-            setLoading(false);
+        } catch (error) {
+            console.error(error);
         }
-    };
+    }
 
     return (
         <div>
-            <form onSubmit={handleLogin} className="p-12">
+            <form onSubmit={onSubmit} className="p-12">
                 <div className="flex flex-col items-center justify-center px-6 py-8 mx-auto lg:py-0">
                     <div className="w-full bg-white rounded-lg shadow border md:mt-0 sm:max-w-md xl:p-0">
                         <div className="p-6 space-y-4 md:space-y-6 sm:p-8">
@@ -62,8 +51,7 @@ export default function Login() {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                                     placeholder="pico@mail.com"
                                     type="email"
-                                    value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    id='email'
                                     required
                                 />
                             </div>
@@ -75,8 +63,7 @@ export default function Login() {
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
                                     placeholder="••••••••"
                                     type="password"
-                                    value={password}
-                                    onChange={(e) => setPassword(e.target.value)}
+                                    id='password'
                                     required
                                 />
                             </div>

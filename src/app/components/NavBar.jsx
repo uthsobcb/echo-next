@@ -3,7 +3,7 @@
 import Image from 'next/image';
 import { signIn, signOut, auth } from 'auth';
 import Link from 'next/link';
-
+import SignOut from './SignOut';
 export default async function NavBar() {
     const session = await auth();
     console.log(session);
@@ -19,25 +19,51 @@ export default async function NavBar() {
                         <h1 className="text-cyan-900 font-bold text-lg">Echo</h1>
                     </Link>
                 </div>
-                <div>
-                    {
-                        session?.user ? (
+                <div className="flex items-center space-x-4 p-2 rounded-lg">
+                    <div className='flex items-center'>
+                        <Image src='/assets/pen.svg' alt="Entry" width={24} height={24} />
+
+                        <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                            Entry
+                        </Link>
+                    </div>
+                    {session?.user ? (
+                        <div className="flex items-center space-x-3 shadow-md">
                             <Link
                                 href="/profile"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium p-2"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm"
                                 aria-label="Account Page"
                             >
                                 {session?.user?.name}
                             </Link>
-                        ) : (
+
+                            <Image
+                                src={session?.user?.image}
+                                alt={session?.user?.name}
+                                width={32}
+                                height={32}
+                                className="rounded-full border border-gray-300 shadow-sm"
+                            />
+                            <SignOut />
+                        </div>
+                    ) : (
+                        <div>
                             <Link
                                 href="/login"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200"
                                 aria-label="Login Page"
                             >
                                 Login
                             </Link>
-                        )}
+                            <Link
+                                href="/api/auth/signin"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200"
+                                aria-label="Login Page"
+                            >
+                                G
+                            </Link>
+                        </div>
+                    )}
                 </div>
             </nav>
         </header>
