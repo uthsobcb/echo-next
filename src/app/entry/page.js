@@ -5,6 +5,7 @@ import axios from 'axios';
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const style = {
     position: 'absolute',
@@ -90,7 +91,7 @@ const Entry = () => {
                                 <p className="text-xl font-semibold text-red-600">Failed to analyze mood.</p>
                             )}
                             <p className="text-lg text-gray-600">
-                                Echo can listen to you and help you feel better. <a href="" className="text-blue-600">Click here</a>
+                                Echo can listen to you and help you feel better. <Link href="" className="text-blue-600">Click here</Link>
                             </p>
                         </div>
                     </Box>

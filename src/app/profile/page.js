@@ -1,4 +1,5 @@
 import { PieChart } from '@mui/x-charts/PieChart';
+import Link from 'next/link';
 import Image from 'next/image';
 
 const timelineEntries = [
@@ -120,7 +121,7 @@ export default function User() {
                             {timelineEntries.map((entry, index) => (
                                 <div key={entry.id} className="mb-8 ml-4">
                                     <div className="absolute w-6 h-6 bg-blue-500 rounded-full -left-3.5 border-2 border-white"></div>
-                                    `<a href='/entry/{entry.id}' className="flex items-center gap-4">
+                                    `<Link href='/entry/{entry.id}' className="flex items-center gap-4">
                                         <div className="bg-white p-4 rounded-lg shadow-md">
                                             <p className="text-sm text-gray-500">{entry.date}</p>
                                             <h2 className="text-xl font-semibold">{entry.title}</h2>
@@ -128,7 +129,7 @@ export default function User() {
                                             <p className="mt-2 text-gray-600">{entry.excerpt}</p>
 
                                         </div>
-                                    </a>
+                                    </Link>
                                 </div>
                             ))}
                         </div>

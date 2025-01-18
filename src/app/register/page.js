@@ -95,8 +95,6 @@ export default function SignupPage() {
                                 disabled={loading}
                                 onClick={onSignup}
                             >
-
-
                                 {loading ? 'Registering...' : 'Register'}
                             </button>
                         </div>

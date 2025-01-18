@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-
+import Link from 'next/link';
 export default function Login() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
@@ -83,12 +83,12 @@ export default function Login() {
                             <div className="flex items-start">
                                 <div className="ml-3 text-sm">
                                     <label className="font-light text-gray-500">
-                                        <a
+                                        <Link
                                             href="/forgot-password"
                                             className="font-medium text-primary-600 hover:underline text-primary-500"
                                         >
                                             Forgot Password
-                                        </a>
+                                        </Link>
                                         ?
                                     </label>
                                 </div>
