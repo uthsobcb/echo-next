@@ -67,7 +67,8 @@ export default async function User() {
             <div className='container mx-auto flex flex-col lg:flex-row m-28 gap-10'>
                 <div className="border border-black shadow-xl bg-gray-100/60 rounded-lg w-full lg:w-1/3  my-10 p-1 lg:p-6">
                     <div className='flex flex-col items-center align-center'>
-                        <img src="https://ui-avatars.com/api/?name=pico" alt="" className='rounded-full w-28 m-4' />
+                        <Image src={user?.image} height={120} width={128} alt={user?.name} className='rounded-full m-4' />
+                        {/* <img src={ } alt="" className='rounded-full w-28 m-4' /> */}
                         <div className='space-y-2 align-center'>
                             <p className="text-lg font-semibold">Name: {user?.name}</p>
                             <p className="text-md text-gray-600">Mail: {user?.email}</p>

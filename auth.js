@@ -50,6 +50,7 @@ export const {
                         email: user.email,
                         image: user.image,
                         subscription: user.subscription,
+                        badges: user.badge || [],
                     };
 
                 } catch (error) {
@@ -70,6 +71,7 @@ export const {
                 token.email = user.email;
                 token.image = user.image;
                 token.subscription = user.subscription;
+                token.badge = user.badge || [];
             }
             return token;
         },
@@ -80,6 +82,7 @@ export const {
                 session.user.email = token.email;
                 session.user.image = token.image;
                 session.user.subscription = token.subscription;
+                session.user.badge = token.badge || [];
             }
             return session;
         },

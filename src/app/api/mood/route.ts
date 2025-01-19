@@ -1,26 +1,13 @@
 import { NextResponse } from "next/server";
-import jwt from "jsonwebtoken";
 import OpenAI from "openai";
 // import { connectToDatabase } from "@/app/lib/mongodb";
 
-const openai = new OpenAI({ apiKey: process.env.API_KEY || "" });
+const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY || "" });
 
 
 export async function POST(req: Request) {
     try {
-        // Verify JWT
-        const authHeader = req.headers.get("authorization");
-        if (!authHeader) {
-            return NextResponse.json({ error: "Unauthorized: No token provided." }, { status: 401 });
-        }
 
-        // const token = authHeader.split(" ")[1];
-        // let decoded: any;
-        // try {
-        //     decoded = jwt.verify(token, JWT_SECRET);
-        // } catch (err) {
-        //     return NextResponse.json({ error: "Unauthorized: Invalid token." }, { status: 401 });
-        // }
 
         const { content } = await req.json();
         if (!content) {
@@ -31,8 +18,14 @@ export async function POST(req: Request) {
         const completion = await openai.chat.completions.create({
             model: "gpt-4",
             messages: [
-                { role: "system", content: "You are a helpful assistant that detects moods from journal entries." },
-                { role: "user", content: `Analyze the mood from this journal entry: ${content}` },
+                {
+                    role: "system",
+                    content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should contain only a single-word mood descriptor (e.g., 'happy', 'anxious', 'excited', 'frustrated'). Do not include any explanations or additional text."
+                },
+                {
+                    role: "user",
+                    content: `Analyze the mood from the following journal entry and provide a single-word response:\n\n"${content}"`
+                },
             ],
         });
 

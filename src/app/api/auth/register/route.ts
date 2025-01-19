@@ -33,7 +33,7 @@ export async function POST(req: Request) {
             // imageUrl = `https://your-image-hosting.com/uploaded-image.jpg`; // Placeholder
         } else {
             // ** If no image is uploaded, generate a default UI avatar**
-            imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random&size=32`;
+            imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
         }
 
         // Create new user
