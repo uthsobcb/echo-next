@@ -27,11 +27,17 @@ export default function Login() {
 
             if (result?.error) {
                 setError(result.error);
+                toast.error(result.error);
+
             } else {
-                router.push("/entry");
+                toast.success("Login successful! Redirecting..."); // Show success toast
+                setTimeout(() => router.push("/entry"), 2000); // Redirect after a short delay
+
+                // router.push("/entry");
             }
         } catch (error) {
             setError("Login failed. Please try again.");
+            toast.error("Login failed. Please try again.");
         } finally {
             setLoading(false);
         }

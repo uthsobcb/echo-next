@@ -1,7 +1,8 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import Link from 'next/link';
 import Image from 'next/image';
-import { auth, signOut } from "auth"
+import { auth } from "auth"
+import SignOut from '../components/SignOut';
 const timelineEntries = [
     {
         id: 1,
@@ -101,7 +102,7 @@ export default async function User() {
                     </div>
                     <div className='mt-3 justify-between flex'>
                         <button className='bg-green-700 p-2 text-white rounded-md font-semibold'>Update Profile</button>
-                        <button className='bg-yellow-700 p-2 text-white rounded-md font-semibold'>Logout</button>
+                        <SignOut />
                     </div>
                 </div>
                 <div className="border border-black shadow-xl bg-gray-200/60 rounded-lg w-2/3  my-10 p-6">
