@@ -18,6 +18,22 @@ const UserSchema = new Schema({
         type: String,
         required: false
     },
+    subscription: {
+        type: String,
+        enum: ['free', 'plus'],
+        default: 'free'
+    },
+    badge: {
+        type: [String],
+        enum: [
+            "Echo Sunshine",
+            "Pen Whisperer",
+            "Mindful Scribe",
+            "Thought Architect",
+            "Guardian of Inked Wisdom"
+        ],
+        default: ["Echo Sunshine"]
+    },
 });
 
 const UserModel = models.User || model("User", UserSchema);

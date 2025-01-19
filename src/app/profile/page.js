@@ -1,7 +1,7 @@
 import { PieChart } from '@mui/x-charts/PieChart';
 import Link from 'next/link';
 import Image from 'next/image';
-
+import { auth, signOut } from "auth"
 const timelineEntries = [
     {
         id: 1,
@@ -26,8 +26,42 @@ const timelineEntries = [
     },
 ];
 
+const badges = [
+    {
+        id: 1,
+        name: "Echo Sunshine",
+        img: "/assets/Echos-Sun.png",
+    },
+    {
+        id: 2,
+        name: "Pen Whisperer",
+        img: "/assets/badge_1.png",
+    },
+    {
+        id: 3,
+        name: "Mindful Scribe",
+        img: "/assets/badge_2.png",
+    },
+    {
+        id: 4,
+        name: "Thought Architect",
+        img: "/assets/badge_3.png",
+    },
+    {
+        id: 5,
+        name: "Guardian of Inked Wisdom",
+        img: "/assets/badge_4.png",
+    }
+]
 
-export default function User() {
+export default async function User() {
+    const session = await auth();
+    const user = session?.user || null;
+
+    // Find the badge corresponding to the user's badge name
+    // const userBadge = badges.find((badge) => badge.name === user?.badge) || badges[0]; // Default to "Echo Sunshine"
+    const userBadges = badges.filter((badge) => user?.badges?.includes(badge.name));
+
     return (
         <>
             <div className='container mx-auto flex flex-col lg:flex-row m-28 gap-10'>
@@ -35,9 +69,9 @@ export default function User() {
                     <div className='flex flex-col items-center align-center'>
                         <img src="https://ui-avatars.com/api/?name=pico" alt="" className='rounded-full w-28 m-4' />
                         <div className='space-y-2 align-center'>
-                            <p className="text-lg font-semibold">Name: Pico</p>
-                            <p className="text-md text-gray-600">Mail: pico@echo.space</p>
-                            <p className="text-md text-gray-600">Plan: Echo+</p>
+                            <p className="text-lg font-semibold">Name: {user?.name}</p>
+                            <p className="text-md text-gray-600">Mail: {user?.email}</p>
+                            <p className="text-md text-gray-600">Plan: {user?.subscription}</p>
                             <p className='text-md text-gray-600'>Entries: 35</p>
                             <p className="text-md text-gray-600">
                                 Subscription Ends: <span className="font-medium">01/12/2024</span>
@@ -45,11 +79,23 @@ export default function User() {
                         </div>
                         <h3 className="mt-6 font-bold text-lg text-gray-800">Badges</h3>
                         <div className='flex flex-wrap gap-2 p-4'>
-                            <Image src='/assets/badge_1.png' alt="PenWhishpererBadge" width={112} height={112} className="rounded-full" />
-                            {/* <img src={PenWhishpererBadge} alt="" className='w-28 h-28 rounded-full' /> */}
-                            {/* <img src={MindScribeBadge} alt="" className='w-28 h-28 rounded-full ' /> */}
-                            {/* <img src={ThoughArchitechBadge} alt="" className='w-28 h-28 rounded-full ' /> */}
-                            {/* <img src={GurdianOfThoughtsBadge} alt="" className='w-28 h-28 rounded-full ' /> */}
+                            {userBadges.length > 0 ? (
+                                userBadges.map((badge) => (
+                                    <div key={badge.id} className="flex flex-col items-center">
+                                        <Image
+                                            src={badge.img}
+                                            alt={`${badge.name} Badge`}
+                                            width={80}
+                                            height={80}
+                                            className="rounded-full"
+                                        />
+                                        <p className="text-sm text-gray-700 mt-1">{badge.name}</p>
+                                    </div>
+                                ))
+                            ) : (
+                                <p className="text-gray-500 text-sm">No badges earned yet.</p>
+                            )}
+                            {/* <Image src='/assets/badge_1.png' alt="PenWhishpererBadge" width={112} height={112} className="rounded-full" /> */}
                         </div>
                     </div>
                     <div className='mt-3 justify-between flex'>

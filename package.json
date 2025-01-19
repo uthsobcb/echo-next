@@ -28,6 +28,7 @@
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
+    "@types/bcrypt": "^5.0.2",
     "@types/node": "^22.10.7",
     "@types/react": "^19.0.6",
     "postcss": "^8",
