@@ -37,13 +37,11 @@ export const {
                         throw new Error("User not found");
                     }
 
-                    // Compare hashed password
                     const isMatch = await bcrypt.compare(credentials.password, user.password);
                     if (!isMatch) {
                         throw new Error("Invalid password");
                     }
 
-                    // Return user data without password
                     return {
                         id: user._id.toString(),
                         name: user.name,
