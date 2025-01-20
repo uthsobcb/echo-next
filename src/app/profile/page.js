@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { auth } from "auth";
 import SignOut from '../components/SignOut';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const badges = [
     {
@@ -36,15 +37,18 @@ const badges = [
 export default async function User() {
     const session = await auth();
     const user = session?.user || null;
+    console.log("User session:", session);
+    console.log("AccessToken:", session.accessToken);
     let entries = [];
 
-    if (session && session.accessToken) {
+    if (session) {
         try {
             const response = await axios.get("http://localhost:3000/api/entries", {
                 headers: { Authorization: `Bearer ${session.accessToken}` },
                 withCredentials: true,
             });
             entries = response.data;
+
             console.log("Entries fetched:", entries);
         } catch (error) {
             console.error("Error fetching entries:", error.response?.data || error.message);
@@ -132,7 +136,7 @@ export default async function User() {
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center">
-                <div className="w-full p-6 rounded-lg shadow-md">
+                <div className="w-full p-6 rounded-lg">
                     <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
                         Search Your Entries
                     </h2>
@@ -152,26 +156,45 @@ export default async function User() {
                 </div>
 
                 {entries.length > 0 ? (
-                    <div className="flex gap-4 overflow-x-auto pb-4 justify-center">
-                        <div className="relative border-l-2 border-gray-200">
-                            {entries.map((entry) => (
-                                <div key={entry.id} className="mb-8 ml-4">
-                                    <div className="absolute w-6 h-6 bg-blue-500 rounded-full -left-3.5 border-2 border-white"></div>
-                                    <Link href={`/entry/${entry.id}`} className="flex items-center gap-4">
-                                        <div className="bg-white p-4 rounded-lg shadow-md">
-                                            <p className="text-sm text-gray-500">{entry.date}</p>
-                                            <h2 className="text-xl font-semibold">{entry.title}</h2>
-                                            <p className="text-sm text-gray-700 mt-1">{entry.mood}</p>
-                                            <p className="text-sm text-gray-700 mt-1">{entry.content || "No content available."}</p>
+                    <div className="flex flex-col gap-6 overflow-x-auto pb-6 justify-center items-center">
+                        <div className="relative max-w-2xl border-l-4 border-blue-500 pl-8">
+                            {entries.map((entry, index) => {
+                                const formattedDate = entry.createdAt
+                                    ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")
+                                    : "Unknown Date";
+
+                                const truncateText = (text = "", wordLimit = 50) => {
+                                    const words = text.split(" ");
+                                    if (words.length > wordLimit) {
+                                        return words.slice(0, wordLimit).join(" ") + "...";
+                                    }
+                                    return text;
+                                };
+
+                                return (
+                                    <div key={entry._id} className="mb-10 relative">
+                                        <div className="absolute -left-8 top-2 flex items-center justify-center w-6 h-6 bg-blue-500 text-white text-xs font-bold rounded-full border-2 border-white shadow-md">
+                                            {index + 1}
                                         </div>
-                                    </Link>
-                                </div>
-                            ))}
+
+                                        <p className="text-sm text-gray-500 mb-2">{formattedDate}</p>
+
+                                        <Link href={`/entry/${entry._id}`} className="block bg-white p-5 rounded-lg shadow-md transition hover:shadow-lg hover:bg-gray-50 border border-gray-200">
+                                            <h2 className="text-lg font-semibold text-gray-900">{formattedDate || "Untitled Entry"}</h2>
+                                            <p className="text-md text-gray-700 font-semibold mt-1">🌟 Mood: {entry.mood}</p>
+                                            <p className="text-sm text-gray-600 mt-1">
+                                                {entry.content ? truncateText(entry.content, 50) : "No content available."}
+                                            </p>
+                                        </Link>
+                                    </div>
+                                );
+                            })}
                         </div>
                     </div>
                 ) : (
-                    <p className="text-center text-gray-500">No journal entries found.</p>
+                    <p className="text-center text-gray-500 mt-6">No journal entries found.</p>
                 )}
+
             </div>
         </>
     );

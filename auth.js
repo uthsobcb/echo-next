@@ -6,7 +6,7 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import UserModel from "@/app/models/User";
 import { connect } from "@/app/lib/mongodb";
 import bcrypt from "bcryptjs";
-
+import jwt from "jsonwebtoken";
 export const {
     handlers: { GET, POST },
     auth,
@@ -48,7 +48,7 @@ export const {
                         email: user.email,
                         image: user.image,
                         subscription: user.subscription,
-                        badges: user.badge || [],
+                        // badges: user.badge || [],
                     };
 
                 } catch (error) {
@@ -62,17 +62,33 @@ export const {
         }),
     ],
     callbacks: {
+
         async jwt({ token, user }) {
+            // console.log("JWT Callback - Before User Check:", token);
+
             if (user) {
+                // console.log("JWT Callback - User Found:", user);
+
                 token.id = user.id;
                 token.name = user.name;
                 token.email = user.email;
                 token.image = user.image;
                 token.subscription = user.subscription;
-                token.badge = user.badge || [];
+
+                // Generate a signed JWT access token
+                const generateToken = jwt.sign(
+                    { userId: user.id, email: user.email },
+                    process.env.NEXTAUTH_SECRET,
+                    { expiresIn: "30d" }
+                );
+
+                token.accessToken = generateToken;
             }
-            return token;
+            // console.log("JWT Callback - After Token Generation:", token);
+            return { ...token, accessToken: token.accessToken }; // ✅ Ensure it’s returned
+            // return token;
         },
+
         async session({ session, token }) {
             if (token) {
                 session.user.id = token.id;
@@ -80,8 +96,10 @@ export const {
                 session.user.email = token.email;
                 session.user.image = token.image;
                 session.user.subscription = token.subscription;
-                session.user.badge = token.badge || [];
+                // session.user.badge = token.badge || [];
+                session.accessToken = token.accessToken; // Ensure frontend gets accessToken
             }
+            console.log("Session:", session); // Debug
             return session;
         },
     },
