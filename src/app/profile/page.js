@@ -37,13 +37,11 @@ const badges = [
 export default async function User() {
     const session = await auth();
     const user = session?.user || null;
-    console.log("User session:", session);
-    console.log("AccessToken:", session.accessToken);
     let entries = [];
 
     if (session) {
         try {
-            const response = await axios.get("http://localhost:3000/api/entries", {
+            const response = await axios.get(`${process.env.BASEURL}/api/entries`, {
                 headers: { Authorization: `Bearer ${session.accessToken}` },
                 withCredentials: true,
             });
@@ -56,6 +54,7 @@ export default async function User() {
     } else {
         console.error("Unauthorized request: No valid session found.");
     }
+
 
     const userBadges = badges.filter((badge) => user?.badges?.includes(badge.name));
 

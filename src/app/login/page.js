@@ -30,10 +30,7 @@ export default function Login() {
                 toast.error(result.error);
 
             } else {
-                toast.success("Login successful! Redirecting..."); // Show success toast
-                setTimeout(() => router.push("/entry"), 2000); // Redirect after a short delay
-
-                // router.push("/entry");
+                router.push("/entry");
             }
         } catch (error) {
             setError("Login failed. Please try again.");
