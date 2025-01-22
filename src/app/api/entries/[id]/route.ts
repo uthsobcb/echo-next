@@ -1,10 +1,10 @@
-import { NextResponse } from "next/server";
+import { NextResponse, NextRequest } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         await connect();
 
