@@ -38,7 +38,7 @@ export default async function User() {
     const session = await auth();
     const user = session?.user || null;
     let entries = [];
-
+    let moodData = [];
     if (session) {
         try {
             const response = await axios.get(`${process.env.BASEURL}/api/entries`, {
@@ -51,11 +51,34 @@ export default async function User() {
         } catch (error) {
             console.error("Error fetching entries:", error.response?.data || error.message);
         }
+        try {
+            const moodtracker = await axios.get(`${process.env.BASEURL}/api/mood-tracker`, {
+                headers: { Authorization: `Bearer ${session.accessToken}` },
+                withCredentials: true,
+            });
+            moodData = moodtracker.data;
+
+            console.log("Mood data fetched:", moodData);
+        }
+        catch (error) {
+            console.error("Error fetching mood data:", error.response?.data || error.message);
+        }
     } else {
         console.error("Unauthorized request: No valid session found.");
     }
+    // const pieChartData = moodData && moodData.mood ? [{
+    //     label: moodData.mood,
+    //     value: 20
+    // }] : [];
+    const pieChartData = Array.isArray(moodData)
+        ? moodData.map(({ mood }) => ({
+            label: mood,
+            value: 20
+        }))
+        : [];
 
 
+    console.log("Pie Chart Data:", pieChartData);
     const userBadges = badges.filter((badge) => user?.badges?.includes(badge.name));
 
     return (
@@ -107,15 +130,7 @@ export default async function User() {
                         <PieChart
                             series={[
                                 {
-                                    data: [
-                                        { value: 10, label: "Frustration" },
-                                        { value: 15, label: "Lonely" },
-                                        { value: 20, label: "Happy" },
-                                        { value: 30, label: "Depressed" },
-                                        { value: 15, label: "Sad" },
-                                        { value: 59, label: "Great" },
-                                        { value: 55, label: "Nice" },
-                                    ],
+                                    data: pieChartData,
                                 },
                             ]}
                             width={800}

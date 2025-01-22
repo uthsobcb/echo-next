@@ -7,7 +7,7 @@ import SignOut from './SignOut';
 export default async function NavBar() {
 
     const session = await auth();
-    console.log(session);
+    // console.log(session);
 
     return (
         <header className="flex items-center justify-center m-3">

@@ -28,9 +28,9 @@ export async function GET(req: Request) {
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
-        const mooddata = await Mood.find({ userId }).sort({ createdAt: -1 });
+        const moodData = await Mood.find({ userId }).sort({ createdAt: -1 }).select('mood');
 
-        return NextResponse.json(mooddata, { status: 200 });
+        return NextResponse.json(moodData, { status: 200 });
 
     } catch (error) {
         console.error("Error fetching entries:", error);
