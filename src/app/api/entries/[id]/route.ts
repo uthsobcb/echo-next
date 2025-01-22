@@ -4,7 +4,7 @@ import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Record<string, string> }) {
     try {
         await connect();
 
