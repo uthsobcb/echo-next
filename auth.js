@@ -48,7 +48,7 @@ export const {
                         email: user.email,
                         image: user.image,
                         subscription: user.subscription,
-                        // badges: user.badge || [],
+                        badges: Array.isArray(user.badge) ? user.badge : [],
                     };
 
                 } catch (error) {
@@ -74,6 +74,7 @@ export const {
                 token.email = user.email;
                 token.image = user.image;
                 token.subscription = user.subscription;
+                token.badge = Array.isArray(user.badge) ? user.badge : [];
 
                 // Generate a signed JWT access token
                 const generateToken = jwt.sign(
@@ -85,8 +86,8 @@ export const {
                 token.accessToken = generateToken;
             }
             // console.log("JWT Callback - After Token Generation:", token);
-            return { ...token, accessToken: token.accessToken }; // ✅ Ensure it’s returned
-            // return token;
+            return { ...token, accessToken: token.accessToken };
+
         },
 
         async session({ session, token }) {
@@ -96,7 +97,7 @@ export const {
                 session.user.email = token.email;
                 session.user.image = token.image;
                 session.user.subscription = token.subscription;
-                // session.user.badge = token.badge || [];
+                session.user.badge = token.badge;
                 session.accessToken = token.accessToken; // Ensure frontend gets accessToken
             }
             console.log("Session:", session); // Debug

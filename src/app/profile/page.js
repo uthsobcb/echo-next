@@ -5,7 +5,7 @@ import { auth } from "auth";
 import SignOut from '../components/SignOut';
 import axios from 'axios';
 import { format } from 'date-fns';
-
+import SearchBar from '../components/SearchBar';
 const badges = [
     {
         id: 1,
@@ -77,6 +77,7 @@ export default async function User() {
         }))
         : [];
 
+    const moodsArray = moodData.map(entry => entry.mood);
 
     console.log("Pie Chart Data:", pieChartData);
     const userBadges = badges.filter((badge) => user?.badges?.includes(badge.name));
@@ -150,25 +151,7 @@ export default async function User() {
                 </div>
             </div>
             <div className="flex flex-col items-center justify-center">
-                <div className="w-full p-6 rounded-lg">
-                    <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
-                        Search Your Entries
-                    </h2>
-                    <div className="flex w-full justify-center items-center m-3">
-                        <div className="flex w-1/2 justify-center items-center space-x-4">
-                            <input
-                                type="text"
-                                placeholder="Type to search..."
-                                className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
-                            />
-                            <input
-                                type="date"
-                                className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
-                            />
-                        </div>
-                    </div>
-                </div>
-
+                <SearchBar />
                 {entries.length > 0 ? (
                     <div className="flex flex-col gap-6 overflow-x-auto pb-6 justify-center items-center">
                         <div className="relative max-w-2xl border-l-4 border-blue-500 pl-8">

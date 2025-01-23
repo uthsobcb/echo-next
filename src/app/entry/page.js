@@ -6,6 +6,7 @@ import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import Image from 'next/image';
 import Link from 'next/link';
+import { toast } from 'react-toastify';
 
 const style = {
     position: 'absolute',
@@ -33,6 +34,7 @@ const Entry = () => {
 
         if (!journalEntry.trim()) {
             setError('Please write something before submitting.');
+            toast.info('Please write something before submitting.');
             return;
         }
 
@@ -45,8 +47,10 @@ const Entry = () => {
             });
 
             setMood(response.data.mood);
+            toast.success('Sucessfully Stored!');
         } catch (err) {
             setError(err.response?.data?.error || 'An error occurred while analyzing your mood.');
+            toast.error('Failed to enter', err.response?.data?.error);
         } finally {
             setLoading(false);
         }

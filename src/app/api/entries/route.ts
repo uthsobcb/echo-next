@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
 
-        const entries = await Entry.find({ userId });
+        const entries = await Entry.find({ userId }).sort({ createdAt: -1 });
         return NextResponse.json(entries, { status: 200 });
 
     } catch (error) {
