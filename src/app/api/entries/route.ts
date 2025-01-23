@@ -1,9 +1,9 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 
-export async function GET(req: Request) {
+export async function GET(req: NextRequest) {
     try {
         await connect();
 

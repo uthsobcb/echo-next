@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { connect } from "../../../lib/mongodb";
@@ -6,7 +6,7 @@ import User from "../../../models/User";
 
 const JWT_SECRET = process.env.JWT_SECRET || "";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
     try {
         const { email, password } = await req.json();
 
