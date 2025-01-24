@@ -48,7 +48,7 @@ export const {
                         email: user.email,
                         image: user.image,
                         subscription: user.subscription,
-                        badges: Array.isArray(user.badge) ? user.badge : [],
+                        badge: user.badge,
                     };
 
                 } catch (error) {
@@ -74,7 +74,7 @@ export const {
                 token.email = user.email;
                 token.image = user.image;
                 token.subscription = user.subscription;
-                token.badge = Array.isArray(user.badge) ? user.badge : [];
+                token.badge = user.badge;
 
                 // Generate a signed JWT access token
                 const generateToken = jwt.sign(

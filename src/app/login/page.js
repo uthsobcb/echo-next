@@ -5,6 +5,8 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { revalidatePath } from "next/cache";
+import { toast } from "react-toastify";
 
 export default function Login() {
     const router = useRouter();
@@ -30,7 +32,9 @@ export default function Login() {
                 toast.error(result.error);
 
             } else {
-                router.push("/entry");
+                router.push("/entry", { replace: true });
+                router.refresh();
+
             }
         } catch (error) {
             setError("Login failed. Please try again.");

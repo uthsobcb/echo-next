@@ -68,7 +68,7 @@ export default async function User() {
     const moodsArray = moodData.map(entry => entry.mood);
 
     console.log("Pie Chart Data:", pieChartData);
-    const userBadges = badges.filter((badge) => user?.badges?.includes(badge.name));
+    const userBadges = badges.filter((badge) => user?.badge?.includes(badge.name));
 
     return (
         <>
@@ -138,7 +138,7 @@ export default async function User() {
                     </div>
                 </div>
             </div>
-            <ProfileEntries session={session}/>
+            <ProfileEntries session={session} />
         </>
     );
 }
