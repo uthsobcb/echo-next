@@ -4,7 +4,7 @@ import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
 
-export async function GET(req: NextRequest, { params }: { params: { id: string } }) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connect();
 
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
 
-        const entry = await Entry.findOne({ _id: new mongoose.Types.ObjectId(params.id), userId });
+        const entry = await Entry.findOne({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
         if (!entry) {
             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
         }

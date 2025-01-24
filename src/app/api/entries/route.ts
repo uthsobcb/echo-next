@@ -5,6 +5,9 @@ import jwt from "jsonwebtoken";
 
 export async function GET(req: NextRequest) {
     try {
+        const searchParams = req.nextUrl.searchParams
+        const search = searchParams.get('search')
+
         await connect();
 
         const authHeader = req.headers.get("authorization");
@@ -29,7 +32,15 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
 
-        const entries = await Entry.find({ userId }).sort({ createdAt: -1 });
+        const query = {
+            userId
+        }
+
+        if (search) {
+            query["$or"] = [{ content: { $regex: search, $options: "i" } }, { mood: { $regex: search, $options: "i" } }]
+        }
+
+        const entries = await Entry.find(query).sort({ createdAt: -1 });
         return NextResponse.json(entries, { status: 200 });
 
     } catch (error) {

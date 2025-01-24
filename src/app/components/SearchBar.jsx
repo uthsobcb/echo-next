@@ -17,7 +17,7 @@ export default function SearchBar({ onSearch }) {
             params.delete('q');
         }
 
-        replace(`${pathName}?${params.toString()}`);
+        replace(`${pathName}?${params.toString()}`, { scroll: false });
         onSearch(term);
     }
 
