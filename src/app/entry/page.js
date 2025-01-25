@@ -65,7 +65,7 @@ const Entry = () => {
     return (
         <div className="flex flex-col items-center justify-center h-screen">
             <h1 className="text-7xl font-handwriting mb-6 text-gray-800">Journal Entry</h1>
-            <div className="w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
+            <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
                 {/* <p className="text-lg text-gray-700 mb-4">{dateandtime}</p> */}
                 <textarea
                     className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting text-6xl overflow-auto focus:outline-none"

@@ -115,7 +115,7 @@ export default function Login() {
                                 <hr className="w-full border-gray-300" />
                             </div>
 
-                            <button
+                            {/* <button
                                 className="w-full bg-violet-500  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-red-800 text-white flex items-center justify-center gap-2"
                                 type="button"
                                 onClick={handleGoogleSignIn}
@@ -123,7 +123,7 @@ export default function Login() {
                             >
                                 <Image src="/assets/google.svg" alt="Google" width={24} height={24} />
                                 Sign in with Google
-                            </button>
+                            </button> */}
 
                             <p className="text-sm text-gray-500 mt-2">
                                 Don't have an account?{" "}

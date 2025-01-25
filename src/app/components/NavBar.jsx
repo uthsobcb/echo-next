@@ -20,15 +20,15 @@ export default async function NavBar() {
                     </Link>
                 </div>
                 <div className="flex items-center space-x-4 p-2 rounded-lg">
-                    <div className='flex items-center'>
-                        <Image src='/assets/pen.svg' alt="Entry" width={24} height={24} />
-
-                        <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
-                            Entry
-                        </Link>
-                    </div>
                     {session?.user ? (
                         <div className="flex items-center space-x-3">
+                            <div className='flex items-center'>
+                                <Image src='/assets/pen.svg' alt="Entry" width={24} height={24} />
+
+                                <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                                    Entry
+                                </Link>
+                            </div>
                             <Image
                                 src={session?.user?.image}
                                 alt={session?.user?.name}
@@ -46,13 +46,20 @@ export default async function NavBar() {
                             <SignOut />
                         </div>
                     ) : (
-                        <div>
+                        <div className='gap-2 flex'>
                             <Link
                                 href="/login"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200 "
                                 aria-label="Login Page"
                             >
                                 Login
+                            </Link>
+                            <Link
+                                href="/register"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200"
+                                aria-label="Login Page"
+                            >
+                                Register
                             </Link>
                         </div>
                     )}
