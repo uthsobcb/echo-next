@@ -2,12 +2,13 @@ import Link from "next/link";
 import { auth } from "auth";
 import axios from "axios";
 import { format } from "date-fns";
-
+import { toast } from "react-toastify";
 export default async function EntryCard({ params }) {
     const session = await auth();
     let entry = [];
     if (!session) {
         return <p className="text-red-500">Unauthorized - Please log in</p>;
+        toast.error("Unauthorized - Please log in");
     }
     try {
         const parID = await params.id;

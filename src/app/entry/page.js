@@ -95,7 +95,9 @@ const Entry = () => {
                                 <p className="text-xl font-semibold text-red-600">Failed to analyze mood.</p>
                             )}
                             <p className="text-lg text-gray-600">
-                                Echo can listen to you and help you feel better. <Link href="/chat" className="text-blue-600">Click here</Link>
+
+                                Echo can listen to you and help you feel better.
+                                <Link href="/chat" className="text-blue-600">Talk To Echo</Link>
                             </p>
                         </div>
                     </Box>

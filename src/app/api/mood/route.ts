@@ -30,7 +30,21 @@ export async function POST(req: Request) {
 
 
         const mood = completion.choices[0]?.message?.content?.trim();
-        const parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
+
+        let parsedMood;
+        try {
+            parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
+
+            // If `parsedMood` has a nested "mood" key, extract the correct value
+            if (parsedMood.mood) {
+                parsedMood = parsedMood.mood; // This ensures you're only getting the inner mood object
+            }
+        } catch (error) {
+            console.error("Error parsing mood:", error);
+            parsedMood = { label: "Unknown", score: 0, comment: "No valid response received." };
+        }
+
+        // const parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
 
         if (!mood) {
             return NextResponse.json({ error: "Failed to detect mood." }, { status: 500 });
@@ -46,15 +60,17 @@ export async function POST(req: Request) {
         }
         const newMood = new Mood({
             userId: user?.id,
-            mood: parsedMood.label,
-            score: parsedMood.score,
-            comment: parsedMood.comment,
+            mood: parsedMood?.label,
+            score: parsedMood?.score,
+            comment: parsedMood?.comment,
             content,
             createdAt: new Date(),
         });
         await newMood.save();
 
-        return NextResponse.json({ message: "Mood saved successfully.", mood });
+        return NextResponse.json({
+            message: "Mood saved successfully.", mood: parsedMood.label,
+        });
     } catch (error) {
         console.error("Error in mood route:", error);
         return NextResponse.json({ error: "Internal server error." }, { status: 500 });

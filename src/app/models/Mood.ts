@@ -7,18 +7,19 @@ const MoodSchema = new mongoose.Schema(
             ref: "User",
             required: true,
         },
+
         // mood: {
         //     label: {
         //         type: String,
-        //         required: true
+        //         // required: true
         //     },
         //     score: {
         //         type: Number,
-        //         required: true
+        //         // required: true
         //     },
         //     comment: {
         //         type: String,
-        //         required: true
+        //         // required: true
         //     }
         // },
         mood: {
