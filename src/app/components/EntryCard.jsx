@@ -41,6 +41,7 @@ export default function EntryCard() {
             <div className="text-center mb-4">
                 <h2 className="text-xl font-semibold text-gray-700">Entry from: {entry.createdAt || "Unknown Date"}</h2>
                 <p className="text-md mt-1">🌟 Mood: {entry.mood}</p>
+                {/* <p> </p> */}
 
                 <div className="flex justify-around mt-6">
                     <button className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md font-medium">Edit</button>
@@ -53,8 +54,11 @@ export default function EntryCard() {
             </div>
 
             <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-md mt-4">
-                <p className="text-lg font-semibold">Need someone to talk to about your feelings?</p>
+                <p className="text-lg font-semibold">
+                    {entry.comment}
+                </p>
                 <p className="mt-2">
+                    Need someone to talk to about your feelings?
                     Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely.
                 </p>
                 <Link href="/chat">

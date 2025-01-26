@@ -19,16 +19,19 @@ export async function POST(req: Request) {
             messages: [
                 {
                     role: "system",
-                    content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should contain only a single-word mood descriptor (e.g., 'happy', 'anxious', 'excited', 'frustrated'). Do not include any explanations or additional text."
+                    content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single word representing the overall emotional tone.\n  - `score`: A numerical rating out of 20, where higher scores indicate a more positive mood.\n  - `comment`: A supportive message based on the mood, offering encouragement or suggestions for improvement if needed.\n\nEnsure the response is empathetic and concise."
                 },
                 {
                     role: "user",
-                    content: `Analyze the mood from the following journal entry and provide a single-word response:\n\n"${content}"`
+                    content: `Analyze the following journal entry and provide the requested JSON response:\n\n"${content}"`
                 },
             ],
         });
 
+
         const mood = completion.choices[0]?.message?.content?.trim();
+        const parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
+
         if (!mood) {
             return NextResponse.json({ error: "Failed to detect mood." }, { status: 500 });
         }
@@ -43,7 +46,9 @@ export async function POST(req: Request) {
         }
         const newMood = new Mood({
             userId: user?.id,
-            mood,
+            mood: parsedMood.label,
+            score: parsedMood.score,
+            comment: parsedMood.comment,
             content,
             createdAt: new Date(),
         });
