@@ -5,7 +5,7 @@ import React, { useState } from "react";
 const ChatBox = () => {
     const [messages, setMessages] = useState([
         { role: "user", text: "How does Echo chat work? Can it really understand what I'm saying?" },
-        { role: "ai", text: "Ech listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely." },
+        { role: "ai", text: "Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely." },
     ]);
     const [input, setInput] = useState("");
 
