@@ -69,7 +69,7 @@ export async function POST(req: Request) {
         await newMood.save();
 
         return NextResponse.json({
-            message: "Mood saved successfully.", mood: parsedMood.label,
+            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment,
         });
     } catch (error) {
         console.error("Error in mood route:", error);

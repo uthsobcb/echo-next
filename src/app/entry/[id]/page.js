@@ -42,8 +42,8 @@ export default async function EntryCard({ params }) {
                     <p className="text-gray-900 font-handwriting text-5xl leading-snug">{entry.content}</p>
                 </div>
 
-                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-md mt-4">
-                    <p className="text-lg font-semibold">Need someone to talk to about your feelings?</p>
+                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-md mt-4 w-9/12">
+                    <p className="text-lg font-semibold">{entry.comment}</p>
                     <p className="mt-2">
                         Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely.
                     </p>

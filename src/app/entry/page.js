@@ -7,6 +7,7 @@ import Modal from '@mui/material/Modal';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
+import { set } from 'mongoose';
 
 const style = {
     position: 'absolute',
@@ -28,6 +29,8 @@ const Entry = () => {
     const [mood, setMood] = useState(null);
     const [error, setError] = useState(null);
     const [loading, setLoading] = useState(false);
+    const [comment, setComment] = useState(null);
+
 
     const handleOpen = async () => {
         setOpen(true);
@@ -47,6 +50,7 @@ const Entry = () => {
             });
 
             setMood(response.data.mood);
+            setComment(response.data.comment);
             toast.success('Sucessfully Stored!');
         } catch (err) {
             setError(err.response?.data?.error || 'An error occurred while analyzing your mood.');
@@ -58,7 +62,6 @@ const Entry = () => {
 
     const handleClose = () => {
         setOpen(false);
-        setMood(null);
         setError(null);
     };
 
@@ -95,9 +98,10 @@ const Entry = () => {
                                 <p className="text-xl font-semibold text-red-600">Failed to analyze mood.</p>
                             )}
                             <p className="text-lg text-gray-600">
-
-                                Echo can listen to you and help you feel better.
-                                <Link href="/chat" className="text-blue-600">Talk To Echo</Link>
+                                Comment:
+                                {comment || 'Comment Fetching...'}
+                                <br />
+                                <Link href="/chat" className="text-blue-600">Talk To Echo about your feelings??</Link>
                             </p>
                         </div>
                     </Box>
