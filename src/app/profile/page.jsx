@@ -20,7 +20,6 @@ export default async function User() {
     const user = session?.user || null;
     let moodData = [];
 
-    console.log(entry);
     if (session) {
         try {
             const moodtracker = await axios.get(`${process.env.BASEURL}/api/mood-tracker`, {

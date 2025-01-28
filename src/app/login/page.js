@@ -109,11 +109,11 @@ export default function Login() {
                                 {loading ? "Logging in..." : "Login"}
                             </button>
 
-                            <div className="flex items-center my-4">
+                            {/* <div className="flex items-center my-4">
                                 <hr className="w-full border-gray-300" />
                                 <span className="px-2 text-gray-500">OR</span>
                                 <hr className="w-full border-gray-300" />
-                            </div>
+                            </div> */}
 
                             {/* <button
                                 className="w-full bg-violet-500  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-red-800 text-white flex items-center justify-center gap-2"
