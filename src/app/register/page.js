@@ -54,7 +54,7 @@ export default function SignupPage() {
                                 <input
                                     name="name"
                                     className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
-                                    placeholder="John Doe"
+                                    placeholder="Mr. Pico"
                                     type="text"
                                     required
                                 />
@@ -85,6 +85,19 @@ export default function SignupPage() {
                                     required
                                 />
                             </div>
+                            <div>
+                                <label className="block mb-2 text-sm font-medium text-gray-900">
+                                    Plan
+                                </label>
+                                <select
+                                    name="subscription"
+                                    className="bg-gray-50 border border-gray-300 text-gray-900 sm:text-sm rounded-lg block w-full p-2.5"
+                                >
+                                    <option value="free">Free</option>
+                                    <option value="premium" disabled>Plus (under working)</option>
+                                </select>
+                            </div>
+
                             <button
                                 className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-blue-800 text-white"
                                 type="submit"

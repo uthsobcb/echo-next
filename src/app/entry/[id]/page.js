@@ -3,6 +3,7 @@ import { auth } from "auth";
 import axios from "axios";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
+import DeleteButton from "@/app/components/DeleteButon";
 export default async function EntryCard({ params }) {
     const session = await auth();
     let entry = [];
@@ -24,6 +25,27 @@ export default async function EntryCard({ params }) {
             : "Unknown Date";
 
 
+        // const handleDelete = async () => {
+        //     "use server";
+
+        //     const confirmDelete = confirm("Are you sure you want to delete this entry?");
+        //     if (!confirmDelete) return;
+
+        //     try {
+        //         await axios.delete(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries/${entry._id}`, {
+        //             headers: { Authorization: `Bearer ${session.accessToken}` },
+        //             withCredentials: true,
+        //         });
+
+        //         toast.success("Entry deleted successfully!");
+        //         redirect("/"); // Redirect after deletion
+        //     } catch (err) {
+        //         console.error("Error deleting entry:", err);
+        //         toast.error("Failed to delete entry");
+        //     }
+        // };
+
+
         return (
             <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 px-4 py-6">
                 <div className="text-center mb-4">
@@ -34,7 +56,7 @@ export default async function EntryCard({ params }) {
 
                     <div className="flex justify-around mt-6">
                         <button className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md font-medium">Edit</button>
-                        <button className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md font-medium">Delete</button>
+                        <DeleteButton entryId={entry._id} accessToken={session.accessToken} />
                     </div>
                 </div>
 

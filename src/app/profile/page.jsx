@@ -132,9 +132,10 @@ export default async function User() {
                         <div className="flex flex-col md:flex-row items-center gap-6 justify-center bg-blue-50 rounded-lg p-6 shadow-md w-full max-w-3xl">
                             <Image src='/assets/logo.png' alt="Echo" width={96} height={96} className="object-contain mb-4 md:mb-0" />
                             <p className="text-black text-center text-lg leading-relaxed">
-                                <span className="font-semibold text-blue-600">Echo says:</span> It seems
+                                <span className="font-semibold text-blue-600">Echo says:</span> It seems:- { }
                                 {overallComment}
 
+                                <br />
                                 <Link href="/chat">
                                     <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
                                         Talk to Echo

@@ -67,7 +67,7 @@ export const {
             // console.log("JWT Callback - Before User Check:", token);
 
             if (user) {
-                // console.log("JWT Callback - User Found:", user);
+                console.log("JWT Callback - User Found:", user);
 
                 token.id = user.id;
                 token.name = user.name;
@@ -75,6 +75,7 @@ export const {
                 token.image = user.image;
                 token.subscription = user.subscription;
                 token.badge = user.badge;
+                // console.log("Badges in Session Callback:", token.badge);
 
                 // Generate a signed JWT access token
                 const generateToken = jwt.sign(
@@ -92,6 +93,7 @@ export const {
 
         async session({ session, token }) {
             if (token) {
+
                 session.user.id = token.id;
                 session.user.name = token.name;
                 session.user.email = token.email;
@@ -101,6 +103,7 @@ export const {
                 session.accessToken = token.accessToken; // Ensure frontend gets accessToken
             }
             console.log("Session:", session); // Debug
+
             return session;
         },
     },
