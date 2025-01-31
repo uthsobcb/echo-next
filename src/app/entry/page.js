@@ -71,7 +71,7 @@ const Entry = () => {
             <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
                 {/* <p className="text-lg text-gray-700 mb-4">{dateandtime}</p> */}
                 <textarea
-                    className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting text-6xl overflow-auto focus:outline-none"
+                    className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting lg:text-6xl text-4xl  overflow-auto focus:outline-none"
                     placeholder="How was your day? What's on your mind? Jot down your thoughts here..."
                     value={journalEntry}
                     onChange={(e) => setJournalEntry(e.target.value)}
@@ -99,7 +99,7 @@ const Entry = () => {
                             )}
                             <p className="text-lg text-gray-600">
                                 Comment:
-                                {comment || 'Comment Fetching...'}
+                                {comment || 'Echo analyzing...'}
                                 <br />
                                 <Link href="/chat" className="text-blue-600">Talk To Echo about your feelings??</Link>
                             </p>

@@ -61,7 +61,7 @@ export default async function EntryCard({ params }) {
                 </div>
 
                 <div className="w-11/12 max-w-5xl bg-[#F5DEB3] border rounded-md p-8">
-                    <p className="text-gray-900 font-handwriting text-5xl leading-snug">{entry.content}</p>
+                    <p className="text-gray-900 font-handwriting lg:text-6xl text-3xl leading-snug">{entry.content}</p>
                 </div>
 
                 <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-md mt-4 w-9/12">
