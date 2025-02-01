@@ -1,6 +1,7 @@
 'use client'
 import { useState } from "react";
 import { CheckCircle, Star } from "lucide-react";
+import Link from "next/link";
 
 export function Card({ children, className }) {
     return (
@@ -18,9 +19,12 @@ export default function LandingPage() {
                 <p className="mt-4 text-lg text-gray-600">
                     Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
                 </p>
-                <button className="bg-blue-600 text-white px-6 py-3 rounded-lg mt-6">
+                <p className="mt-2 text-md text-gray-500">Enjoy Echo for free, or upgrade to premium for unlimited access!</p>
+                <br />
+                <Link className="bg-blue-600 text-white px-6 py-3 rounded-lg mt-6" href="/register">
                     Get Started for Free
-                </button>
+                    <br />
+                </Link>
 
             </section>
 

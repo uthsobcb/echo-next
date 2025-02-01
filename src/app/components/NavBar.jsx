@@ -29,20 +29,28 @@ export default async function NavBar() {
                                     Entry
                                 </Link>
                             </div>
-                            <Image
-                                src={session?.user?.image}
-                                alt={session?.user?.name}
-                                width={32}
-                                height={32}
-                                className="rounded-full border border-gray-300 shadow-sm"
-                            />
+
                             <Link
                                 href="/profile"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm flex items-center gap-2"
                                 aria-label="Account Page"
                             >
+                                <Image
+                                    src={session?.user?.image}
+                                    alt={session?.user?.name}
+                                    width={32}
+                                    height={32}
+                                    className="rounded-full border border-gray-300 shadow-sm"
+                                />
                                 {session?.user?.name}
                             </Link>
+                            <div className='flex items-center gap-2'>
+                                <Image src='/assets/chatbot.svg' alt="ChatBOT" width={24} height={24} />
+
+                                <Link href="/chat" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                                    Chat
+                                </Link>
+                            </div>
                             <SignOut />
                         </div>
                     ) : (
