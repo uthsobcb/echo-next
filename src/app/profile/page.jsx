@@ -6,7 +6,8 @@ import SignOut from '../components/SignOut';
 import axios from 'axios';
 import { format } from 'date-fns';
 import ProfileEntries from './ProfileEntries';
-
+import BetterMood from './BetterMood';
+import BadMood from './BadMood';
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
     { id: 2, name: "Pen Whisperer", img: "/assets/badge_1.png" },
@@ -104,7 +105,7 @@ export default async function User() {
                     <div className="flex flex-col items-center p-8 rounded-lg text-center">
                         <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
                         <div>
-                            <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the your entries</p>
+                            <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the 7</p>
                             {/* <select
                                 id="mood-range"
                                 className="text-lg text-gray-600 border rounded-md px-3 py-1 h-10"
@@ -121,7 +122,7 @@ export default async function User() {
                             <PieChart
                                 series={[
                                     {
-                                        data: pieChartData,
+                                        data: selectedData,
                                     },
                                 ]}
                                 width={600}
@@ -129,20 +130,8 @@ export default async function User() {
                                 className="w-full max-w-[90%] sm:max-w-lg lg:max-w-4xl"
                             />
                         </div>
-                        <div className="flex flex-col md:flex-row items-center gap-6 justify-center bg-blue-50 rounded-lg p-6 shadow-md w-full max-w-3xl">
-                            <Image src='/assets/logo.png' alt="Echo" width={96} height={96} className="object-contain mb-4 md:mb-0" />
-                            <p className="text-black text-center text-lg leading-relaxed">
-                                <span className="font-semibold text-blue-600">Echo says:</span> It seems:- { }
-                                {overallComment}
 
-                                <br />
-                                <Link href="/chat">
-                                    <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
-                                        Talk to Echo
-                                    </button>
-                                </Link>
-                            </p>
-                        </div>
+                        {totalValue > 50 ? <BetterMood /> : <BadMood />}
                     </div>
                 </div>
             </div>
