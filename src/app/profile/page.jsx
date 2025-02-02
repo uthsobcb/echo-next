@@ -104,7 +104,7 @@ export default async function User() {
                     <div className="flex flex-col items-center p-8 rounded-lg text-center">
                         <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
                         <div>
-                            <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the last</p>
+                            <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the your entries</p>
                             {/* <select
                                 id="mood-range"
                                 className="text-lg text-gray-600 border rounded-md px-3 py-1 h-10"

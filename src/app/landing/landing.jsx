@@ -1,6 +1,6 @@
 'use client'
 import { useState } from "react";
-import { CheckCircle, Star } from "lucide-react";
+import { CheckCircle, Star, BookOpen } from "lucide-react";
 import Link from "next/link";
 
 export function Card({ children, className }) {
@@ -27,6 +27,47 @@ export default function LandingPage() {
                 </Link>
 
             </section>
+
+            <div className="flex flex-col md:flex-row bg-gray-50 rounded-xl">
+                <section className="py-16 px-6 md:w-1/2 text-center">
+                    <div className="max-w-lg mx-auto">
+                        <h2 className="text-3xl font-bold text-gray-800">What is Journaling?</h2>
+                        <p className="text-gray-600 mt-6 text-lg">
+                            Journaling is the practice of writing down your thoughts, emotions, and daily experiences. It helps you process your feelings, track your growth, and clear your mind.
+                        </p>
+                    </div>
+                </section>
+
+                <div className="hidden md:block w-px bg-gray-300 self-stretch mx-4"></div>
+
+                <section className="py-16 px-6 md:w-1/2">
+                    <div className="max-w-lg mx-auto">
+                        <h2 className="text-3xl font-bold text-center text-gray-800">Why Journaling is Good for Your Mental Health</h2>
+                        <div className="mt-8">
+                            <ul className="space-y-4">
+                                <li className="flex items-center text-xl font-medium text-gray-800 transition-colors duration-200 hover:text-blue-600">
+                                    <svg className="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <circle cx="10" cy="10" r="8" />
+                                    </svg>
+                                    <span>Reduces Stress & Anxiety</span>
+                                </li>
+                                <li className="flex items-center text-xl font-medium text-gray-800 transition-colors duration-200 hover:text-blue-600">
+                                    <svg className="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <circle cx="10" cy="10" r="8" />
+                                    </svg>
+                                    <span>Enhances Self-Awareness</span>
+                                </li>
+                                <li className="flex items-center text-xl font-medium text-gray-800 transition-colors duration-200 hover:text-blue-600">
+                                    <svg className="w-6 h-6 text-blue-500 mr-3 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                                        <circle cx="10" cy="10" r="8" />
+                                    </svg>
+                                    <span>Improves Emotional Well-Being</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                </section>
+            </div>
 
             <section className="py-16 px-6 max-w-4xl">
                 <h2 className="text-3xl font-semibold text-center">Why Choose Echo?</h2>

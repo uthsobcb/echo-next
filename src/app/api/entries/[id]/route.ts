@@ -78,3 +78,97 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         return NextResponse.json({ message: "Failed to fetch entry" }, { status: 500 });
     }
 }
+
+// export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+//     try {
+
+//         await connect();
+//         const authHeader = req.headers.get("authorization");
+//         console.log("Received Authorization Header:", authHeader);
+
+//         if (!authHeader?.startsWith("Bearer ")) {
+//             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+//         }
+
+//         const token = authHeader.split(" ")[1];
+
+//         let decodedToken;
+//         try {
+//             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+//             console.log("Decoded Token:", decodedToken);
+//         } catch (err) {
+//             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
+//         }
+
+//         const userId = decodedToken.userId;
+//         if (!userId) {
+//             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
+//         }
+//         const updateData = await req.json();
+//         const entryId = params.id;
+//         const updatedEntry = await Entry.findByIdAndUpdate(
+//             new mongoose.Types.ObjectId(entryId),
+//             updateData,
+//             { new: true }
+//         );
+
+//         if (!updatedEntry) {
+//             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
+//         }
+//         return NextResponse.json(updatedEntry, { status: 200 });
+
+//     }
+//     catch (error) {
+//         console.error("Error fetching entry:", error);
+//         return NextResponse.json({ message: "Failed to fetch entry" }, { status: 500 });
+//     }
+// }
+export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+    try {
+        await connect();
+
+        const authHeader = req.headers.get("authorization");
+        console.log("Received Authorization Header:", authHeader);
+
+        if (!authHeader?.startsWith("Bearer ")) {
+            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+        }
+        const token = authHeader.split(" ")[1];
+
+        let decodedToken;
+        try {
+            decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
+            console.log("Decoded Token:", decodedToken);
+        } catch (err) {
+            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
+        }
+
+        const userId = (decodedToken as any).userId;
+        if (!userId) {
+            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
+        }
+
+        // Parse the request body to extract update data
+        const updateData = await req.json();
+
+        // Optionally, verify that the user is allowed to update this entry here.
+        // e.g., check if the entry's owner equals userId.
+
+        // Convert the route parameter id to a Mongoose ObjectId and update the entry
+        const entryId = params.id;
+        const updatedEntry = await Entry.findByIdAndUpdate(
+            new mongoose.Types.ObjectId(entryId),
+            updateData,
+            { new: true }
+        );
+
+        if (!updatedEntry) {
+            return NextResponse.json({ message: "Entry not found" }, { status: 404 });
+        }
+
+        return NextResponse.json(updatedEntry, { status: 200 });
+    } catch (error) {
+        console.error("Error updating entry:", error);
+        return NextResponse.json({ message: "Failed to update entry" }, { status: 500 });
+    }
+}

@@ -4,7 +4,13 @@ import { connect } from "@/app/lib/mongodb";
 import { auth } from "auth";
 import Mood from "@/app/models/Mood";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import {
+    GoogleGenerativeAI,
+} from "@google/generative-ai";
 
+const apiKey = process.env.GEMINI_API;
+
+const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req: Request) {
     try {
@@ -14,31 +20,69 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Journal entry is required." }, { status: 400 });
         }
 
-        const completion = await openai.chat.completions.create({
-            model: "gpt-4",
-            messages: [
-                {
-                    role: "system",
-                    content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single word representing the overall emotional tone.\n  - `score`: A numerical rating out of 20, where higher scores indicate a more positive mood.\n  - `comment`: A supportive message based on the mood, offering encouragement or suggestions for improvement if needed.\n\nEnsure the response is empathetic and concise."
-                },
-                {
-                    role: "user",
-                    content: `Analyze the following journal entry and provide the requested JSON response:\n\n"${content}"`
-                },
-            ],
+
+        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
+        const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
+- \`mood\`: An object containing:
+  - \`label\`: A single word representing the overall emotional tone.
+  - \`score\`: A numerical rating out of 20, where higher scores indicate a more positive mood.
+  - \`comment\`: A supportive message based on the mood, offering encouragement or suggestions for improvement if needed.
+Ensure the response is empathetic and concise.
+Analyze the following journal entry and provide the requested JSON response: "${content}"`;
+
+        const result = await model.generateContent({
+            contents: [{
+                role: "user",
+                parts: [{ text: prompt }]
+            }]
         });
 
 
-        const mood = completion.choices[0]?.message?.content?.trim();
+        const response = result.response;
+        const mood = response.candidates[0].content.parts[0].text;
+
+        console.log(mood);
+
+        function cleanResponse(response) {
+            return response.replace(/```json|```/g, '').trim();
+        }
+
+        //OAI method
+        // const completion = await openai.chat.completions.create({
+        //     model: "gpt-4",
+        //     messages: [
+        //         {
+        //             role: "system",
+        //             content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single word representing the overall emotional tone.\n  - `score`: A numerical rating out of 20, where higher scores indicate a more positive mood.\n  - `comment`: A supportive message based on the mood, offering encouragement or suggestions for improvement if needed.\n\nEnsure the response is empathetic and concise."
+        //         },
+        //         {
+        //             role: "user",
+        //             content: `Analyze the following journal entry and provide the requested JSON response:\n\n"${content}"`
+        //         },
+        //     ],
+        // });
+
+
+        // const mood = completion.choices[0]?.message?.content?.trim();
 
         let parsedMood;
         try {
-            parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
+            const cleanedResponse = typeof mood === "string" ? cleanResponse(mood) : mood;
 
-            // If `parsedMood` has a nested "mood" key, extract the correct value
+            parsedMood = typeof cleanedResponse === "string" ? JSON.parse(cleanedResponse) : cleanedResponse;
+
+            // If `parsedMood` has a nested "mood" key, extract the inner mood object.
             if (parsedMood.mood) {
-                parsedMood = parsedMood.mood; // This ensures you're only getting the inner mood object
+                parsedMood = parsedMood.mood;
             }
+
+            // OAI method
+            // parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
+            // If `parsedMood` has a nested "mood" key, extract the correct value
+            // if (parsedMood.mood) {
+            //     parsedMood = parsedMood.mood; // This ensures you're only getting the inner mood object
+            // }
         } catch (error) {
             console.error("Error parsing mood:", error);
             parsedMood = { label: "Unknown", score: 0, comment: "No valid response received." };

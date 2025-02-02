@@ -12,6 +12,7 @@
     "@auth/mongodb-adapter": "^3.7.4",
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
+    "@google/generative-ai": "^0.21.0",
     "@mui/material": "^6.3.1",
     "@mui/x-charts": "^7.24.1",
     "@vercel/analytics": "^1.4.1",

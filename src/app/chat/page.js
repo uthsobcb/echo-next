@@ -7,8 +7,6 @@ export default async function page() {
 
     if (!isSubscribe) {
         return <ChatBox />
-
-
     }
     else return <SubscriptionWarning />
 }

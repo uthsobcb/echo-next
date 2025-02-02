@@ -23,7 +23,9 @@ export default async function EntryCard({ params }) {
         const formattedDate = entry.createdAt
             ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")
             : "Unknown Date";
-
+        const formattedTime = entry.createdAt
+            ? format(new Date(entry.createdAt), "EEE, h:mm a")
+            : "Unknown Date";
 
         // const handleDelete = async () => {
         //     "use server";
@@ -52,10 +54,17 @@ export default async function EntryCard({ params }) {
                     <h2 className="text-xl font-semibold text-gray-700">
                         Entry from: {formattedDate || "Unknown Date"}
                     </h2>
+                    <h3 className="text-gray-700">
+                        <span className="text-gray-500">at</span> {formattedTime || "Unknown Time"}
+                    </h3>
                     <p className="text-md mt-1">🌟 Mood: {entry.mood}</p>
 
                     <div className="flex justify-around mt-6">
-                        <button className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md font-medium">Edit</button>
+                        <Link href={`/entry/${entry._id}/edit`}>
+                            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md font-medium">
+                                Edit
+                            </button>
+                        </Link>
                         <DeleteButton entryId={entry._id} accessToken={session.accessToken} />
                     </div>
                 </div>

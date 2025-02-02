@@ -56,9 +56,8 @@ function ProfileEntries({ session }) {
                     <div className="relative max-w-2xl border-l-4 border-blue-500 pl-8">
                         {entries.map((entry, index) => {
                             const formattedDate = entry.createdAt
-                                ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")
+                                ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy, h:mm a")
                                 : "Unknown Date";
-
                             const truncateText = (text = "", wordLimit = 50) => {
                                 const words = text.split(" ");
                                 if (words.length > wordLimit) {
