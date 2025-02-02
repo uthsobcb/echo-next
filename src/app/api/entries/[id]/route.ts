@@ -123,7 +123,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 //         return NextResponse.json({ message: "Failed to fetch entry" }, { status: 500 });
 //     }
 // }
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connect();
 
@@ -151,13 +151,9 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
         // Parse the request body to extract update data
         const updateData = await req.json();
 
-        // Optionally, verify that the user is allowed to update this entry here.
-        // e.g., check if the entry's owner equals userId.
+        // const deletedEntry = await Entry.findByIdAndDelete({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
 
-        // Convert the route parameter id to a Mongoose ObjectId and update the entry
-        const entryId = params.id;
-        const updatedEntry = await Entry.findByIdAndUpdate(
-            new mongoose.Types.ObjectId(entryId),
+        const updatedEntry = await Entry.findByIdAndUpdate({ _id: new mongoose.Types.ObjectId((await params)?.id) },
             updateData,
             { new: true }
         );
