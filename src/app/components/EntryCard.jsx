@@ -61,7 +61,7 @@ export default function EntryCard() {
                     Need someone to talk to about your feelings?
                     Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely.
                 </p>
-                <Link href="/chat">
+                <Link href={{ pathname: "/chat", query: { entryContent: entry.content } }}>
                     <button className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-md">
                         Talk to Echo
                     </button>
