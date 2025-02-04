@@ -1,36 +1,46 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { useSearchParams } from "next/navigation";
 
 const ChatBox = () => {
-    const [messages, setMessages] = useState([
-        { role: "user", text: "How does Echo chat work? Can it really understand what I'm saying?" },
-        { role: "ai", text: "Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely." },
-    ]);
+    const searchParams = useSearchParams();
+    const entryContent = searchParams.get("entryContent"); // Get the entry content from query params
+
+    const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
-    const handleSend = async () => {
-        if (input.trim() === "") return;
+    // Function to send a message
+    const sendMessage = async (text, isAuto = false) => {
+        if (!text.trim()) return;
 
-        const userMessage = { role: "user", text: input };
-        setMessages((prev) => [...prev, userMessage]);
-        setInput("");
-        setLoading(true);
+        // Add user message
+        setMessages((prev) => [...prev, { role: "user", text }]);
 
         try {
-            const res = await axios.post("/api/chat", { message: input });
+            setLoading(true);
+            const res = await axios.post("/api/chat", { message: text });
             const aiReply = res.data.reply || "I'm here to listen.";
 
+            // Add AI response
             setMessages((prev) => [...prev, { role: "ai", text: aiReply }]);
         } catch (error) {
             console.error("Error fetching AI response:", error);
             setMessages((prev) => [...prev, { role: "ai", text: "Oops! Something went wrong." }]);
         } finally {
+            setInput("");
             setLoading(false);
         }
     };
+
+    // Initiate conversation automatically if entryContent is provided
+    useEffect(() => {
+        if (entryContent) {
+            sendMessage(entryContent, true);
+        }
+    }, [entryContent]); // Runs only when the component mounts and entryContent exists
 
     return (
         <div className="flex items-center justify-center">
@@ -39,9 +49,7 @@ const ChatBox = () => {
                     {messages.map((msg, index) => (
                         <div
                             key={index}
-                            className={`max-w-[75%] px-4 py-2 text-[16px] leading-relaxed rounded-lg shadow-md ${msg.role === "user"
-                                ? "bg-blue-500 text-white self-end ml-auto"
-                                : "bg-gray-200 text-gray-800 self-start"
+                            className={`max-w-[75%] px-4 py-2 text-[16px] leading-relaxed rounded-lg shadow-md ${msg.role === "user" ? "bg-blue-500 text-white self-end ml-auto" : "bg-gray-200 text-gray-800 self-start"
                                 }`}
                         >
                             {msg.text}
@@ -62,10 +70,10 @@ const ChatBox = () => {
                         placeholder="Type a message..."
                         value={input}
                         onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && handleSend()}
+                        onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
                     />
                     <button
-                        onClick={handleSend}
+                        onClick={() => sendMessage(input)}
                         className="px-5 py-2 bg-blue-500 text-white rounded-full text-[15px] font-medium shadow-md hover:bg-blue-600 transition"
                         disabled={loading}
                     >

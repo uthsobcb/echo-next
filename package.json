@@ -21,6 +21,7 @@
     "bcrypt": "^5.1.1",
     "bcryptjs": "^2.4.3",
     "date-fns": "^4.1.0",
+    "elevenlabs": "^1.50.4",
     "jsonwebtoken": "^9.0.2",
     "lucide-react": "^0.474.0",
     "mongodb": "^6.12.0",
