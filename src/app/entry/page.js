@@ -28,6 +28,7 @@ const Entry = () => {
     const [journalEntry, setJournalEntry] = useState('');
     const [mood, setMood] = useState(null);
     const [error, setError] = useState(null);
+    const [score, setScore] = useState(null);
     const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState(null);
 
@@ -51,6 +52,9 @@ const Entry = () => {
 
             setMood(response.data.mood);
             setComment(response.data.comment);
+            setScore(response.data.score);
+            console.log("Score value:", Number(score));
+
             toast.success('Sucessfully Stored!');
         } catch (err) {
             setError(err.response?.data?.error || 'An error occurred while analyzing your mood.');
@@ -87,7 +91,43 @@ const Entry = () => {
                 <Modal open={open} onClose={handleClose}>
                     <Box sx={style}>
                         <div className="flex justify-center flex-col items-center">
-                            <Image src="/assets/logo.png" alt="Logo" width={96} height={96} className="object-contain mb-4" />
+
+                            {loading ? (
+                                <Image
+                                    src="/assets/loading.png"
+                                    alt="Logo"
+                                    width={96}
+                                    height={96}
+                                    className="object-contain mb-4"
+                                />
+                            ) : (
+
+                                score < 0 ? (
+                                    <Image
+                                        src="/assets/echo-sad.png"
+                                        alt="Sad Echo"
+                                        width={96}
+                                        height={96}
+                                        className="object-contain mb-4"
+                                    />
+                                ) : (
+                                    <Image
+                                        src="/assets/loved-echo.png"
+                                        alt="Happy Echo"
+                                        width={96}
+                                        height={96}
+                                        className="object-contain mb-4"
+                                    />
+                                )
+                            )}
+
+                            {/* {loading ? (<Image src="/assets/logo.png" alt="Logo" width={96} height={96} className="object-contain mb-4" />) :
+                                ({
+                                    score< 0?(<Image src = "/assets/echo-sad.png" alt = "Logo" width = { 96} height = { 96} className = "object-contain mb-4" />
+                                ): (<Image src = "/assets/loved-echo.png" alt = "Logo" width = { 96 } height = { 96 } className = "object-contain mb-4" />
+                                )
+                            })
+                        } */}
                             {loading ? (
                                 <p className="text-xl font-semibold text-gray-800">Analyzing your mood...</p>
                             ) : mood ? (

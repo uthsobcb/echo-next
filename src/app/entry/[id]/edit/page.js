@@ -2,6 +2,7 @@ import axios from "axios";
 import { auth } from "auth";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
+import { toast } from "react-toastify";
 
 export default async function EditEntryPage({ params }) {
     const session = await auth();
@@ -18,6 +19,7 @@ export default async function EditEntryPage({ params }) {
         entry = response.data;
     } catch (error) {
         return <p className="text-red-500">Error fetching entry.</p>;
+        toast.error("Error fetching entry.");
     }
     const formattedDate = entry.createdAt
         ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")
@@ -69,7 +71,7 @@ export default async function EditEntryPage({ params }) {
                             htmlFor="content"
                             className="block text-gray-700 text-sm font-bold mb-2"
                         >
-                            You can edit your entry content only:
+                            You can edit your entry content only from below:
                         </label>
                         <textarea
                             className="w-full border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting lg:text-6xl text-4xl  overflow-auto focus:outline-none cursor-text" id="content"

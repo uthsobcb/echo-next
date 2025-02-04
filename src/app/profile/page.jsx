@@ -1,4 +1,5 @@
 import { PieChart } from '@mui/x-charts/PieChart';
+import { ResponsiveChartContainer } from '@mui/x-charts';
 import Link from 'next/link';
 import Image from 'next/image';
 import { auth } from "auth";
@@ -6,8 +7,8 @@ import SignOut from '../components/SignOut';
 import axios from 'axios';
 import { format } from 'date-fns';
 import ProfileEntries from './ProfileEntries';
-import BetterMood from './BetterMood';
-import BadMood from './BadMood';
+import BetterMood from './Components/BetterMood';
+import BadMood from './Components/BadMood';
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
     { id: 2, name: "Pen Whisperer", img: "/assets/badge_1.png" },
@@ -43,7 +44,7 @@ export default async function User() {
     const selectedData = Array.isArray(moodData)
         ? moodData.slice(-7).map(({ mood, score }) => ({
             label: mood,
-            value: score || 20
+            value: Math.abs(score) || 10
         }))
         : [];
     // console.log(last7DaysData);
@@ -53,8 +54,6 @@ export default async function User() {
     const totalValue = valuesArray.reduce((sum, value) => sum + value, 0);
     // console.log(valuesArray, "and", totalValue);
 
-
-    const overallComment = totalValue > 50 ? "You're doing great!" : "You can do better!";
 
     const userBadges = badges.filter((badge) => user?.badge?.includes(badge.name));
 
@@ -95,9 +94,9 @@ export default async function User() {
                         </div>
                     </div>
                     <div className='mt-3 flex justify-between flex-wrap gap-2'>
-                        <button className='bg-green-700 px-4 py-2 text-white rounded-md font-semibold w-full sm:w-auto text-center'>
+                        <Link href={'/profile/edit'} className='bg-green-700 px-4 py-2 text-white rounded-md font-semibold w-full sm:w-auto text-center' >
                             Update Profile
-                        </button>
+                        </Link>
                         <SignOut />
                     </div>
                 </div>
@@ -118,20 +117,23 @@ export default async function User() {
                                 ))}
                             </select>*/}
                         </div>
-                        <div className="w-full flex justify-center">
+                        <div className="w-full flex">
+
                             <PieChart
                                 series={[
                                     {
                                         data: selectedData,
                                     },
                                 ]}
-                                width={600}
+                                width={800}
                                 height={200}
-                                className="w-full max-w-[90%] sm:max-w-lg lg:max-w-4xl"
+                                className="w-full sm:max-w-lg lg:max-w-4xl"
                             />
+
+
                         </div>
 
-                        {totalValue > 50 ? <BetterMood /> : <BadMood />}
+                        {totalValue > 0 ? <BetterMood /> : <BadMood />}
                     </div>
                 </div>
             </div>

@@ -25,8 +25,8 @@ export async function POST(req: Request) {
 
         const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
   - \`mood\`: An object containing:
-  - \`label\`: A single word representing the overall emotional tone.
-  - \`score\`: A numerical rating out of 20, where higher scores indicate a more positive mood.
+  - \`label\`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.
+  - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
   - \`comment\`: A supportive message based on the mood, offering suggestions for improvement if needed.
 Ensure the response is empathetic and concise.
   - \`category\`: A single word representing the overall emotional tone from the following categories: positive, negative, neutral, angry, frustrated.

@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
-        const moodData = await Mood.find({ userId }).sort({ createdAt: -1 }).select('mood score');
+        const moodData = await Mood.find({ userId }).sort({ createdAt: 1 }).select('mood score');
 
         return NextResponse.json(moodData, { status: 200 });
 
