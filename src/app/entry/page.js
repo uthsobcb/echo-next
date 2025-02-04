@@ -28,7 +28,7 @@ const Entry = () => {
     const [journalEntry, setJournalEntry] = useState('');
     const [mood, setMood] = useState(null);
     const [error, setError] = useState(null);
-    const [score, setScore] = useState(null);
+    const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState(null);
 
@@ -53,7 +53,8 @@ const Entry = () => {
             setMood(response.data.mood);
             setComment(response.data.comment);
             setScore(response.data.score);
-            console.log("Score value:", Number(score));
+
+            console.log("Score value:", response.data);
 
             toast.success('Sucessfully Stored!');
         } catch (err) {
@@ -68,6 +69,9 @@ const Entry = () => {
         setOpen(false);
         setError(null);
     };
+
+    const numericScore = !isNaN(score) && typeof score === 'number' ? score : 0;
+
 
     return (
         <div className="flex flex-col items-center justify-center h-screen">
@@ -102,7 +106,7 @@ const Entry = () => {
                                 />
                             ) : (
 
-                                score < 0 ? (
+                                numericScore < 0 ? (
                                     <Image
                                         src="/assets/echo-sad.png"
                                         alt="Sad Echo"

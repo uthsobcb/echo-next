@@ -17,7 +17,7 @@ export default function DeleteButton({ entryId, accessToken }) {
             });
 
             toast.success("Entry deleted successfully!");
-            router.push("/");
+            router.push("/profile");
         } catch (err) {
             console.error("Error deleting entry:", err);
             toast.error("Failed to delete entry");

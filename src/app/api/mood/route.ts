@@ -29,7 +29,6 @@ export async function POST(req: Request) {
   - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
   - \`comment\`: A supportive message based on the mood, offering suggestions for improvement if needed.
 Ensure the response is empathetic and concise.
-  - \`category\`: A single word representing the overall emotional tone from the following categories: positive, negative, neutral, angry, frustrated.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
         const result = await model.generateContent({
@@ -114,7 +113,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
         await newMood.save();
 
         return NextResponse.json({
-            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment,
+            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score,
         });
     } catch (error) {
         console.error("Error in mood route:", error);

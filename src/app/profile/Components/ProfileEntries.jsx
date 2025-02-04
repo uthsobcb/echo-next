@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import SearchBar from '../components/SearchBar';
+import SearchBar from '@/app/components/SearchBar';
 import axios from 'axios';
 import { format } from 'date-fns';
 import Link from 'next/link';
@@ -36,8 +36,8 @@ function ProfileEntries({ session }) {
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
                     Search Your Entries
                 </h2>
-                <div className="flex w-full justify-center items-center m-3">
-                    <div className="flex w-1/2 justify-center items-center space-x-4">
+                <div className="flex lg:flex-row flex-col  w-full justify-center items-center m-3">
+                    <div className="flex lg:w-1/2 w-full justify-center items-center space-x-4">
                         <input
                             type="text"
                             placeholder="Type to search..."

@@ -6,7 +6,7 @@ import { auth } from "auth";
 import SignOut from '../components/SignOut';
 import axios from 'axios';
 import { format } from 'date-fns';
-import ProfileEntries from './ProfileEntries';
+import ProfileEntries from './Components/ProfileEntries';
 import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 const badges = [
