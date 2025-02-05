@@ -7,7 +7,10 @@ import Modal from '@mui/material/Modal';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
-import { set } from 'mongoose';
+import { Upload, ScanText } from "lucide-react";
+import JournalPrompt from '@/app/components/JournalPrompt';
+import ScanComponent from '@/app/components/ScanComponent';
+import UploadIcon from '@/app/components/UploadIcon';
 
 const style = {
     position: 'absolute',
@@ -54,8 +57,6 @@ const Entry = () => {
             setComment(response.data.comment);
             setScore(response.data.score);
 
-            console.log("Score value:", response.data);
-
             toast.success('Sucessfully Stored!');
         } catch (err) {
             setError(err.response?.data?.error || 'An error occurred while analyzing your mood.');
@@ -78,6 +79,11 @@ const Entry = () => {
             <h1 className="text-7xl font-handwriting mb-6 text-gray-800">Journal Entry</h1>
             <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
                 {/* <p className="text-lg text-gray-700 mb-4">{dateandtime}</p> */}
+                <div className="flex items-center justify-center space-x-4 mb-14">
+                    <ScanComponent />
+                    <JournalPrompt />
+                    <UploadIcon />
+                </div>
                 <textarea
                     className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting lg:text-6xl text-4xl  overflow-auto focus:outline-none"
                     placeholder="How was your day? What's on your mind? Jot down your thoughts here..."
@@ -125,13 +131,7 @@ const Entry = () => {
                                 )
                             )}
 
-                            {/* {loading ? (<Image src="/assets/logo.png" alt="Logo" width={96} height={96} className="object-contain mb-4" />) :
-                                ({
-                                    score< 0?(<Image src = "/assets/echo-sad.png" alt = "Logo" width = { 96} height = { 96} className = "object-contain mb-4" />
-                                ): (<Image src = "/assets/loved-echo.png" alt = "Logo" width = { 96 } height = { 96 } className = "object-contain mb-4" />
-                                )
-                            })
-                        } */}
+
                             {loading ? (
                                 <p className="text-xl font-semibold text-gray-800">Analyzing your mood...</p>
                             ) : mood ? (
@@ -142,7 +142,7 @@ const Entry = () => {
                                 <p className="text-xl font-semibold text-red-600">Failed to analyze mood.</p>
                             )}
                             <p className="text-lg text-gray-600">
-                                Comment:
+                                Comment: { }
                                 {comment || 'Echo analyzing...'}
                                 <br />
                                 <Link href="/chat" className="text-blue-600">Talk To Echo about your feelings??</Link>
