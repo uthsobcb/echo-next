@@ -40,7 +40,12 @@ export default function JournalPromptButton() {
 
     const handleClick = () => {
         const randomIndex = Math.floor(Math.random() * journalPrompts.length);
-        setRandomPrompt(journalPrompts[randomIndex]);
+        const newPrompt = journalPrompts[randomIndex];
+
+        // console.log("Generated Index:", randomIndex);
+        // console.log("Selected Prompt:", newPrompt);
+
+        setRandomPrompt(newPrompt);
 
         setTimeout(() => {
             setRandomPrompt("");
@@ -48,24 +53,24 @@ export default function JournalPromptButton() {
     };
 
     return (
-        <div className="flex flex-col items-center justify-center relative mt-5">
+        <div className="relative flex flex-col items-center justify-center mt-5">
+            {/* Button (Remains Fixed in Position) */}
             <button
                 onClick={handleClick}
-                className="p-3 bg-white/80 rounded-full shadow hover:bg-white transition "
+                className="p-2 bg-white/80 rounded-full shadow hover:bg-white transition"
             >
                 <Bot className="w-6 h-6 text-gray-700" />
             </button>
 
+            <p className="mt-2">Don't Know What to Write?</p>
+
 
             {randomPrompt && (
-                <div className="absolute top-full mt-4 w-72 p-6 bg-white text-blue-700 text-md px-4 py-3 rounded-lg shadow-lg border border-gray-200">
+                <div className="absolute top-12 left-1/2 transform -translate-x-1/2 w-72 p-6 bg-white text-blue-700 text-md px-4 py-3 rounded-lg shadow-lg border border-gray-200">
                     <Sparkles />
-                    <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1 w-5 h-5 bg-white rotate-45 border-t border-l border-gray-200"></div>
-
                     <p className="text-center mt-5">{randomPrompt}</p>
                 </div>
             )}
-            <p>Don't Know What to Write?</p>
         </div>
 
     );
