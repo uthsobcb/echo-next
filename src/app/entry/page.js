@@ -50,7 +50,6 @@ const Entry = () => {
         setError(null);
 
         try {
-            console.log("clienttt", imageUrl, journalEntry);
             const response = await axios.post('/api/mood', {
                 content: journalEntry,
                 imgUrl: imageUrl,
@@ -81,7 +80,7 @@ const Entry = () => {
         <div className="flex flex-col items-center justify-center h-screen mt-16 m-6">
 
             <h1 className="text-7xl font-handwriting text-gray-800">Journal Entry</h1>
-            <div className="flex items-center justify-center space-x-4">
+            <div className="flex items-center justify-center space-x-4 mb-10 z-20">
                 <ScanComponent />
                 <JournalPrompt />
                 <UploadIcon OnImageUpload={setImageUrl} />

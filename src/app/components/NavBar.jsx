@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { signIn, signOut, auth } from 'auth';
 import Link from 'next/link';
 import SignOut from './SignOut';
+import MobileMenu from './MobileMenu';
 export default async function NavBar() {
     const session = await auth();
     // console.log(session);
@@ -15,11 +16,13 @@ export default async function NavBar() {
                     <Link href="/" className="flex justify-center">
                         <Image src="/assets/logo.png" alt="Logo" width={46} height={100} />
                     </Link>
-                    <Link href="/" className="hidden lg:block">
+                    <Link href="/" className="block">
                         <h1 className="text-cyan-900 font-bold text-lg">Echo</h1>
                     </Link>
                 </div>
-                <div className="flex items-center space-x-4 p-2 rounded-lg">
+
+                <MobileMenu session={session} />
+                <div className="items-center space-x-4 p-2 rounded-lg lg:block hidden">
                     {session?.user ? (
                         <div className="flex items-center space-x-3">
                             <div className='flex items-center'>
