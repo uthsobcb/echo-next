@@ -4,6 +4,7 @@ import axios from "axios";
 import { format } from "date-fns";
 import { toast } from "react-toastify";
 import DeleteButton from "@/app/components/DeleteButon";
+import Image from "next/image";
 export default async function EntryCard({ params }) {
     const session = await auth();
     let entry = [];
@@ -70,6 +71,18 @@ export default async function EntryCard({ params }) {
                 </div>
 
                 <div className="w-11/12 max-w-5xl bg-[#F5DEB3] border rounded-md p-8">
+                    {entry.imgUrl && (
+                        <div className="top-10 -right-[-50px] rotate-6">
+                            <Image
+                                src={entry.imgUrl}
+                                width={96}
+                                height={96}
+                                alt="Uploaded image"
+                                className="shadow-lg rounded-lg"
+                            />
+                            <p className='text-gray-400'> Uploaded image</p>
+                        </div>
+                    )}
                     <p className="text-gray-900 font-handwriting lg:text-6xl text-3xl leading-snug">{entry.content}</p>
                 </div>
 

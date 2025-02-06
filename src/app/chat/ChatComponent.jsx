@@ -6,13 +6,12 @@ import { useSearchParams } from "next/navigation";
 
 const ChatBox = () => {
     const searchParams = useSearchParams();
-    const entryContent = searchParams.get("entryContent"); // Get the entry content from query params
+    const entryContent = searchParams.get("entryContent");
 
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
 
-    // Function to send a message
     const sendMessage = async (text, isAuto = false) => {
         if (!text.trim()) return;
 
@@ -35,12 +34,11 @@ const ChatBox = () => {
         }
     };
 
-    // Initiate conversation automatically if entryContent is provided
     useEffect(() => {
         if (entryContent) {
             sendMessage(entryContent, true);
         }
-    }, [entryContent]); // Runs only when the component mounts and entryContent exists
+    }, [entryContent]);
 
     return (
         <div className="flex items-center justify-center">

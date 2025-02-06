@@ -34,8 +34,9 @@ const Entry = () => {
     const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState(null);
+    const [imageUrl, setImageUrl] = useState(null);
 
-
+    // console.log("From parent", imgUrl)
     const handleOpen = async () => {
         setOpen(true);
 
@@ -49,8 +50,10 @@ const Entry = () => {
         setError(null);
 
         try {
+            console.log("clienttt", imageUrl, journalEntry);
             const response = await axios.post('/api/mood', {
                 content: journalEntry,
+                imgUrl: imageUrl,
             });
 
             setMood(response.data.mood);
@@ -73,17 +76,31 @@ const Entry = () => {
 
     const numericScore = !isNaN(score) && typeof score === 'number' ? score : 0;
 
-
     return (
-        <div className="flex flex-col items-center justify-center h-screen">
-            <h1 className="text-7xl font-handwriting mb-6 text-gray-800">Journal Entry</h1>
-            <div className="w-full sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
-                {/* <p className="text-lg text-gray-700 mb-4">{dateandtime}</p> */}
-                <div className="flex items-center justify-center space-x-4 mb-14">
-                    <ScanComponent />
-                    <JournalPrompt />
-                    <UploadIcon />
-                </div>
+
+        <div className="flex flex-col items-center justify-center h-screen mt-16 m-6">
+
+            <h1 className="text-7xl font-handwriting text-gray-800">Journal Entry</h1>
+            <div className="flex items-center justify-center space-x-4">
+                <ScanComponent />
+                <JournalPrompt />
+                <UploadIcon OnImageUpload={setImageUrl} />
+            </div>
+            <div className="w-full relative sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
+                {imageUrl && (
+                    <div className="top-10 -right-[-50px] rotate-6">
+                        <Image
+                            src={imageUrl}
+                            width={96}
+                            height={96}
+                            alt="Uploaded image"
+                            unoptimized
+                            className="shadow-lg rounded-lg"
+                        />
+                        <p className='text-gray-400'> Uploaded image</p>
+                    </div>
+                )}
+
                 <textarea
                     className="w-full h-[75vh] border-none bg-transparent text-gray-900 placeholder-gray-400 font-handwriting lg:text-6xl text-4xl  overflow-auto focus:outline-none"
                     placeholder="How was your day? What's on your mind? Jot down your thoughts here..."
