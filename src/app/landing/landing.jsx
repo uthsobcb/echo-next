@@ -87,7 +87,7 @@ export default function LandingPage() {
                 </div>
             </section>
 
-            <section className="py-16 px-6 max-w-3xl text-center">
+            {/* <section className="py-16 px-6 max-w-3xl text-center">
                 <h2 className="text-3xl font-semibold">Simple & Affordable Pricing</h2>
                 <Card className="mt-6 bg-gray-100">
                     <h3 className="text-2xl font-bold">$1 / Month</h3>
@@ -98,15 +98,15 @@ export default function LandingPage() {
 
 
                 </Card>
-            </section>
+            </section> */}
 
             {/* Testimonials */}
             <section className="py-16 px-6 max-w-4xl text-center">
                 <h2 className="text-3xl font-semibold">What Users Say</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     {[
-                        { name: "Alex", review: "Echo transformed the way I track my emotions!" },
-                        { name: "Jamie", review: "The AI insights are so helpful and spot on." },
+                        { name: "Shihab", review: "Echo transformed the way I track my emotions!" },
+                        { name: "Arafat", review: "The AI insights are so helpful and spot on." },
                     ].map((testimonial, index) => (
                         <Card key={index}>
                             <Star className="text-yellow-500 mx-auto mb-3" size={32} />

@@ -15,11 +15,10 @@ const genAI = new GoogleGenerativeAI(apiKey);
 export async function POST(req: Request) {
     try {
 
-        const { content } = await req.json();
+        const { content, imgUrl } = await req.json();
         if (!content) {
             return NextResponse.json({ error: "Journal entry is required." }, { status: 400 });
         }
-
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
@@ -108,6 +107,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
             score: parsedMood?.score,
             comment: parsedMood?.comment,
             content,
+            imgUrl: imgUrl || "",
             createdAt: new Date(),
         });
         await newMood.save();

@@ -38,6 +38,10 @@ const MoodSchema = new mongoose.Schema(
             type: String,
             required: true,
         },
+        imgUrl: {
+            type: String,
+            default: "",
+        },
         createdAt: {
             type: Date,
             default: Date.now,
