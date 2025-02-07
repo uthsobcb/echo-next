@@ -1,4 +1,3 @@
-import { PieChart } from '@mui/x-charts/PieChart';
 import { ResponsiveChartContainer } from '@mui/x-charts';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -10,6 +9,7 @@ import ProfileEntries from './Components/ProfileEntries';
 import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 import ErrorPage from '../components/ErrorPage';
+import MoodChart from './Components/MoodChart';
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
     { id: 2, name: "Pen Whisperer", img: "/assets/badge_1.png" },
@@ -73,6 +73,7 @@ export default async function User() {
         : [];
     // console.log(last7DaysData);
 
+    const entryCount = journalEntries.length;
 
     const valuesArray = pieChartData.map(({ value }) => value || 0);
     const totalValue = valuesArray.reduce((sum, value) => sum + value, 0);
@@ -96,7 +97,7 @@ export default async function User() {
                                     <p className="text-md text-gray-600 break-words">Mail: {userData?.email}</p>
                                     <p className="text-md text-gray-600">Plan: {userData?.subscription}</p>
                                     <p className="text-md text-gray-600">
-                                        Entries Left: <span className="font-medium">Unlimited</span>
+                                        Entries done: <span className="font-medium">{entryCount}</span>
                                     </p>
                                 </div>
                                 <h3 className="mt-6 font-bold text-lg text-gray-800">Badges</h3>
@@ -145,7 +146,7 @@ export default async function User() {
                                 </div>
                                 <div className="w-full flex">
 
-                                    <PieChart
+                                    {/* <PieChart
                                         series={[
                                             {
                                                 data: selectedData,
@@ -154,7 +155,8 @@ export default async function User() {
                                         width={800}
                                         height={200}
                                         className="w-full sm:max-w-lg lg:max-w-4xl"
-                                    />
+                                    /> */}
+                                    <MoodChart selectedData={selectedData} />
 
 
                                 </div>

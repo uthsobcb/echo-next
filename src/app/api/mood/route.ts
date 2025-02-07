@@ -112,14 +112,6 @@ Analyze the following journal entry and provide the requested JSON response: "${
         });
         await newMood.save();
 
-        const countMood = await Mood.countDocuments({ userId: user?.id });
-
-        if (countMood == 10) {
-            // addBadgeOne()
-        } else if (countMood == 20) {
-            // addBadgeTwo()
-        }
-
         return NextResponse.json({
             message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score,
         });
