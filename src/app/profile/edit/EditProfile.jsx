@@ -41,7 +41,7 @@ export default function EditProfile({ user }) {
         setIsUpdating(true);
 
         try {
-            const response = await axios.put("/api/update-profile", {
+            const response = await axios.put("/api/profile", {
                 name,
                 image: profileImage,
                 currentPassword: currentPassword || undefined, // Only send if entered

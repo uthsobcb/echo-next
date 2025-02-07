@@ -1,34 +1,34 @@
 "use client"
-
-import React, { useEffect, useState } from 'react'
-import SearchBar from '@/app/components/SearchBar';
-import axios from 'axios';
-import { format } from 'date-fns';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { format } from 'date-fns';
 
-function ProfileEntries({ session }) {
-    const [entries, setEntries] = useState([]);
+function ProfileEntries({ session, journalEntries }) {
     const [searchQuery, setSearchQuery] = useState("");
+    const [filteredEntries, setFilteredEntries] = useState(journalEntries);
 
-    const fetchEntries = async () => {
-        try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries?search=${searchQuery}`, {
-                headers: { Authorization: `Bearer ${session.accessToken}` },
-                withCredentials: true,
-            });
-            setEntries(response.data);
+    // const fetchEntries = async () => {
+    //     try {
+    //         const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries?search=${searchQuery}`, {
+    //             headers: { Authorization: `Bearer ${session.accessToken}` },
+    //             withCredentials: true,
+    //         });
+    //         setEntries(response.data);
 
-            console.log("Entries fetched:", entries);
-        } catch (error) {
-            console.log(error)
-            console.error("Error fetching entries:", error.response?.data || error.message);
-        }
-    }
+    //         console.log("Entries fetched:", entries);
+    //     } catch (error) {
+    //         console.log(error)
+    //         console.error("Error fetching entries:", error.response?.data || error.message);
+    //     }
+    // }
 
     useEffect(() => {
-        fetchEntries()
-    }, [searchQuery])
-
+        setFilteredEntries(
+            journalEntries.filter(entry =>
+                entry.content.toLowerCase().includes(searchQuery.toLowerCase())
+            )
+        );
+    }, [searchQuery, journalEntries]);
 
     return (
         <div className="flex flex-col items-center justify-center">
@@ -42,6 +42,7 @@ function ProfileEntries({ session }) {
                             type="text"
                             placeholder="Type to search..."
                             className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+                            value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         <input
@@ -51,10 +52,10 @@ function ProfileEntries({ session }) {
                     </div>
                 </div>
             </div>
-            {entries.length > 0 ? (
+            {filteredEntries.length > 0 ? (
                 <div className="flex flex-col gap-6 overflow-x-auto pb-6 justify-center items-center">
                     <div className="relative max-w-2xl border-l-4 border-blue-500 pl-8">
-                        {entries.map((entry, index) => {
+                        {filteredEntries.map((entry, index) => {
                             const formattedDate = entry.createdAt
                                 ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy, h:mm a")
                                 : "Unknown Date";
@@ -87,11 +88,11 @@ function ProfileEntries({ session }) {
                     </div>
                 </div>
             ) : (
-                <p className="text-center text-gray-500 mt-6">No journal entries found.</p>
+                <p className="text-gray-500 text-sm">No matching entries found.</p>
             )}
-
         </div>
-    )
+    );
 }
 
-export default ProfileEntries
+export default ProfileEntries;
+

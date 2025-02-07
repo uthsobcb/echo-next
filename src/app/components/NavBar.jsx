@@ -5,10 +5,19 @@ import { signIn, signOut, auth } from 'auth';
 import Link from 'next/link';
 import SignOut from './SignOut';
 import MobileMenu from './MobileMenu';
+import axios from 'axios';
 export default async function NavBar() {
     const session = await auth();
-    // console.log(session);
-
+    let userData = [];
+    try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/profile`, {
+            headers: { Authorization: `Bearer ${session.accessToken}` },
+            withCredentials: true,
+        });
+        userData = response.data.user;
+    } catch (error) {
+        console.log("Error fetching entries:", error.response?.data || error.message);
+    }
     return (
         <header className="flex items-center justify-center m-3">
             <nav className="flex items-center justify-around lg:w-1/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
@@ -21,7 +30,7 @@ export default async function NavBar() {
                     </Link>
                 </div>
 
-                <MobileMenu session={session} />
+                <MobileMenu session={session} userData={userData} />
                 <div className="items-center space-x-4 p-2 rounded-lg lg:block hidden">
                     {session?.user ? (
                         <div className="flex items-center space-x-3">
@@ -39,13 +48,14 @@ export default async function NavBar() {
                                 aria-label="Account Page"
                             >
                                 <Image
-                                    src={session?.user?.image}
-                                    alt={session?.user?.name}
+                                    src={userData?.image}
+                                    alt={userData?.name}
                                     width={32}
                                     height={32}
+                                    unoptimized
                                     className="rounded-full border border-gray-300 shadow-sm"
                                 />
-                                {session?.user?.name}
+                                {userData?.name}
                             </Link>
                             <div className='flex items-center gap-2'>
                                 <Image src='/assets/chatbot.svg' alt="ChatBOT" width={24} height={24} />

@@ -5,9 +5,9 @@ import Image from "next/image";
 import Link from "next/link";
 import SignOut from "./SignOut";
 
-export default function MobileMenu({ session }) {
+export default function MobileMenu({ session, userData }) {
     const [isOpen, setIsOpen] = useState(false);
-
+    // const [user, setUser] = useState(userData);
     const toggleMenu = () => setIsOpen(!isOpen);
     const closeMenu = () => setIsOpen(false);
 
@@ -21,15 +21,15 @@ export default function MobileMenu({ session }) {
             {isOpen && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50" onClick={closeMenu}>
                     <div className="bg-gray-50 border rounded-xl shadow-lg flex flex-col items-center gap-6 p-8 w-4/5 max-w-md relative text-center" onClick={(e) => e.stopPropagation()}>
-                        {session?.user ? (
+                        {userData ? (
                             <div className="flex flex-col items-center gap-6 w-full">
                                 <Link href="/entry" onClick={closeMenu} className="flex items-center gap-3 text-cyan-900 hover:text-cyan-700 font-semibold text-base w-full justify-center py-3">
                                     <Image src="/assets/pen.svg" alt="Entry" width={26} height={26} />
                                     Entry
                                 </Link>
                                 <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3 text-cyan-900 hover:text-cyan-700 font-semibold text-base w-full justify-center py-3">
-                                    <Image src={session?.user?.image} alt={session?.user?.name} width={36} height={36} className="rounded-full border border-gray-300 shadow-sm" />
-                                    {session?.user?.name}
+                                    <Image src={userData?.image} alt={session?.user?.name} width={36} height={36} unoptimized className="rounded-full border border-gray-300 shadow-sm" />
+                                    {userData?.name}
                                 </Link>
                                 <Link href="/chat" onClick={closeMenu} className="flex items-center gap-3 text-cyan-900 hover:text-cyan-700 font-semibold text-base w-full justify-center py-3">
                                     <Image src="/assets/chatbot.svg" alt="ChatBOT" width={26} height={26} />
