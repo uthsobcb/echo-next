@@ -105,7 +105,7 @@ export default function LandingPage() {
                 <h2 className="text-3xl font-semibold">What Users Say</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
                     {[
-                        { name: "Shihab", review: "Echo transformed the way I track my emotions!" },
+                        { name: "Shihab", review: "It’s fun journaling & chatting with echo. Very well done 👏" },
                         { name: "Arafat", review: "The AI insights are so helpful and spot on." },
                     ].map((testimonial, index) => (
                         <Card key={index}>

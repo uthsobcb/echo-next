@@ -7,7 +7,6 @@ import Modal from '@mui/material/Modal';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'react-toastify';
-import { Upload, ScanText } from "lucide-react";
 import JournalPrompt from '@/app/components/JournalPrompt';
 import ScanComponent from '@/app/components/ScanComponent';
 import UploadIcon from '@/app/components/UploadIcon';
