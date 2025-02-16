@@ -57,13 +57,6 @@ export default async function NavBar() {
                                 />
                                 {userData?.name}
                             </Link>
-                            <div className='flex items-center gap-2'>
-                                <Image src='/assets/chatbot.svg' alt="ChatBOT" width={24} height={24} />
-
-                                <Link href="/chat" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
-                                    Chat
-                                </Link>
-                            </div>
                             <SignOut />
                         </div>
                     ) : (

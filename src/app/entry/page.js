@@ -76,7 +76,7 @@ const Entry = () => {
 
     return (
 
-        <div className="flex flex-col items-center justify-center h-screen mt-16 m-6">
+        <div className="flex flex-col items-center justify-center h-screen mt-16 m-6 p-8">
 
             <h1 className="text-7xl font-handwriting text-gray-800">Journal Entry</h1>
             <div className="flex items-center justify-center space-x-4 mb-10 z-20">

@@ -31,10 +31,6 @@ export default function MobileMenu({ session, userData }) {
                                     <Image src={userData?.image} alt={session?.user?.name} width={36} height={36} unoptimized className="rounded-full border border-gray-300 shadow-sm" />
                                     {userData?.name}
                                 </Link>
-                                <Link href="/chat" onClick={closeMenu} className="flex items-center gap-3 text-cyan-900 hover:text-cyan-700 font-semibold text-base w-full justify-center py-3">
-                                    <Image src="/assets/chatbot.svg" alt="ChatBOT" width={26} height={26} />
-                                    Chat
-                                </Link>
                                 <SignOut />
                             </div>
                         ) : (

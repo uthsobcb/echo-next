@@ -10,7 +10,6 @@ export async function GET(req: NextRequest) {
 
         const authHeader = req.headers.get("authorization");
 
-
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
         }
@@ -29,28 +28,38 @@ export async function GET(req: NextRequest) {
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
+
         const moodData = await Mood.find({ userId }).sort({ createdAt: 1 }).select('mood score');
 
-        // const countMood = await Mood.countDocuments({ userId });
+        const countMood = await Mood.countDocuments({ userId });
 
-        // const dbUser = await UserModel.findOne({ userId });
-        // if (!dbUser) {
-        //     return NextResponse.json({ error: "User not found" }, { status: 404 });
-        // }
 
-        // let newBadge = null;
+        const dbUser = await UserModel.findOne({ _id: userId });
+        if (!dbUser) {
+            return NextResponse.json({ error: "User not found" }, { status: 404 });
+        }
 
-        // if (countMood >= 15 && !dbUser.badge.includes("Pen Whisperer")) {
-        //     newBadge = "Pen Whisperer";
-        // } else if (countMood >= 20 && !dbUser.badge.includes("Master Scribe")) {
-        //     newBadge = "Master Scribe";
-        // }
+        // Badge assignment logic
+        let newBadge = null;
+        if (countMood >= 15) {
+            newBadge = "Pen Whisperer";
+        }
+        if (countMood >= 30) {
+            newBadge = "Mindful Scribe";
+        }
+        if (countMood >= 45) {
+            newBadge = "Thought Architect";
+        }
+        if (countMood >= 60) {
+            newBadge = "Guardian of Inked Wisdom";
+        }
 
-        // if (newBadge) {
-        //     dbUser.badge.push(newBadge);
-        //     await dbUser.save();
-        // }
-
+        if (newBadge) {
+            await UserModel.updateOne(
+                { _id: userId },
+                { $addToSet: { badge: newBadge } }
+            );
+        }
 
         return NextResponse.json(moodData, { status: 200 });
 
