@@ -1,6 +1,16 @@
 import mongoose from "mongoose";
 
-const MoodSchema = new mongoose.Schema(
+interface IMood {
+    userId: mongoose.Schema.Types.ObjectId;
+    mood: string;
+    score: number;
+    comment: string;
+    content: string;
+    imgUrl: string;
+    createdAt: Date;
+}
+
+const MoodSchema = new mongoose.Schema<IMood>(
     {
         userId: {
             type: mongoose.Schema.Types.ObjectId,
@@ -52,4 +62,4 @@ const MoodSchema = new mongoose.Schema(
 
 const Mood = mongoose.models.Mood || mongoose.model("Mood", MoodSchema);
 
-export default Mood;
+export default Mood as mongoose.Model<IMood>;

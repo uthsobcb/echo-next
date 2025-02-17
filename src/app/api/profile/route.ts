@@ -29,6 +29,7 @@ export async function GET(req: NextRequest) {
         const userId = decodedToken.userId;
 
         const user = await UserModel.findOne({ _id: userId });
+        // const user = await UserModel.findById(userId);
         if (!user) {
             return NextResponse.json({ message: "User not found." }, { status: 404 });
         }
