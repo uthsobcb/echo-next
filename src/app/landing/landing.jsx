@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { CheckCircle, Star, BookOpen, Heart, Sparkles, PenTool } from "lucide-react";
+import { CheckCircle, Star, BookOpen, Heart, Sparkles, PenTool, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -13,12 +13,65 @@ export function Card({ children, className = "" }) {
     );
 }
 
+
+const steps = [
+    {
+        title: "Step 1: Sign Up",
+        description: "Create a free account to start your AI journaling journey.",
+        image: "/assets/signup.png",
+    },
+    {
+        title: "Step 2: Express yourself",
+        description: "Write, add images, or scan handwritten notes seamlessly.",
+        image: "/assets/entry.png",
+    },
+    // {
+    //     title: "Step 3: AI Insights",
+    //     description: "Get meaningful AI-powered insights based on your journaling habits.",
+    //     image: "/images/insights.gif",
+    // },
+    // {
+    //     title: "Step 4: Track Your Progress",
+    //     description: "Monitor your mood trends and personal growth over time.",
+    //     image: "/images/track.gif",
+    // },
+];
+
+const faqs = [
+    {
+        question: "How does Echo help with journaling?",
+        answer: "Echo provides AI-powered insights, mood tracking, and writing prompts to help you reflect on your thoughts.",
+    },
+    {
+        question: "Can I attach images to my journal entries?",
+        answer: "Yes! You can upload images or even scan handwritten notes to digitize your journal.",
+    },
+    {
+        question: "Is my data private and secure?",
+        answer: "Absolutely. We use end-to-end encryption to ensure your journal remains private and accessible only to you.",
+    },
+    {
+        question: "Can I access my journal from multiple devices?",
+        answer: "Yes, Echo syncs across all your devices so you can write anytime, anywhere.",
+    },
+];
+
+
+
 export default function LandingPage() {
+    const [openIndex, setOpenIndex] = useState(null);
+
+    const toggleFAQ = (index) => {
+        setOpenIndex(openIndex === index ? null : index);
+    };
 
     return (
-        <div className="w-full min-h-screen flex flex-col items-center px-4">
+        <div className="w-full min-h-screen flex flex-col items-center  px-4">
+
             <section className="text-center py-20 px-6 max-w-3xl">
-                <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">Meet Echo: Your AI Journaling Companion</h1>
+                <p className="p-2 bg-gray-400/35 text-gray-600 border rounded-full max-w-48 mx-auto">✨ Introducing</p>
+
+                <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">Meet <span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span> { }: Your AI Journaling Companion</h1>
                 <p className="mt-6 text-xl text-gray-700 leading-relaxed">
                     Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
                 </p>
@@ -94,6 +147,45 @@ export default function LandingPage() {
                     ))}
                 </div>
             </section>
+
+
+            <section className="w-full py-20 bg-aliceblue text-gray-900">
+                <div className="max-w-6xl mx-auto px-6">
+                    <h2 className="text-5xl font-bold text-center mb-16 tracking-tight">
+                        How It Works
+                    </h2>
+                    <div className="space-y-16">
+                        {steps.map((step, index) => (
+                            <div
+                                key={index}
+                                className={`flex flex-col md:flex-row items-center gap-12 
+                ${index % 2 === 1 ? "md:flex-row-reverse" : ""} transition-transform duration-300`}
+                            >
+                                {/* Text Content */}
+                                <div className="w-full md:w-1/2 bg-white/70 backdrop-blur-lg p-8 rounded-2xl shadow-md border border-gray-200 hover:shadow-lg transition">
+                                    <h3 className="text-3xl font-semibold">{step.title}</h3>
+                                    <p className="mt-4 text-lg text-gray-600">{step.description}</p>
+                                </div>
+
+                                <div className="hidden md:block w-[3px] bg-gradient-to-b from-gray-300 to-gray-500 h-40"></div>
+
+                                <div className="w-full md:w-1/2 relative">
+                                    <div className="rounded-2xl overflow-hidden shadow-lg border border-gray-300 hover:shadow-xl transition">
+                                        <img
+                                            src={step.image}
+                                            alt={step.title}
+                                            className="w-full object-cover"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+
+
             <section className="py-20 px-6 max-w-4xl text-center">
                 <h2 className="text-4xl font-semibold">What Users Say</h2>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
@@ -109,6 +201,39 @@ export default function LandingPage() {
                     ))}
                 </div>
             </section>
+
+            <section className="w-full py-20 bg-aliceblue text-gray-900">
+                <div className="max-w-4xl mx-auto px-6">
+                    <h2 className="text-5xl font-bold text-center mb-12 tracking-tight">
+                        Frequently Asked Questions
+                    </h2>
+                    <div className="space-y-6">
+                        {faqs.map((faq, index) => (
+                            <div
+                                key={index}
+                                className="bg-white rounded-xl shadow-md border border-gray-200 overflow-hidden"
+                            >
+                                <button
+                                    className="w-full flex justify-between items-center px-6 py-4 text-left text-lg font-medium hover:bg-gray-100 transition"
+                                    onClick={() => toggleFAQ(index)}
+                                >
+                                    {faq.question}
+                                    <ChevronDown
+                                        className={`w-6 h-6 text-gray-600 transition-transform ${openIndex === index ? "rotate-180" : ""
+                                            }`}
+                                    />
+                                </button>
+                                {openIndex === index && (
+                                    <div className="px-6 py-4 text-gray-600 border-t border-gray-200">
+                                        {faq.answer}
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
         </div >
     );
 }
