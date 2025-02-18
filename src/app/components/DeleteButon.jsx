@@ -30,7 +30,7 @@ export default function DeleteButton({ entryId, accessToken }) {
         <div>
             <button
                 onClick={() => setIsOpen(true)}
-                className="bg-red-500 text-white px-6 py-2 rounded-lg shadow-md font-medium hover:bg-red-600 transition"
+                className="bg-red-500 text-white px-6 py-2 rounded-xl shadow-md font-medium hover:bg-red-600 transition"
             >
                 Delete
             </button>

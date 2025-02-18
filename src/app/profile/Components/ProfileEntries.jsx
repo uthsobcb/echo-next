@@ -32,7 +32,7 @@ function ProfileEntries({ session, journalEntries }) {
 
     return (
         <div className="flex flex-col items-center justify-center">
-            <div className="w-full p-6 rounded-lg">
+            <div className="w-full p-6 rounded-xl">
                 <h2 className="text-2xl font-semibold text-gray-800 mb-4 text-center">
                     Search Your Entries
                 </h2>
@@ -41,13 +41,13 @@ function ProfileEntries({ session, journalEntries }) {
                         <input
                             type="text"
                             placeholder="Type to search..."
-                            className="w-full p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+                            className="w-full p-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
                         />
                         <input
                             type="date"
-                            className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
+                            className="p-3 border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
                         />
                     </div>
                 </div>
@@ -75,7 +75,7 @@ function ProfileEntries({ session, journalEntries }) {
 
                                     <p className="text-sm text-gray-500 mb-2">{formattedDate}</p>
 
-                                    <Link href={`/entry/${entry._id}`} className="block bg-white p-5 rounded-lg shadow-md transition hover:shadow-lg hover:bg-gray-50 border border-gray-200">
+                                    <Link href={`/entry/${entry._id}`} className="block bg-white p-5 rounded-xl shadow-md transition hover:shadow-lg hover:bg-gray-50 border border-gray-200">
                                         <h2 className="text-lg font-semibold text-gray-900">{formattedDate || "Untitled Entry"}</h2>
                                         <p className="text-md text-gray-700 font-semibold mt-1">🌟 Mood: {entry.mood}</p>
                                         <p className="text-sm text-gray-600 mt-1">

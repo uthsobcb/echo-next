@@ -84,7 +84,7 @@ const Entry = () => {
                 <JournalPrompt />
                 <UploadIcon OnImageUpload={setImageUrl} />
             </div>
-            <div className="w-full relative sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-lg shadow-lg p-5">
+            <div className="w-full relative sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-xl shadow-lg p-5">
                 {imageUrl && (
                     <div className="top-10 -right-[-50px] rotate-6">
                         <Image
@@ -93,7 +93,7 @@ const Entry = () => {
                             height={96}
                             alt="Uploaded image"
                             unoptimized
-                            className="shadow-lg rounded-lg"
+                            className="shadow-lg rounded-xl"
                         />
                         <p className='text-gray-400'> Uploaded image</p>
                     </div>
@@ -107,7 +107,7 @@ const Entry = () => {
                 ></textarea>
                 {error && <p className="text-red-600 mt-2">{error}</p>}
                 <button
-                    className="mt-4 px-6 py-2 bg-black/40 text-white font-semibold rounded-lg hover:bg-black transition duration-300"
+                    className="mt-4 px-6 py-2 bg-black/40 text-white font-semibold rounded-xl hover:bg-black transition duration-300"
                     onClick={handleOpen}
                     disabled={loading}
                 >

@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
-
+import { toast } from "react-toastify";
 export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState("");
@@ -25,11 +25,13 @@ export default function SignupPage() {
             });
 
             setSuccess(response.data.message);
+            toast.success("Signup successful. Redirecting to login page...");
             setTimeout(() => {
                 router.push("/login");
             }, 2000);
         } catch (error) {
             setError(error.response?.data?.message || "Signup failed");
+            toast.error(error.response?.data?.message || "Signup failed");
         } finally {
             setLoading(false);
         }
@@ -44,8 +46,8 @@ export default function SignupPage() {
                             <p className="text-xl font-bold leading-tight tracking-tight text-gray-900 md:text-2xl">
                                 Register
                             </p>
-                            {error && <div className="text-red-500 text-sm">{error}</div>}
-                            {success && <div className="text-green-500 text-sm">{success}</div>}
+                            {/* {error && <div className="text-red-500 text-sm">{error}</div>}
+                            {success && <div className="text-green-500 text-sm">{success}</div>} */}
 
                             <div>
                                 <label className="block mb-2 text-sm font-medium text-gray-900">

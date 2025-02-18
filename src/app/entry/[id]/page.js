@@ -25,7 +25,7 @@ export default async function EntryCard({ params }) {
             ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")
             : "Unknown Date";
         const formattedTime = entry.createdAt
-            ? format(new Date(entry.createdAt), "EEE, h:mm a")
+            ? format(new Date(entry.createdAt), "h:mm a")
             : "Unknown Date";
 
         // const handleDelete = async () => {
@@ -62,7 +62,7 @@ export default async function EntryCard({ params }) {
 
                     <div className="flex justify-around mt-6">
                         <Link href={`/entry/${entry._id}/edit`}>
-                            <button className="bg-blue-600 text-white px-6 py-2 rounded-lg shadow-md font-medium">
+                            <button className="bg-blue-600 text-white px-6 py-2 rounded-xl shadow-md font-medium">
                                 Edit
                             </button>
                         </Link>
@@ -70,7 +70,7 @@ export default async function EntryCard({ params }) {
                     </div>
                 </div>
 
-                <div className="w-11/12 max-w-5xl bg-[#F5DEB3] border rounded-md p-8">
+                <div className="w-11/12 max-w-5xl bg-[#F5DEB3] border rounded-xl p-8">
                     {entry.imgUrl && (
                         <div className="top-10 -right-[-50px] rotate-6">
                             <Image
@@ -86,7 +86,7 @@ export default async function EntryCard({ params }) {
                     <p className="text-gray-900 font-handwriting lg:text-6xl text-3xl leading-snug">{entry.content}</p>
                 </div>
 
-                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-md shadow-md mt-4 w-9/12">
+                <div className="bg-blue-100 border-l-4 border-blue-500 text-blue-700 p-4 rounded-lg shadow-md mt-4 w-9/12">
                     <p className="text-lg font-semibold">{entry.comment}</p>
                     <p className="mt-2">
                         Echo listens to you attentively and responds with empathy. It doesn’t judge, interrupt, or assume—just a space where you can share your thoughts freely.
@@ -101,6 +101,6 @@ export default async function EntryCard({ params }) {
         );
     } catch (err) {
         console.error("Error fetching entry:", err);
-        return <p className="text-red-500">Error fetching entry</p>;
+        return <p className="text-red-500 justify-center flex">Error fetching entry</p>;
     }
 }

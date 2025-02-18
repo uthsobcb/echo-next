@@ -87,7 +87,7 @@ export default async function User() {
             {session ? (
                 <>
                     <div className='container mx-auto flex flex-col lg:flex-row m-28 gap-10'>
-                        <div className="border border-black shadow-xl bg-gray-100/60 rounded-lg w-full lg:w-1/3 my-10 p-1 lg:p-6">
+                        <div className="border border-black shadow-xl bg-gray-100/60 rounded-xl w-full lg:w-1/3 my-10 p-1 lg:p-6">
                             <div className='flex flex-col items-center align-center'>
                                 {userData?.image && (
                                     <Image src={userData.image} height={120} width={128} alt={userData?.name} className='rounded-full m-4' />
@@ -121,13 +121,13 @@ export default async function User() {
                                 </div>
                             </div>
                             <div className='mt-3 flex justify-between flex-wrap gap-2'>
-                                <Link href={'/profile/edit'} className='bg-green-700 px-4 py-2 text-white rounded-md font-semibold w-full sm:w-auto text-center' >
+                                <Link href={'/profile/edit'} className='bg-green-700 px-4 py-2 text-white rounded-xl font-semibold w-full sm:w-auto text-center' >
                                     Update Profile
                                 </Link>
                                 <SignOut />
                             </div>
                         </div>
-                        <div className="border border-black shadow-xl bg-gray-200/60 rounded-lg w-full lg:w-2/3 my-10 p-6">
+                        <div className="border border-black shadow-xl bg-gray-200/60 rounded-xl w-full lg:w-2/3 my-10 p-6">
                             <div className="flex flex-col items-center p-8 rounded-lg text-center">
                                 <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
                                 <div>

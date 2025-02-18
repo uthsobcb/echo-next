@@ -29,7 +29,7 @@ export default function Login() {
 
             if (result?.error) {
                 setError(result.error);
-                toast.error(result.error);
+                toast.error("Your mail or password is incorrect. Please Try with correct mail and password.");
 
             } else {
                 router.push("/entry", { replace: true });
