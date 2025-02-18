@@ -37,7 +37,8 @@
     "react-toastify": "^11.0.3",
     "recharts": "^2.15.1",
     "tailwind-merge": "^3.0.1",
-    "tailwindcss-animate": "^1.0.7"
+    "tailwindcss-animate": "^1.0.7",
+    "tesseract.js": "^6.0.0"
   },
   "devDependencies": {
     "@types/bcrypt": "^5.0.2",

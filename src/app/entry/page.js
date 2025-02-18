@@ -35,6 +35,11 @@ const Entry = () => {
     const [comment, setComment] = useState(null);
     const [imageUrl, setImageUrl] = useState(null);
 
+    const handleScannedText = (text) => {
+        setJournalEntry((prev) => prev + "\n" + text);
+    };
+
+
     // console.log("From parent", imgUrl)
     const handleOpen = async () => {
         setOpen(true);
@@ -80,7 +85,7 @@ const Entry = () => {
 
             <h1 className="text-7xl font-handwriting text-gray-800">Journal Entry</h1>
             <div className="flex items-center justify-center space-x-4 mb-10 z-20">
-                <ScanComponent />
+                <ScanComponent onScanComplete={handleScannedText} />
                 <JournalPrompt />
                 <UploadIcon OnImageUpload={setImageUrl} />
             </div>
