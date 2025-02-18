@@ -2,14 +2,19 @@ import { NextRequest, NextResponse } from "next/server";
 import {
     GoogleGenerativeAI,
 } from "@google/generative-ai";
+import Chat from "../../models/Chat";
+import { connect } from "../../lib/mongodb";
 
 const apiKey = process.env.GEMINI_API;
+const MESSAGE_LIMIT = 30;
 
 const genAI = new GoogleGenerativeAI(apiKey);
 
 export async function POST(req: NextRequest) {
     try {
         const { message } = await req.json();
+
+        await connect();
 
         if (!message) {
             return NextResponse.json({ error: "Message is required" }, { status: 400 });

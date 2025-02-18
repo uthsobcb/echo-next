@@ -3,7 +3,7 @@ import Mood from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 import UserModel from "@/app/models/User";
-
+// import { sendMail } from "@/app/lib/mailer";
 export async function GET(req: NextRequest) {
     try {
         await connect();
@@ -38,10 +38,10 @@ export async function GET(req: NextRequest) {
         if (!dbUser) {
             return NextResponse.json({ error: "User not found" }, { status: 404 });
         }
-
-        // Badge assignment logic
+        const email = dbUser.email;
+        const userName = dbUser.name;
         let newBadge = null;
-        if (countMood >= 15) {
+        if (countMood >= 10) {
             newBadge = "Pen Whisperer";
         }
         if (countMood >= 30) {
@@ -59,6 +59,12 @@ export async function GET(req: NextRequest) {
                 { _id: userId },
                 { $addToSet: { badge: newBadge } }
             );
+            // await sendMail(
+            //     email,
+            //     "Congratulations on Your New Badge!",
+            //     `<h1>Hey ${userName}!!</h1><p>You just earned the <strong>${newBadge}</strong> badge! 🎉 Keep it up!</p>`
+            // );
+
         }
 
         return NextResponse.json(moodData, { status: 200 });

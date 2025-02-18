@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import UserModel from "@/app/models/User";
-
+// import { sendMail } from "@/app/lib/mailer";
 export async function POST(req: NextRequest) {
     try {
         await connect();
@@ -44,6 +44,12 @@ export async function POST(req: NextRequest) {
         });
 
         await newUser.save();
+        // await sendMail(
+        //     email,
+        //     "Welcome to Echo!",
+        //     `<h1>Hi ${name}, Welcome to Echo!</h1><p>We're excited to have you on board.</p>`
+        // );
+
         return NextResponse.json({ message: "User registered successfully", imageUrl }, { status: 201 });
 
     } catch (error) {
