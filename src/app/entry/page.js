@@ -81,15 +81,15 @@ const Entry = () => {
 
     return (
 
-        <div className="flex flex-col items-center justify-center h-screen mt-16 m-6 p-8">
+        <div className="flex flex-col items-center justify-center h-screen mt-16 mb-8">
 
-            <h1 className="text-7xl font-handwriting text-gray-800">Journal Entry</h1>
+            <h1 className="lg:text-7xl text-5xl font-handwriting text-gray-800 mt-7">Journal Entry</h1>
             <div className="flex items-center justify-center space-x-4 mb-10 z-20">
                 <ScanComponent onScanComplete={handleScannedText} />
                 <JournalPrompt />
                 <UploadIcon OnImageUpload={setImageUrl} />
             </div>
-            <div className="w-full relative sm:w-3/4 md:w-2/3 lg:w-1/2 max-w-5xl bg-[#F5DEB3] border rounded-xl shadow-lg p-5">
+            <div className="relative w-full lg:w-1/2 bg-[#F5DEB3] border rounded-xl shadow-lg p-5">
                 {imageUrl && (
                     <div className="top-10 -right-[-50px] rotate-6">
                         <Image

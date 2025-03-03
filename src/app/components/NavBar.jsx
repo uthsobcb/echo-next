@@ -63,14 +63,14 @@ export default async function NavBar() {
                         <div className='gap-2 flex'>
                             <Link
                                 href="/login"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200 "
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-xl shadow-sm hover:bg-cyan-200 "
                                 aria-label="Login Page"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/register"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-lg shadow-sm hover:bg-cyan-200"
+                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-xl shadow-sm hover:bg-cyan-200"
                                 aria-label="Login Page"
                             >
                                 Register
