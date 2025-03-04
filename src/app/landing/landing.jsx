@@ -71,7 +71,7 @@ export default function LandingPage() {
             <section className="text-center py-20 px-6 max-w-3xl">
                 <p className="p-2 bg-gray-400/35 text-gray-600 border rounded-full max-w-48 mx-auto">✨ Introducing</p>
 
-                <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">Meet <span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span> { }: Your AI Journaling Companion</h1>
+                <h1 className="text-6xl font-extrabold text-gray-900 leading-tight"><span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span> { }: Your AI Journaling Companion</h1>
                 <p className="mt-6 text-xl text-gray-700 leading-relaxed">
                     Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
                 </p>

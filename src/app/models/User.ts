@@ -7,6 +7,8 @@ interface IUser {
     image: string;
     subscription: string;
     badge: string[];
+    resetPasswordCode?: string;
+    resetPasswordExpires?: Date;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -43,6 +45,16 @@ const UserSchema = new Schema<IUser>({
         ],
         default: ["Echo Sunshine"]
     },
+    resetPasswordCode: {
+        type: String,
+        default: null
+    },
+
+    resetPasswordExpires: {
+        type: Date,
+        required: false,
+        default: null
+    }
 });
 
 const UserModel = models.User || model("User", UserSchema);
