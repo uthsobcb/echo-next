@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
 
         // Send email with verification code
         await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "echo@uthsob.ninja",
             to: email,
             subject: "Password Reset Code",
             html: `

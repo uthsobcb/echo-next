@@ -68,7 +68,7 @@ export async function GET(req: NextRequest) {
 
             // Send Email
             await resend.emails.send({
-                from: "onboarding@resend.dev",
+                from: "echo@uthsob.ninja",
                 to: email,
                 subject: `📊 Echo Weekly Mood Report for ${userName}`,
                 html: emailHtml,

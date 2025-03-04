@@ -80,7 +80,7 @@ export async function POST(req: NextRequest) {
     `;
 
         await resend.emails.send({
-            from: "onboarding@resend.dev",
+            from: "echo@uthsob.ninja",
             to: email,
             subject: "Welcome to Echo - Your AI Journaling Companion!",
             html: emailHtml,
