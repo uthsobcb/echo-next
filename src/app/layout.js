@@ -1,18 +1,43 @@
-
 import "./globals.css";
 import NavBar from "./components/NavBar";
 import Footer from "./components/Footer";
 import ToastProvider from "./components/ToastProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
+// import Script from 'next/script'
+
 export const metadata = {
   title: "Echo",
   description: "AI enabled journal",
+  manifest: "/manifest.json",
+  icons: {
+    apple: [
+      { url: "/assets/logo.png", sizes: "192x192", type: "image/png" },
+      { url: "/assets/logo.png", sizes: "512x512", type: "image/png" },
+    ],
+  },
+  themeColor: "#4A90E2",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="application-name" content="Echo" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="Echo" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="theme-color" content="#4A90E2" />
+
+        <link rel="apple-touch-icon" href="/assets/logo.png" />
+        <link rel="shortcut icon" href="/favicon.ico" />
+        {/* <Script
+          src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
+          strategy="beforeInteractive"
+        /> */}
+      </head>
       <body>
         <NavBar />
         <SpeedInsights />
