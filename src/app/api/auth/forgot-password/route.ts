@@ -37,21 +37,13 @@ export async function POST(req: NextRequest) {
                 <div style="font-size: 24px; font-weight: bold; text-align: center; background: #f4f4f4; padding: 15px; border-radius: 5px; margin: 20px 0; letter-spacing: 2px;">
                     ${verificationCode}
                 </div>
-                <p style="color: #333;">
-                    Alternatively, you can reset your password by clicking the button below:
-                </p>
-                <div style="text-align: center; margin: 20px 0;">
-                    <a href="https://${process.env.NEXT_PUBLIC_BASEURL}/reset-password?code=${verificationCode}" 
-                       style="background-color: #2d89ef; color: #ffffff; padding: 12px 24px; text-decoration: none; font-size: 16px; font-weight: bold; border-radius: 5px; display: inline-block;">
-                       Reset Password
-                    </a>
-                </div>
+                
                 <p style="color: #555;">
                     If you did not request a password reset, you can safely ignore this email.
                 </p>
                 <p style="color: #555;">
                     Thank you, <br>
-                    <strong>Your Company Support Team</strong>
+                    <strong>Echo</strong>
                 </p>
                 <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
                 <p style="color: #777; font-size: 12px; text-align: center;">
