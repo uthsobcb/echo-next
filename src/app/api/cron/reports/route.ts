@@ -24,8 +24,12 @@ export async function GET(req: NextRequest) {
                 userId,
                 createdAt: { $gte: oneWeekAgo }
             }).sort({ createdAt: 1 });
+            // Add delay between emails to avoid rate limiting
+            if (users.indexOf(user) > 0) {
+                await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
+            }
 
-            if (!moodData.length) continue; // Skip users with no entries
+
 
             // Analyze moods
             const moodSummary = moodData.map(mood => `<li>${mood.mood} - Score: ${mood.score}</li>`).join("");
