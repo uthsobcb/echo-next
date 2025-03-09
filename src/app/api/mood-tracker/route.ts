@@ -44,7 +44,7 @@ export async function GET(req: NextRequest) {
         const email = dbUser.email;
         const userName = dbUser.name;
         let newBadge = null;
-        if (countMood >= 10) {
+        if (countMood >= 7) {
             newBadge = "Pen Whisperer";
         }
         if (countMood >= 30) {

@@ -37,7 +37,24 @@ const steps = [
     // },
 ];
 
+const badges = [
+    { id: 1, name: "Echo Sunshine", desc: "Earned by Just joining Echo", img: "/assets/Echos-Sun.png" },
+    { id: 2, name: "Pen Whisperer", desc: "Earned by Writing 7 Journals", img: "/assets/badge_1.png" },
+    { id: 3, name: "Mindful Scribe", desc: "Earned by Writing 30 Journals", img: "/assets/badge_2.png" },
+    { id: 4, name: "Thought Architect", desc: "Earned by Writing 40 Journals", img: "/assets/badge_3.png" },
+    { id: 5, name: "Guardian of Inked Wisdom", desc: "Earned by Writing 60 Journals", img: "/assets/badge_4.png" }
+];
+
+
 const faqs = [
+    {
+        question: "What is Echo?",
+        answer: "Echo is an AI-powered journaling app that helps you write, track your mood, and get insights into your emotional patterns.",
+    },
+    {
+        question: "What is Journal?",
+        answer: "Journal is a place where you can write down your thoughts, feelings, and experiences. It is a place where you can be yourself and express yourself.",
+    },
     {
         question: "How does Echo help with journaling?",
         answer: "Echo provides AI-powered insights, mood tracking, and writing prompts to help you reflect on your thoughts.",
@@ -50,9 +67,14 @@ const faqs = [
         question: "Is my data private and secure?",
         answer: "Absolutely. We use end-to-end encryption to ensure your journal remains private and accessible only to you.",
     },
+
     {
         question: "Can I access my journal from multiple devices?",
         answer: "Yes, Echo syncs across all your devices so you can write anytime, anywhere.",
+    },
+    {
+        question: "How do I earn badges?",
+        answer: "You earn badges by writing journals. The more you write, the more badges you earn.",
     },
 ];
 
@@ -201,7 +223,31 @@ export default function LandingPage() {
                     ))}
                 </div>
             </section>
+            <section className="py-20 bg-blue-50 text-gray-900">
+                <div className="max-w-5xl mx-auto px-6 text-center">
+                    <h2 className="text-5xl font-bold">Every Entry Counts – Unlock Badges!</h2>
+                    <p className="mt-4 text-lg text-gray-700">
+                        Stay motivated by unlocking achievements as you build a consistent journaling habit.
+                    </p>
 
+                    {/* Badge Display */}
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
+                        {badges.map((badge, index) => (
+                            <div key={index} className="relative group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition">
+                                <Image src={badge.img} alt="Badge Image" height={250} width={350} className="w-full object-cover" />
+
+                                {/* Overlay Text */}
+                                <div className="absolute bottom-0 left-0 w-full bg-black/70 text-white p-4 text-center transition-all duration-300 group-hover:bg-black/80">
+                                    <h3 className="text-xl">{badge.name}</h3>
+                                    <p className="text-sm mt-1">{badge.desc}</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+
+                </div>
+            </section>
             <section className="w-full py-20 bg-aliceblue text-gray-900">
                 <div className="max-w-4xl mx-auto px-6">
                     <h2 className="text-5xl font-bold text-center mb-12 tracking-tight">

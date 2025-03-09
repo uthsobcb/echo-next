@@ -1,15 +1,14 @@
-import { ResponsiveChartContainer } from '@mui/x-charts';
 import Link from 'next/link';
 import Image from 'next/image';
 import { auth } from "auth";
 import SignOut from '../components/SignOut';
 import axios from 'axios';
-import { format } from 'date-fns';
 import ProfileEntries from './Components/ProfileEntries';
 import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 import ErrorPage from '../components/ErrorPage';
 import MoodChart from './Components/MoodChart';
+
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
     { id: 2, name: "Pen Whisperer", img: "/assets/badge_1.png" },
@@ -83,7 +82,7 @@ export default async function User() {
     const userBadges = badges.filter((badge) => userData?.badge?.includes(badge.name));
 
     return (
-        <>
+        <div>
             {session ? (
                 <>
                     <div className='container mx-auto flex flex-col lg:flex-row max-w-7xl px-4 sm:px-6 lg:px-8 my-16 gap-8'>
@@ -213,7 +212,6 @@ export default async function User() {
             ) : (
                 <ErrorPage />
             )}
-        </>
-
+        </div>
     );
 }
