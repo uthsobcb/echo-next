@@ -15,26 +15,32 @@ export function Card({ children, className = "" }) {
 
 
 const steps = [
+
     {
-        title: "Step 1: Sign Up",
-        description: "Create a free account to start your AI journaling journey.",
-        image: "/assets/signup.png",
-    },
-    {
-        title: "Step 2: Express yourself",
+        title: "Step 1: Express yourself",
         description: "Write, add images, or scan handwritten notes seamlessly.",
         image: "/assets/entry.png",
     },
-    // {
-    //     title: "Step 3: AI Insights",
-    //     description: "Get meaningful AI-powered insights based on your journaling habits.",
-    //     image: "/images/insights.gif",
-    // },
-    // {
-    //     title: "Step 4: Track Your Progress",
-    //     description: "Monitor your mood trends and personal growth over time.",
-    //     image: "/images/track.gif",
-    // },
+    {
+        title: "Step 2: Echo Analyze mood automatically",
+        description: "Echo analyzes your mood automatically, and add a supportive note on your journal.",
+        image: "/assets/echo-mood.png",
+    },
+    {
+        title: "Step 3: AI Insights",
+        description: "Get meaningful AI-powered insights based on your journaling habits.",
+        image: "/assets/Analytics.png",
+    },
+    {
+        title: "Step 4: Chat with Echo",
+        description: "Chat with Echo, your AI journaling companion, to get support and guidance.",
+        image: "/assets/chat.png",
+    },
+    {
+        title: "Step 5: Get insights on your inbox",
+        description: "Get insights right on your inbox, Echo sends a summary of your moods every week.",
+        image: "/assets/mail.png",
+    }
 ];
 
 const badges = [
@@ -88,38 +94,105 @@ export default function LandingPage() {
     };
 
     return (
-        <div className="w-full min-h-screen flex flex-col items-center  px-4">
+        <div className="w-full min-h-screen flex flex-col items-center px-4">
+            <section className="relative w-full flex flex-col items-center">
+                <div className="text-center py-20 px-6 max-w-3xl">
+                    <p className="p-2 bg-gray-400/35 text-gray-600 border rounded-full max-w-48 mx-auto">✨ Introducing</p>
 
-            <section className="text-center py-20 px-6 max-w-3xl">
-                <p className="p-2 bg-gray-400/35 text-gray-600 border rounded-full max-w-48 mx-auto">✨ Introducing</p>
+                    <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">
+                        <span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span>
+                        { }: Your AI Journaling Companion
+                    </h1>
+                    <p className="mt-6 text-xl text-gray-700 leading-relaxed">
+                        Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
+                    </p>
 
-                <h1 className="text-6xl font-extrabold text-gray-900 leading-tight"><span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span> { }: Your AI Journaling Companion</h1>
-                <p className="mt-6 text-xl text-gray-700 leading-relaxed">
-                    Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
-                </p>
-                <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-
-                    <Link href="/register" className="inline-block mt-8 bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:bg-blue-700 transition-all">
-                        Get Started for Free
-                    </Link>
-                    {/* <Link
-                        href="https://www.producthunt.com/posts/your-product-slug"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex mt-8 bg-red-500 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:bg-red-700 transition-all"
-                    >
-                        <Image
-                            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=0065000&theme=light"
-                            alt="Product Hunt Badge"
-                            className="h-6"
-                            height={20}
-                            width={20}
-                        />
-                        <span className="hidden sm:inline">Vote on Product Hunt</span>
-                    </Link> */}
-
+                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
+                        <Link
+                            href="/register"
+                            className="inline-block mt-8 bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:bg-blue-700 transition-all"
+                        >
+                            Get Started for Free
+                        </Link>
+                        <button
+                            onClick={() => document.getElementById('demoVideo').scrollIntoView({ behavior: 'smooth' })}
+                            className="inline-flex items-center mt-8 text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-blue-700 transition-all"
+                        >
+                            Watch Demo
+                            <ArrowRight className="ml-2 w-5 h-5" />
+                        </button>
+                    </div>
                 </div>
-            </section >
+
+                {/* Video Section */}
+                <div id="demoVideo" className="w-full max-w-6xl mx-auto px-4 mb-20">
+                    <div className="relative rounded-2xl overflow-hidden shadow-xl">
+                        <div
+                            className="relative w-full"
+                            style={{
+                                position: "relative",
+                                boxSizing: "content-box",
+                                maxHeight: "80vh",
+                                width: "100%",
+                                aspectRatio: "1.826086956521739",
+                            }}
+                        >
+                            <iframe
+                                src="https://app.supademo.com/embed/cm81zjbhu0hsbicgem08esrl5?embed_v=2"
+                                loading="lazy"
+                                title="Echo Demo"
+                                allow="clipboard-write"
+                                frameBorder="0"
+                                webkitallowfullscreen="true"
+                                mozallowfullscreen="true"
+                                allowFullScreen
+                                style={{
+                                    position: "absolute",
+                                    top: 0,
+                                    left: 0,
+                                    width: "100%",
+                                    height: "100%",
+                                }}
+                            ></iframe>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            {/* Add required styles to the head */}
+            <style jsx global>{`
+                @keyframes gradient {
+                    0% { background-position: 0% 50%; }
+                    50% { background-position: 100% 50%; }
+                    100% { background-position: 0% 50%; }
+                }
+                
+                .animate-gradient {
+                    background-size: 200% auto;
+                    animation: gradient 4s linear infinite;
+                }
+                
+                .bg-grid-pattern {
+                    background-image: linear-gradient(to right, rgba(0,0,0,0.1) 1px, transparent 1px),
+                                    linear-gradient(to bottom, rgba(0,0,0,0.1) 1px, transparent 1px);
+                    background-size: 40px 40px;
+                }
+                
+                .animate-fade-in-up {
+                    animation: fadeInUp 0.8s ease-out;
+                }
+                
+                @keyframes fadeInUp {
+                    from {
+                        opacity: 0;
+                        transform: translateY(20px);
+                    }
+                    to {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                }
+            `}</style>
 
             <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-5xl">
 
@@ -133,7 +206,6 @@ export default function LandingPage() {
 
                     </div>
                 </section>
-
                 <div className="hidden md:block w-px bg-gray-300 self-stretch mx-6"></div>
 
                 <section className="py-16 px-8 md:w-1/2">
