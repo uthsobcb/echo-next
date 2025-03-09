@@ -6,15 +6,17 @@ import { useSearchParams } from "next/navigation";
 import { Send, Loader2, User } from "lucide-react";
 import Image from "next/image";
 
-const ChatBox = () => {
+const ChatBox = ({ user }) => {
     const searchParams = useSearchParams();
     const entryContent = searchParams.get("entryContent");
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
+    const [userImageError, setUserImageError] = useState(false);
     const chatRef = useRef(null);
 
     const botImage = "/assets/loading.png";
+    const userImage = user?.image;
 
     const sendMessage = async (text) => {
         if (!text.trim() || loading) return;
@@ -46,62 +48,69 @@ const ChatBox = () => {
     }, [messages]);
 
     return (
-        <div className="flex items-center justify-center  w-full">
-            <div className="flex flex-col w-full md:w-3/4 h-screen max-w-4xl">
+        <div className="flex items-center justify-center w-full min-h-screen bg-gray-100">
+            <div className="flex flex-col w-full md:w-3/4 h-[90vh] max-w-4xl bg-white rounded-lg shadow-lg m-4">
                 {/* Chat Header */}
-                <header className="p-3 md:p-4 bg-gray-800 text-white text-base md:text-lg font-semibold shadow flex items-center">
+                <header className="p-4 bg-blue-600 text-white text-lg font-semibold rounded-t-lg">
                     Echo Chat
                 </header>
 
                 {/* Chat Messages */}
-                <div ref={chatRef} className="flex-1 overflow-y-auto p-2 md:p-4 space-y-2 md:space-y-3">
+                <div ref={chatRef} className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
                     {messages.map((msg, i) => {
                         const isUser = msg.role === "user";
                         return (
-                            <div key={i} className={`flex flex-col max-w-[85%] md:max-w-[70%] ${isUser ? "ml-auto items-end" : "items-start"}`}>
-                                <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-center space-x-1 md:space-x-2`}>
-                                    <div className="relative flex flex-col items-center">
-                                        <div className={`relative p-2 md:p-3 ${isUser
-                                            ? "bg-gradient-to-r from-blue-600 to-blue-700"
-                                            : "bg-gradient-to-r from-cyan-600 to-blue-600"
-                                            } text-white rounded-lg shadow-lg mb-2 text-sm md:text-base`}>
-                                            <p>{msg.text}</p>
-                                            <div className={`absolute w-2 md:w-3 h-2 md:h-3 ${isUser
-                                                ? "bg-blue-700"
-                                                : "bg-blue-600"
-                                                } transform rotate-45 bottom-[-4px] md:bottom-[-6px] left-1/2 -translate-x-1/2`}></div>
-                                        </div>
-                                        <Image
-                                            src={isUser ? "/assets/user-avatar.png" : botImage}
-                                            alt={isUser ? "User" : "Echo Bot"}
-                                            height={20}
-                                            width={20}
-                                            className="w-16 h-16 md:w-20 md:h-20"
-                                        />
+                            <div key={i} className={`flex ${isUser ? "justify-end" : "justify-start"} items-end space-x-2`}>
+                                {!isUser && (
+                                    <Image
+                                        src={botImage}
+                                        alt="Echo Bot"
+                                        width={40}
+                                        height={40}
+                                        className="rounded-full object-cover"
+                                    />
+                                )}
+                                <div className={`flex flex-col ${isUser ? "items-end" : "items-start"} max-w-[70%]`}>
+                                    <div className={`p-3 rounded-2xl ${isUser ? "bg-blue-600 text-white" : "bg-white border border-gray-200"}`}>
+                                        <p className={`text-sm md:text-base ${!isUser && "text-gray-800"}`}>{msg.text}</p>
                                     </div>
+                                    <span className="text-xs text-gray-500 mt-1">
+                                        {isUser ? "You" : "Echo Bot"} • {new Date().toLocaleTimeString()}
+                                    </span>
                                 </div>
-                                <span className="text-[10px] md:text-xs text-gray-400 mt-1">
-                                    {isUser ? "You" : "Echo Bot"} • {new Date().toLocaleTimeString()}
-                                </span>
+                                {isUser && (
+                                    <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center">
+                                        {userImageError ? (
+                                            <User className="w-6 h-6 text-gray-500" />
+                                        ) : (
+                                            <Image
+                                                src={userImage}
+                                                alt="User"
+                                                width={40}
+                                                height={40}
+                                                unoptimized={true}
+                                                className="rounded-full object-cover"
+                                                onError={() => setUserImageError(true)}
+                                            />
+                                        )}
+                                    </div>
+                                )}
                             </div>
                         );
                     })}
 
                     {loading && (
-                        <div className={`flex flex-col max-w-[85%] md:max-w-[70%] items-start`}>
-                            <div className="flex justify-start items-center space-x-1 md:space-x-2">
-                                <div className="relative flex flex-col items-center">
-                                    <div className="relative p-2 md:p-3 bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-lg shadow-lg mb-2 text-sm md:text-base">
-                                        <p>Thinking...</p>
-                                        <div className="absolute w-2 md:w-3 h-2 md:h-3 bg-blue-600 transform rotate-45 bottom-[-4px] md:bottom-[-6px] left-1/2 -translate-x-1/2"></div>
-                                    </div>
-                                    <Image
-                                        src={botImage}
-                                        alt="Echo Bot"
-                                        height={20}
-                                        width={20}
-                                        className="w-16 h-16 md:w-20 md:h-20 animate-pulse"
-                                    />
+                        <div className="flex justify-start items-end space-x-2">
+                            <Image
+                                src={botImage}
+                                alt="Echo Bot"
+                                width={40}
+                                height={40}
+                                className="rounded-full object-cover animate-pulse"
+                            />
+                            <div className="flex flex-col items-start max-w-[70%]">
+                                <div className="p-3 rounded-2xl bg-white border border-gray-200">
+                                    <p className="text-sm md:text-base text-gray-800">Thinking...</p>
                                 </div>
                             </div>
                         </div>
@@ -109,22 +118,28 @@ const ChatBox = () => {
                 </div>
 
                 {/* Message Input */}
-                <div className="p-2 md:p-4bg-gradient-to-r from-cyan-600 to-blue-600 flex items-center space-x-2">
-                    <input
-                        value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
-                        placeholder="Type a message..."
-                        className="flex-1 p-2 md:p-3 rounded-full bg-gray-700 text-white outline-none text-sm md:text-base"
-                        disabled={loading}
-                    />
-                    <button
-                        onClick={() => sendMessage(input)}
-                        className="bg-green-500 px-4 md:px-6 py-2 md:py-3 rounded-full text-white text-sm md:text-base disabled:opacity-50"
-                        disabled={loading}
-                    >
-                        {loading ? "..." : "Send"}
-                    </button>
+                <div className="p-4 bg-white border-t border-gray-200 rounded-b-lg">
+                    <div className="flex items-center space-x-2">
+                        <input
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => e.key === "Enter" && sendMessage(input)}
+                            placeholder="Type a message..."
+                            className="flex-1 p-3 rounded-full bg-gray-100 text-gray-800 placeholder-gray-500 outline-none focus:ring-2 focus:ring-blue-500"
+                            disabled={loading}
+                        />
+                        <button
+                            onClick={() => sendMessage(input)}
+                            className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-full text-white font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                            disabled={loading}
+                        >
+                            {loading ? (
+                                <Loader2 className="w-5 h-5 animate-spin" />
+                            ) : (
+                                <Send className="w-5 h-5" />
+                            )}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

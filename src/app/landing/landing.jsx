@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { CheckCircle, Star, BookOpen, Heart, Sparkles, PenTool, ChevronDown } from "lucide-react";
+import { CheckCircle, Star, BookOpen, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -158,7 +158,7 @@ export default function LandingPage() {
                     {[
                         { title: "Unlimited Journaling", desc: "Never run out of space to write your thoughts.", icon: PenTool },
                         { title: "AI Mood Insights", desc: "Get deep insights into your emotional patterns.", icon: Heart },
-                        { title: "Custom Echo Themes", desc: "Personalize your Echo’s look and feel.", icon: Sparkles },
+                        { title: "Custom Echo Themes", desc: "Personalize your Echo's look and feel.", icon: Sparkles },
                         { title: "Premium AI Chatbot", desc: "Chat with an AI assistant that listens with empathy and supports you.", icon: CheckCircle },
                     ].map((feature, index) => (
                         <Card key={index} className="text-center">
@@ -208,19 +208,84 @@ export default function LandingPage() {
 
 
 
-            <section className="py-20 px-6 max-w-4xl text-center">
-                <h2 className="text-4xl font-semibold">What Users Say</h2>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-12">
-                    {[
-                        { name: "Shihab", review: "It’s fun journaling & chatting with Echo. Very well done!" },
-                        { name: "Arafath", review: "The AI insights are so helpful and spot on." },
-                    ].map((testimonial, index) => (
-                        <Card key={index}>
-                            <Star className="text-yellow-500 mx-auto mb-4" size={36} />
-                            <p className="text-lg font-medium leading-relaxed">"{testimonial.review}"</p>
-                            <p className="text-gray-600 mt-3">- {testimonial.name}</p>
-                        </Card>
-                    ))}
+            <section className="py-20 px-6 bg-gradient-to-b from-white to-gray-50 border rounded-xl">
+                <div className="max-w-5xl mx-auto">
+                    <div className="text-center mb-12">
+                        <h2 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-cyan-600">
+                            What Our Users Say
+                        </h2>
+                        <p className="mt-4 text-gray-600 text-lg">
+                            Discover how Echo is helping people express themselves
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        {[
+                            {
+                                name: "Shihab",
+                                role: "Daily User",
+                                review: "It's fun journaling & chatting with Echo. Very well done!",
+                                image: "/assets/shihab.png"
+                            },
+                            {
+                                name: "Arafath",
+                                role: "Student",
+                                review: "The AI insights are so helpful and spot on.",
+                                image: "/assets/arafath.png"
+                            },
+                        ].map((testimonial, index) => (
+                            <div
+                                key={index}
+                                className="bg-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-shadow duration-300"
+                            >
+                                <div className="flex items-center space-x-4 mb-4">
+                                    <div className="w-12 h-12 rounded-full overflow-hidden bg-gray-100 flex items-center justify-center">
+                                        {testimonial.image ? (
+                                            <Image
+                                                src={testimonial.image}
+                                                alt={testimonial.name}
+                                                width={48}
+                                                height={48}
+                                                className="object-cover"
+                                                onError={(e) => {
+                                                    e.target.style.display = 'none';
+                                                    e.target.nextSibling.style.display = 'block';
+                                                }}
+                                            />
+                                        ) : (
+                                            <User className="w-6 h-6 text-gray-400" />
+                                        )}
+                                    </div>
+                                    <div className="flex-1">
+                                        <h3 className="font-semibold text-lg text-gray-900">{testimonial.name}</h3>
+                                        <p className="text-sm text-gray-500">{testimonial.role}</p>
+                                    </div>
+                                    <div className="flex space-x-1">
+                                        {[...Array(5)].map((_, i) => (
+                                            <Star
+                                                key={i}
+                                                className="w-5 h-5 text-yellow-400 fill-current"
+                                            />
+                                        ))}
+                                    </div>
+                                </div>
+                                <blockquote className="relative">
+                                    <span className="absolute top-0 left-0 text-6xl text-blue-100 -z-10">"</span>
+                                    <p className="text-gray-700 text-lg leading-relaxed pl-6 italic">
+                                        {testimonial.review}
+                                    </p>
+                                </blockquote>
+
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="text-center mt-12">
+                        <button className="inline-flex items-center px-6 py-3 rounded-full bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors duration-200">
+                            See More Reviews
+                            <ArrowRight className="ml-2 w-4 h-4" />
+                        </button>
+                    </div>
                 </div>
             </section>
             <section className="py-20 bg-blue-50 text-gray-900">
