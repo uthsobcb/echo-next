@@ -1,14 +1,14 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { auth } from "auth";
-import SignOut from '../components/SignOut';
+import { doSignOut } from '../action';
 import axios from 'axios';
 import ProfileEntries from './Components/ProfileEntries';
 import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 import ErrorPage from '../components/ErrorPage';
 import MoodChart from './Components/MoodChart';
-
+import { LogOut } from 'lucide-react'
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
     { id: 2, name: "Pen Whisperer", img: "/assets/badge_1.png" },
@@ -165,7 +165,12 @@ export default async function User() {
                                         </svg>
                                         Edit Profile
                                     </Link>
-                                    <SignOut className="flex-1" />
+                                    <button onClick={doSignOut} className='flex-1 bg-blue-600 px-4 py-2.5 text-white rounded-lg font-semibold hover:bg-blue-700 transition-colors text-center'>
+                                        <div className='flex items-center justify-center gap-2'>
+                                            <LogOut />
+                                            Sign Out
+                                        </div>
+                                    </button>
                                 </div>
                             </div>
                         </div>
