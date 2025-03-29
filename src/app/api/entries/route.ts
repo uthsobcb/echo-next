@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
-
+import { decrypt } from "@/app/lib/encryption";
 export async function GET(req: NextRequest) {
     try {
         const searchParams = req.nextUrl.searchParams
@@ -41,7 +41,21 @@ export async function GET(req: NextRequest) {
         }
 
         const entries = await Entry.find(query).sort({ createdAt: -1 });
-        return NextResponse.json(entries, { status: 200 });
+        const decryptedEntries = entries.map(entry => {
+            return {
+                ...entry.toObject(),
+                content: entry.content && entry.content.includes(":") ? (() => {
+                    try {
+                        return decrypt(entry.content);  // Try to decrypt if it's encrypted
+                    } catch (error) {
+                        console.error("Error during decryption:", error);
+                        return "Error decrypting content";
+                    }
+                })() : entry.content  // If not encrypted, return content as is
+            }
+        });
+        console.log("Decrypted Entries:", decryptedEntries);
+        return NextResponse.json(decryptedEntries, { status: 200 });
 
     } catch (error) {
         console.error("Error fetching entries:", error);

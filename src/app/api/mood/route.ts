@@ -7,7 +7,7 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 import {
     GoogleGenerativeAI,
 } from "@google/generative-ai";
-
+import { encrypt } from "@/app/lib/encryption";
 const apiKey = process.env.GEMINI_API;
 
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -98,6 +98,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
 
         const session = await auth();
         const user = session?.user;
+        const encryptedContent = encrypt(content);
         if (!user) {
             return NextResponse.json({ error: "Unauthorized Request" }, { status: 401 });
         }
@@ -106,7 +107,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
             mood: parsedMood?.label,
             score: parsedMood?.score,
             comment: parsedMood?.comment,
-            content,
+            content: encryptedContent,
             imgUrl: imgUrl || "",
             createdAt: new Date(),
         });

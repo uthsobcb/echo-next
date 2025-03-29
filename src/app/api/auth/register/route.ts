@@ -68,7 +68,7 @@ export async function POST(req: NextRequest) {
                 <p style="color: #777; font-size: 14px;">
                     Ready to begin? Click below to start journaling with Echo.
                 </p>
-                <a href="${process.env.NEXT_PUBLIC_URL}/login" 
+                <a href="https://my-echo.space/login" 
                     style="display: inline-block; background: #4A90E2; color: white; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-size: 16px; margin-top: 20px;">
                     Start Journaling 🚀
                 </a>

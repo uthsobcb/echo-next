@@ -3,7 +3,7 @@ import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
 import jwt from "jsonwebtoken";
 import mongoose from "mongoose";
-
+import { encrypt, decrypt } from "@/app/lib/encryption";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connect();
@@ -35,7 +35,20 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
         }
         console.log("Entry found:", entry);
-        return NextResponse.json(entry, { status: 200 });
+        const decryptedEntry = {
+            ...entry.toObject(),
+            content: entry.content && entry.content.includes(":") ? (() => {
+                try {
+                    return decrypt(entry.content);  // Try to decrypt if it's encrypted
+                } catch (error) {
+                    console.error("Error during decryption:", error);
+                    return "Error decrypting content";
+                }
+            })() : entry.content  // If not encrypted, return content as is
+        };
+
+        console.log("Decrypted Entry:", decryptedEntry);
+        return NextResponse.json(decryptedEntry, { status: 200 });
     } catch (error) {
         console.error("Error fetching entry:", error);
         return NextResponse.json({ message: "Failed to fetch entry" }, { status: 500 });

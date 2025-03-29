@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { CheckCircle, Star, BookOpen, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User } from "lucide-react";
+import { CheckCircle, Star, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
@@ -230,6 +230,7 @@ export default function LandingPage() {
                     {[
                         { title: "Unlimited Journaling", desc: "Never run out of space to write your thoughts.", icon: PenTool },
                         { title: "AI Mood Insights", desc: "Get deep insights into your emotional patterns.", icon: Heart },
+                        { title: "Secure & Private", desc: "Your data is encrypted and only accessible by you.", icon: Lock },
                         { title: "Custom Echo Themes", desc: "Personalize your Echo's look and feel.", icon: Sparkles },
                         { title: "Premium AI Chatbot", desc: "Chat with an AI assistant that listens with empathy and supports you.", icon: CheckCircle },
                     ].map((feature, index) => (
