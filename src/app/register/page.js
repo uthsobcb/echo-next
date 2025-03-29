@@ -38,7 +38,7 @@ export default function SignupPage() {
     };
 
     return (
-        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12 bg-gray-50">
+        <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12">
             <form onSubmit={onSignup} className="w-full">
                 <div className="flex flex-col items-center justify-center">
                     <div className="w-full max-w-md bg-white rounded-xl shadow-lg border p-6 sm:p-8">
@@ -103,6 +103,35 @@ export default function SignupPage() {
                                         <option value="free">Free</option>
                                         <option value="premium" disabled>Plus (under working)</option>
                                     </select>
+                                </div>
+                                <div className="flex items-start space-x-2 mt-4">
+                                    <input
+                                        type="checkbox"
+                                        id="agree"
+                                        className="mt-1"
+                                        defaultChecked
+                                        disabled
+                                    />
+                                    <label htmlFor="agree" className="text-sm text-gray-700">
+                                        I agree to the{" "}
+                                        <a
+                                            href="/legal/privacy-policy"
+                                            className="text-blue-600 underline hover:text-blue-800"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Privacy Policy
+                                        </a>{" "}
+                                        and{" "}
+                                        <a
+                                            href="/legal/tnc"
+                                            className="text-blue-600 underline hover:text-blue-800"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            Terms & Conditions
+                                        </a>.
+                                    </label>
                                 </div>
                             </div>
 

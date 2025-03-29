@@ -99,6 +99,36 @@ export default function Login() {
                             </div>
                         </div>
 
+                        <div className="flex items-start space-x-2 mt-4">
+                            <input
+                                type="checkbox"
+                                id="agree"
+                                className="mt-1"
+                                defaultChecked
+                                disabled
+                            />
+                            <label htmlFor="agree" className="text-sm text-gray-700">
+                                I agree to the{" "}
+                                <a
+                                    href="/legal/privacy-policy"
+                                    className="text-blue-600 underline hover:text-blue-800"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Privacy Policy
+                                </a>{" "}
+                                and{" "}
+                                <a
+                                    href="/legal/tnc"
+                                    className="text-blue-600 underline hover:text-blue-800"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                >
+                                    Terms & Conditions
+                                </a>.
+                            </label>
+                        </div>
+
                         <button
                             className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-blue-800 text-white"
                             type="submit"
