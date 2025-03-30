@@ -50,7 +50,7 @@ export default async function EntryCard({ params }) {
 
 
         return (
-            <div className="flex flex-col items-center w-full min-h-screen bg-gray-100 px-4 py-6">
+            <div className="flex flex-col items-center w-full min-h-screen px-4 py-6">
                 <div className="text-center mb-4">
                     <h2 className="text-xl font-semibold text-gray-700">
                         Entry from: {formattedDate || "Unknown Date"}

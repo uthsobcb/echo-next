@@ -1,5 +1,5 @@
-import React, { useRef, useState } from "react";
-import { ScanText, Camera, X } from "lucide-react";
+import React, { useEffect, useRef, useState } from "react";
+import { ScanText, Camera, X, Repeat } from "lucide-react";
 import Tesseract from "tesseract.js";
 
 const ScanComponent = ({ onScanComplete }) => {
@@ -9,11 +9,35 @@ const ScanComponent = ({ onScanComplete }) => {
     const [scannedText, setScannedText] = useState(null);
     const [loading, setLoading] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
+    const [videoDevices, setVideoDevices] = useState([]);
+    const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
 
-    const startCamera = async () => {
+    useEffect(() => {
+        // Get all video input devices
+        navigator.mediaDevices.enumerateDevices().then((devices) => {
+            const videoInputs = devices.filter(device => device.kind === "videoinput");
+            setVideoDevices(videoInputs);
+
+            // Default to back camera if available
+            const backCameraIndex = videoInputs.findIndex(device =>
+                device.label.toLowerCase().includes("back")
+            );
+
+            setCurrentDeviceIndex(backCameraIndex >= 0 ? backCameraIndex : 0);
+        });
+    }, []);
+
+    const startCamera = async (deviceIndex = currentDeviceIndex) => {
         setIsCameraOpen(true);
         try {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            const constraints = {
+                video: {
+                    deviceId: videoDevices[deviceIndex]?.deviceId || undefined,
+                    facingMode: "environment" // Hint for mobile devices
+                }
+            };
+
+            const stream = await navigator.mediaDevices.getUserMedia(constraints);
             if (videoRef.current) {
                 videoRef.current.srcObject = stream;
                 videoRef.current.play();
@@ -21,6 +45,19 @@ const ScanComponent = ({ onScanComplete }) => {
         } catch (error) {
             console.error("Error accessing camera:", error);
         }
+    };
+
+    const switchCamera = async () => {
+        const nextIndex = (currentDeviceIndex + 1) % videoDevices.length;
+        setCurrentDeviceIndex(nextIndex);
+
+        // Stop current stream
+        if (videoRef.current?.srcObject) {
+            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        }
+
+        // Start new camera
+        await startCamera(nextIndex);
     };
 
     const captureImage = () => {
@@ -62,28 +99,43 @@ const ScanComponent = ({ onScanComplete }) => {
 
     return (
         <div className="flex flex-col items-center justify-center relative mt-5">
-            {/* Scan Button */}
             <button
-                onClick={startCamera}
+                onClick={() => startCamera(currentDeviceIndex)}
                 className="p-3 bg-white/80 rounded-full shadow hover:bg-white transition"
             >
                 <ScanText className="w-6 h-6 text-gray-700" />
             </button>
-            <p> Scan Handwritten Journal!</p>
+            <p>Scan Handwritten Journal!</p>
 
             {isCameraOpen && (
                 <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
                     <video ref={videoRef} className="w-full h-full object-cover"></video>
 
-                    <button
-                        onClick={captureImage}
-                        className="absolute bottom-10 px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg"
-                    >
-                        Capture
-                    </button>
+                    <div className="absolute bottom-10 flex gap-4">
+                        <button
+                            onClick={captureImage}
+                            className="px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg"
+                        >
+                            Capture
+                        </button>
+
+                        {videoDevices.length > 1 && (
+                            <button
+                                onClick={switchCamera}
+                                className="p-3 bg-gray-700 text-white rounded-full"
+                            >
+                                <Repeat className="w-6 h-6" />
+                            </button>
+                        )}
+                    </div>
 
                     <button
-                        onClick={() => setIsCameraOpen(false)}
+                        onClick={() => {
+                            setIsCameraOpen(false);
+                            if (videoRef.current?.srcObject) {
+                                videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+                            }
+                        }}
                         className="absolute top-4 right-4 bg-red-500 text-white p-3 rounded-full"
                     >
                         <X className="w-6 h-6" />
