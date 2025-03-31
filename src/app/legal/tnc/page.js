@@ -10,7 +10,7 @@ const TermsAndConditions = () => {
             <section className="mb-10">
                 <h2 className="text-2xl font-semibold mb-2">1. Acceptance of Terms</h2>
                 <p>
-                    By using [App Name], you agree to be bound by these Terms & Conditions and our Privacy Policy.
+                    By using Echo, you agree to be bound by these Terms & Conditions and our Privacy Policy.
                     If you do not agree with any part of these terms, you should discontinue use of the app immediately.
                 </p>
             </section>
@@ -19,7 +19,7 @@ const TermsAndConditions = () => {
             <section className="mb-10">
                 <h2 className="text-2xl font-semibold mb-2">2. Use of the App</h2>
                 <p className="mb-2">
-                    [App Name] is designed to support journaling, self-reflection, and emotional wellbeing.
+                    Echo is designed to support journaling, self-reflection, and emotional wellbeing.
                     You agree to use the app only for lawful, personal, and non-commercial purposes.
                 </p>
                 <p>
@@ -73,7 +73,7 @@ const TermsAndConditions = () => {
             <section className="mb-10">
                 <h2 className="text-2xl font-semibold mb-2">7. Limitation of Liability</h2>
                 <p>
-                    [App Name] is provided “as is” without warranties of any kind. We are not liable for any loss, emotional distress,
+                    Echo is provided “as is” without warranties of any kind. We are not liable for any loss, emotional distress,
                     or damage arising from your use of the app. Always consult a mental health professional for clinical support.
                 </p>
             </section>

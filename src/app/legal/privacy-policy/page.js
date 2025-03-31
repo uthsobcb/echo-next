@@ -9,19 +9,19 @@ const PrivacyPolicy = () => {
             <section className="mb-10">
                 <h2 className="text-2xl font-semibold mb-2">1. Your Journal is Private and Encrypted</h2>
                 <p className="mb-2">
-                    Every journal entry you create is <strong>end-to-end encrypted</strong>. This means your data is encrypted
-                    before it even leaves your device, and only you have the key to unlock it. Even our servers cannot access the
+                    Every journal entry you create is <strong>encrypted</strong>. This means your data is encrypted
+                    before it even leaves your account, and only you have the key to unlock it. Even our servers cannot access the
                     contents of your entries. Your thoughts, reflections, and personal stories remain strictly private and fully secure.
                 </p>
                 <p>
-                    Encryption is applied both in transit and at rest, following modern best practices to ensure your mental
+                    Encryption is applied to store your entries, following modern best practices to ensure your mental
                     health data is never exposed or accessible to unauthorized parties.
                 </p>
             </section>
 
             {/* Section 2: Mood Data */}
             <section className="mb-10">
-                <h2 className="text-2xl font-semibold mb-2">2. Mood Data for Research (Anonymously)</h2>
+                <h2 className="text-2xl font-semibold mb-2">2. Agreement Mood Data for Research (Anonymously)</h2>
                 <p className="mb-2">
                     We may collect non-identifiable mood-related metadata, such as selected moods, emotional tags, or
                     engagement patterns (e.g., journaling frequency), to support mental health research.
