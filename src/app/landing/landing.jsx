@@ -97,8 +97,21 @@ export default function LandingPage() {
         <div className="w-full min-h-screen flex flex-col items-center px-4">
             <section className="relative w-full flex flex-col items-center">
                 <div className="text-center py-20 px-6 max-w-3xl">
-                    <p className="p-2 bg-gray-400/35 text-gray-600 border rounded-full max-w-48 mx-auto">✨ Introducing</p>
-
+                    <div className="flex justify-center m-2">
+                        <Link
+                            href="https://www.producthunt.com/posts/echo-e657689c-f521-42ce-9dec-904ae6fd47ac?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-echo-e657689c-f521-42ce-9dec-904ae6fd47ac"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                        >
+                            <Image
+                                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=947473&theme=light&t=1743937447052"
+                                alt="Echo☁️ - A Space to Write, Reflect, and Grow 🚀☁️ | Product Hunt"
+                                width={250}
+                                height={54}
+                                unoptimized // Required for external SVGs not hosted locally
+                            />
+                        </Link>
+                    </div>
                     <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">
                         <span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span>
                         { }: Your AI Journaling Companion
