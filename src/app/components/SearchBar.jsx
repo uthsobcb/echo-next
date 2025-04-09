@@ -35,10 +35,6 @@ export default function SearchBar({ onSearch }) {
                         onChange={(e) => { handleSearch(e.target.value) }}
                         defaultValue={searchParams.get('q')?.toString()}
                     />
-                    <input
-                        type="date"
-                        className="p-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring focus:ring-blue-300"
-                    />
                 </div>
             </div>
         </div>

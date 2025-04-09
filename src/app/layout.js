@@ -7,8 +7,8 @@ import { Analytics } from "@vercel/analytics/react"
 // import Script from 'next/script'
 
 export const metadata = {
-  title: "Echo",
-  description: "AI enabled journal",
+  title: "Echo || Journal Effortlessly ||  A Space to Write, Reflect, and Grow",
+  description: "Echo is your intelligent journaling companion, combining AI-powered insights with mood tracking and emotional support to help you reflect, grow, and achieve better mental well-being. Start journaling with Echo today to unlock your personal growth journey.",
   manifest: "/manifest.json",
   icons: {
     apple: [

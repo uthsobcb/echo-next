@@ -10,6 +10,8 @@ export default function SignupPage() {
     const [error, setError] = useState("");
     const [success, setSuccess] = useState("");
     const [loading, setLoading] = useState(false);
+    const [agreeChecked, setAgreeChecked] = useState(false);
+
 
     const onSignup = async (e) => {
         e.preventDefault();
@@ -91,26 +93,13 @@ export default function SignupPage() {
                                         required
                                     />
                                 </div>
-
-                                <div>
-                                    <label className="block mb-1.5 text-sm font-medium text-gray-900">
-                                        Plan
-                                    </label>
-                                    <select
-                                        name="subscription"
-                                        className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-2.5 sm:p-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
-                                    >
-                                        <option value="free">Free</option>
-                                        <option value="premium" disabled>Plus (under working)</option>
-                                    </select>
-                                </div>
                                 <div className="flex items-start space-x-2 mt-4">
                                     <input
                                         type="checkbox"
                                         id="agree"
                                         className="mt-1"
-                                        defaultChecked
-                                        disabled
+                                        checked={agreeChecked}
+                                        onChange={(e) => setAgreeChecked(e.target.checked)}
                                     />
                                     <label htmlFor="agree" className="text-sm text-gray-700">
                                         I agree to the{" "}
@@ -134,11 +123,10 @@ export default function SignupPage() {
                                     </label>
                                 </div>
                             </div>
-
                             <button
                                 className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center text-white transition-colors disabled:opacity-70 disabled:cursor-not-allowed"
                                 type="submit"
-                                disabled={loading}
+                                disabled={!agreeChecked}
                             >
                                 {loading ? (
                                     <span className="flex items-center justify-center">
