@@ -56,7 +56,7 @@ export default function Footer() {
                                         <Link href="" className="hover:underline ">X/Twitter</Link>
                                     </li>
                                     <li>
-                                        <Link href="https://discord.gg/28d9HE7J" className="hover:underline">Discord</Link>
+                                        <Link href="https://discord.gg/B2safuyRYF" target='_blank' className="hover:underline">Discord</Link>
                                     </li>
                                 </ul>
                             </div>
