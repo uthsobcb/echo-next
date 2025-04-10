@@ -1,36 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
-import Chat from "../../../models/Chat";
-import { connect } from "../../../lib/mongodb";
+import Chat from "@/app/models/Chat";
+import { connect } from "@/app/lib/mongodb";
 import { auth } from "auth";
 
-export async function GET(
-    request: NextRequest,
-    context: { params: { id: string } }
-) {
+export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         const session = await auth();
         const user = session?.user;
-        const { id } = context.params;
+        const { id } = await params;
 
         if (!user) {
-            return NextResponse.json(
-                { error: "Unauthorized" },
-                { status: 401 }
-            );
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
         await connect();
 
         const chat = await Chat.findOne({
             _id: id,
-            userId: user.id
+            userId: user.id,
         }).lean();
 
         if (!chat) {
-            return NextResponse.json(
-                { error: "Chat not found" },
-                { status: 404 }
-            );
+            return NextResponse.json({ error: "Chat not found" }, { status: 404 });
         }
 
         return NextResponse.json(chat);
@@ -41,4 +32,4 @@ export async function GET(
             { status: 500 }
         );
     }
-} 
+}
