@@ -18,6 +18,10 @@ const config = {
             },
             {
                 protocol: 'https',
+                hostname: 'i.ibb.co.com',
+            },
+            {
+                protocol: 'https',
                 hostname: 'api.producthunt.com',
             },
             {
