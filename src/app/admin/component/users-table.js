@@ -2,15 +2,39 @@
 
 import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 
 export default function UsersTable({ users }) {
+  const [editingUser, setEditingUser] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+
+
+  const handleEditSave = async (userId, updates) => {
+    try {
+      const res = await fetch("/api/admin/user", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, updates }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error);
+      toast.success("User Updated");
+      // alert("User updated!");
+      setModalOpen(false);
+      // Optionally: refetch users or update state
+    } catch (err) {
+      toast.error("Update Failed" + err.message);
+      alert("Update failed: " + err.message);
+    }
+  };
+
+  const displayKeys = ["name", "email", "subscription", "badge", "image"];
+
   if (!users || users.length === 0) {
     return <div className="text-center py-4 text-gray-500">No users found</div>;
   }
-
-  // Define which fields to show and in what order
-  const displayKeys = ["name", "email", "subscription", "badge", "image"];
 
   return (
     <div className="overflow-x-auto rounded-md border border-gray-200 dark:border-gray-800">
@@ -35,8 +59,8 @@ export default function UsersTable({ users }) {
                       src={user[key]}
                       alt={user.name}
                       className="w-8 h-8 rounded-full object-cover"
-                      width={20}
-                      height={20}
+                      width={32}
+                      height={32}
                     />
                   ) : key === "badge" ? (
                     <div className="flex flex-wrap gap-1">
@@ -57,17 +81,30 @@ export default function UsersTable({ users }) {
                 </td>
               ))}
               <td className="px-4 py-2 text-right">
-                <DropdownActions />
+                <DropdownActions
+                  onEdit={() => {
+                    setEditingUser(user);
+                    setModalOpen(true);
+                  }}
+                  onDelete={() => handleDelete(user._id)}
+                />
               </td>
             </tr>
           ))}
         </tbody>
       </table>
+
+      <EditUserModal
+        isOpen={modalOpen}
+        onClose={() => setModalOpen(false)}
+        user={editingUser}
+        onSave={handleEditSave}
+      />
     </div>
   );
 }
 
-function DropdownActions() {
+function DropdownActions({ onEdit }) {
   const [open, setOpen] = useState(false);
 
   return (
@@ -83,12 +120,105 @@ function DropdownActions() {
       {open && (
         <div className="absolute right-0 z-10 mt-2 w-40 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-md">
           <div className="p-2 text-sm text-gray-700 dark:text-gray-200">
-            <div className="hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 cursor-pointer">View details</div>
-            <div className="hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 cursor-pointer">Edit user</div>
-            <div className="hover:bg-red-100 dark:hover:bg-red-900 text-red-600 px-2 py-1 cursor-pointer">Delete</div>
+            <div
+              className="hover:bg-gray-100 dark:hover:bg-gray-700 px-2 py-1 cursor-pointer"
+              onClick={onEdit}
+            >
+              Edit user
+            </div>
+
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function EditUserModal({ isOpen, onClose, user, onSave }) {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    subscription: "",
+    badge: "",
+  });
+
+  useEffect(() => {
+    if (user) {
+      setFormData({
+        name: user.name || "",
+        email: user.email || "",
+        subscription: user.subscription || "",
+        badge: user.badge?.join(", ") || "",
+      });
+    }
+  }, [user]);
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const updates = {
+      ...formData,
+      badge: formData.badge.split(",").map((b) => b.trim()),
+    };
+    onSave(user._id, updates);
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-40 flex items-center justify-center z-50">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-lg shadow-xl w-full max-w-md">
+        <h2 className="text-lg font-semibold mb-4 text-gray-800 dark:text-white">Edit User</h2>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            name="name"
+            value={formData.name}
+            onChange={handleChange}
+            placeholder="Name"
+            className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"
+          />
+          <input
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            placeholder="Email"
+            className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"
+          />
+          <input
+            name="subscription"
+            value={formData.subscription}
+            onChange={handleChange}
+            placeholder="Subscription (e.g., free, pro, admin)"
+            className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"
+          />
+          <input
+            name="badge"
+            value={formData.badge}
+            onChange={handleChange}
+            placeholder="Badges (comma-separated)"
+            className="w-full p-2 border rounded dark:bg-gray-800 dark:text-white"
+          />
+          <div className="flex justify-end gap-2">
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-4 py-2 text-sm bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-4 py-2 text-sm bg-blue-600 text-white rounded hover:bg-blue-700"
+            >
+              Save
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   );
 }

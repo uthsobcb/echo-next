@@ -40,13 +40,34 @@ export default function Page() {
     console.log("Moods:", JSON.stringify(moods, null, 2));
     console.log("Entries:", JSON.stringify(entries, null, 2));
 
-
     if (loading) {
-        return <div>Loading...</div>;
+        return (
+            <div className="flex items-center justify-center h-64">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-4 border-blue-500 border-opacity-50"></div>
+                <p className="ml-4 text-blue-600 font-semibold text-lg">Loading...</p>
+            </div>
+        );
     }
 
     if (error) {
-        return <div>Error: {error}</div>;
+        return (
+            <div className="flex items-center justify-center h-64 text-red-600 font-medium">
+                <svg
+                    className="w-6 h-6 mr-2 text-red-500"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    viewBox="0 0 24 24"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M18.364 5.636L5.636 18.364M5.636 5.636l12.728 12.728"
+                    />
+                </svg>
+                <span>Error: {error}</span>
+            </div>
+        );
     }
 
     return (
