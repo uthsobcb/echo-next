@@ -35,16 +35,16 @@ export default async function NavBar() {
                 <div className="items-center space-x-4 p-2 rounded-lg lg:block hidden">
                     {session?.user ? (
                         <div className="flex items-center space-x-3">
-                            <div className='flex items-center space-y-2'>
+                            <div className='flex items-center mx-2'>
                                 <Image src='/assets/pen.svg' alt="Entry" width={24} height={24} />
 
-                                <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                                <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm mx-1">
                                     Entry
                                 </Link>
                             </div>
-                            <div className='flex items-center space-y-2'>
+                            <div className='flex items-center mx-2'>
                                 <Brain width={24} height={24} />
-                                <Link href="/memory" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                                <Link href="/memory" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm mx-1">
                                     Memory
                                 </Link>
                             </div>
