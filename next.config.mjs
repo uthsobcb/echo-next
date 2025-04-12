@@ -19,7 +19,11 @@ const config = {
             {
                 protocol: 'https',
                 hostname: 'api.producthunt.com',
-            }
+            },
+            {
+                protocol: 'https',
+                hostname: 'ph-avatars.imgix.net',
+            },
         ],
         dangerouslyAllowSVG: true,
     },

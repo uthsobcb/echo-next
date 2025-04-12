@@ -5,6 +5,7 @@ import Link from "next/link";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 export default function Login() {
     const router = useRouter();
@@ -99,35 +100,6 @@ export default function Login() {
                             </div>
                         </div>
 
-                        <div className="flex items-start space-x-2 mt-4">
-                            <input
-                                type="checkbox"
-                                id="agree"
-                                className="mt-1"
-                                defaultChecked
-                                disabled
-                            />
-                            <label htmlFor="agree" className="text-sm text-gray-700">
-                                I agree to the{" "}
-                                <a
-                                    href="/legal/privacy-policy"
-                                    className="text-blue-600 underline hover:text-blue-800"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Privacy Policy
-                                </a>{" "}
-                                and{" "}
-                                <a
-                                    href="/legal/tnc"
-                                    className="text-blue-600 underline hover:text-blue-800"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                >
-                                    Terms & Conditions
-                                </a>.
-                            </label>
-                        </div>
 
                         <button
                             className="w-full bg-blue-500 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-blue-800 text-white"
@@ -137,21 +109,35 @@ export default function Login() {
                             {loading ? "Logging in..." : "Login"}
                         </button>
 
-                        {/* <div className="flex items-center my-4">
-                                <hr className="w-full border-gray-300" />
-                                <span className="px-2 text-gray-500">OR</span>
-                                <hr className="w-full border-gray-300" />
-                            </div> */}
+                        <div className="flex items-center my-4">
+                            <hr className="w-full border-gray-300" />
+                            <span className="px-2 text-gray-500">OR</span>
+                            <hr className="w-full border-gray-300" />
+                        </div>
 
-                        {/* <button
-                                className="w-full bg-violet-500  focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-2.5 text-center focus:ring-red-800 text-white flex items-center justify-center gap-2"
-                                type="button"
-                                onClick={handleGoogleSignIn}
-                                disabled={loading}
-                            >
-                                <Image src="/assets/google.svg" alt="Google" width={24} height={24} />
-                                Sign in with Google
-                            </button> */}
+                        <button
+                            type="button"
+                            onClick={handleGoogleSignIn}
+                            disabled={loading}
+                            className={`
+    w-full flex items-center justify-center gap-3
+    px-5 py-2.5 text-sm font-semibold text-white
+    bg-black hover:bg-zinc-900 active:bg-zinc-800
+    focus:outline-none focus:ring-4 focus:ring-zinc-300
+    disabled:opacity-60 disabled:cursor-not-allowed
+    rounded-lg transition duration-200 ease-in-out
+  `}
+                        >
+                            <Image
+                                src="/assets/google.svg"
+                                alt="Google"
+                                width={24}
+                                height={24}
+                                className="pointer-events-none"
+                            />
+                            {loading ? "Signing in..." : "Sign in with Google"}
+                        </button>
+
 
                         <p className="text-sm text-gray-500 mt-2">
                             Don't have an account?{" "}

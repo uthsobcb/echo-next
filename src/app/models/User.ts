@@ -31,7 +31,7 @@ const UserSchema = new Schema<IUser>({
     },
     subscription: {
         type: String,
-        enum: ['free', 'plus'],
+        enum: ['free', 'plus', 'admin'],
         default: 'free'
     },
     badge: {
