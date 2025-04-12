@@ -319,6 +319,12 @@ export default function LandingPage() {
                                 review: "The AI insights are so helpful and spot on.",
                                 image: "/assets/arafath.png"
                             },
+                            {
+                                name: "Evak Chan",
+                                role: "from ProductHunt",
+                                review: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
+                                image: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1"
+                            },
                         ].map((testimonial, index) => (
                             <div
                                 key={index}

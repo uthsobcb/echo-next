@@ -6,6 +6,7 @@ import Link from 'next/link';
 import SignOut from './SignOut';
 import MobileMenu from './MobileMenu';
 import axios from 'axios';
+import { Brain } from 'lucide-react';
 export default async function NavBar() {
     const session = await auth();
     let userData = [];
@@ -20,7 +21,7 @@ export default async function NavBar() {
     }
     return (
         <header className="flex items-center justify-center m-3">
-            <nav className="flex items-center justify-around lg:w-1/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
+            <nav className="flex items-center justify-around lg:w-2/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
                 <div className="flex items-center gap-4">
                     <Link href="/" className="flex justify-center">
                         <Image src="/assets/logo.png" alt="Logo" width={46} height={100} />
@@ -34,14 +35,19 @@ export default async function NavBar() {
                 <div className="items-center space-x-4 p-2 rounded-lg lg:block hidden">
                     {session?.user ? (
                         <div className="flex items-center space-x-3">
-                            <div className='flex items-center'>
+                            <div className='flex items-center space-y-2'>
                                 <Image src='/assets/pen.svg' alt="Entry" width={24} height={24} />
 
                                 <Link href="/entry" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
                                     Entry
                                 </Link>
                             </div>
-
+                            <div className='flex items-center space-y-2'>
+                                <Brain width={24} height={24} />
+                                <Link href="/memory" className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm">
+                                    Memory
+                                </Link>
+                            </div>
                             <Link
                                 href="/profile"
                                 className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-semibold text-sm flex items-center gap-2"

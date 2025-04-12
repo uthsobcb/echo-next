@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import Image from "next/image";
+import { signIn } from "next-auth/react";
 export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState("");
@@ -39,6 +41,10 @@ export default function SignupPage() {
         }
     };
 
+    async function handleGoogleSignIn() {
+        setLoading(true);
+        signIn("google", { callbackUrl: "/entry" });
+    }
     return (
         <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12">
             <form onSubmit={onSignup} className="w-full">
@@ -147,6 +153,35 @@ export default function SignupPage() {
                                     Sign in
                                 </Link>
                             </p>
+                            <div className="flex items-center my-4">
+                                <hr className="w-full border-gray-300" />
+                                <span className="px-2 text-gray-500">OR</span>
+                                <hr className="w-full border-gray-300" />
+                            </div>
+
+                            <button
+                                type="button"
+                                onClick={handleGoogleSignIn}
+                                disabled={loading}
+                                className={`
+                                w-full flex items-center justify-center gap-3
+                                px-5 py-2.5 text-sm font-semibold text-white
+                                bg-black hover:bg-zinc-900 active:bg-zinc-800
+                                focus:outline-none focus:ring-4 focus:ring-zinc-300
+                                disabled:opacity-60 disabled:cursor-not-allowed
+                                rounded-lg transition duration-200 ease-in-out
+                              `}
+                            >
+                                <Image
+                                    src="/assets/google.svg"
+                                    alt="Google"
+                                    width={24}
+                                    height={24}
+                                    className="pointer-events-none"
+                                />
+                                {loading ? "Signing in..." : "Sign in with Google"}
+                            </button>
+
                         </div>
                     </div>
                 </div>

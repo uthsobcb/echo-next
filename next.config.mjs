@@ -18,8 +18,16 @@ const config = {
             },
             {
                 protocol: 'https',
+                hostname: 'i.ibb.co.com',
+            },
+            {
+                protocol: 'https',
                 hostname: 'api.producthunt.com',
-            }
+            },
+            {
+                protocol: 'https',
+                hostname: 'ph-avatars.imgix.net',
+            },
         ],
         dangerouslyAllowSVG: true,
     },

@@ -4,6 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SignOut from "./SignOut";
+import { Brain, PenIcon } from "lucide-react";
 
 export default function MobileMenu({ session, userData }) {
     const [isOpen, setIsOpen] = useState(false);
@@ -71,13 +72,16 @@ export default function MobileMenu({ session, userData }) {
                                             className="flex items-center gap-3 text-gray-300 hover:text-white p-3 rounded-lg
                                                      hover:bg-gray-800 transition-all duration-200"
                                         >
-                                            <Image
-                                                src="/assets/pen.svg"
-                                                alt="Entry"
-                                                width={24}
-                                                height={24}
-                                            />
+                                            <PenIcon width={24} height={24} />
+
                                             New Entry
+                                        </Link>
+                                        <Link href="/memory" className="flex items-center gap-3 text-gray-300 hover:text-white p-3 rounded-lg
+                                                     hover:bg-gray-800 transition-all duration-200"
+                                        >
+                                            <Brain width={24} height={24} />
+
+                                            Memory
                                         </Link>
 
                                         <Link
