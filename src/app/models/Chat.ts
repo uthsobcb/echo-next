@@ -5,7 +5,7 @@ if (mongoose.models.Chat) {
     delete mongoose.models.Chat;
 }
 
-interface IMessage {
+export interface IMessage {
     role: 'user' | 'ai';
     text: string;
     timestamp: Date;
