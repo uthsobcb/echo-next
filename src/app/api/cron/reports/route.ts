@@ -9,74 +9,98 @@ export async function GET(req: NextRequest) {
         await connect();
         const resend = new Resend(process.env.RESEND_API_KEY);
 
-        // Get all users
         const users = await UserModel.find({});
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 
-        for (const user of users) {
-            const userId = user._id;
-            const email = user.email;
-            const userName = user.name;
+        const batchSize = 2;
 
-            // Fetch mood entries from the past 7 days
-            const moodData = await Mood.find({
-                userId,
-                createdAt: { $gte: oneWeekAgo }
-            }).sort({ createdAt: 1 });
-            // Add delay between emails to avoid rate limiting
-            if (users.indexOf(user) > 0) {
-                await new Promise(resolve => setTimeout(resolve, 1000)); // 1 second delay
-            }
+        for (let i = 0; i < users.length; i += batchSize) {
+            const batch = users.slice(i, i + batchSize);
 
+            await Promise.allSettled(
+                batch.map(async (user) => {
+                    try {
+                        const moodData = await Mood.find({
+                            userId: user._id,
+                            createdAt: { $gte: oneWeekAgo }
+                        }).sort({ createdAt: 1 });
 
+                        const moodSummary = moodData.map(mood => `<li>${mood.mood} - Score: ${mood.score}</li>`).join("");
+                        const moodCount = moodData.length;
+                        const avgScore = moodCount > 0
+                            ? (moodData.reduce((sum, mood) => sum + mood.score, 0) / moodCount).toFixed(2)
+                            : "N/A";
 
-            // Analyze moods
-            const moodSummary = moodData.map(mood => `<li>${mood.mood} - Score: ${mood.score}</li>`).join("");
-            const moodCount = moodData.length;
-            const avgScore = (moodData.reduce((sum, mood) => sum + mood.score, 0) / moodCount).toFixed(2);
+                        const emailHtml = `
+                            <div style="background: linear-gradient(135deg, #f6f9fc 0%, #f1f4f8 100%); padding: 50px; text-align: center; font-family: 'Arial', sans-serif;">
+                                <div style="max-width: 600px; background: white; padding: 40px; border-radius: 15px; 
+                                            box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.08); margin: auto; border: 1px solid rgba(0,0,0,0.05);">
+                                    <div style="background: #4A90E2; padding: 20px; border-radius: 10px; margin-bottom: 30px;">
+                                        <h1 style="color: white; margin: 0; font-size: 28px; letter-spacing: 1px;">📊 Your Weekly Mood Report</h1>
+                                    </div>
+                                    
+                                    <div style="margin-bottom: 30px;">
+                                        <p style="color: #555; font-size: 18px; margin-bottom: 20px;">Hey <strong style="color: #4A90E2;">${user.name}</strong>, here's your mood journey this week! 🌈</p>
+                                        
+                                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                            <h3 style="color: #4A90E2; margin-top: 0; font-size: 22px;">🌟 Key Insights</h3>
+                                            <div style="display: flex; justify-content: space-around; margin: 20px 0;">
+                                                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                                    <p style="color: #777; margin: 0;">Total Entries</p>
+                                                    <p style="color: #4A90E2; font-size: 24px; margin: 10px 0;">${moodCount}</p>
+                                                </div>
+                                                <div style="background: white; padding: 15px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+                                                    <p style="color: #777; margin: 0;">Avg. Score</p>
+                                                    <p style="color: #4A90E2; font-size: 24px; margin: 10px 0;">${avgScore}</p>
+                                                </div>
+                                            </div>
+                                        </div>
 
-            // Prepare email content
-            const emailHtml = `
-                <div style="background-color: #f9f9f9; padding: 40px; text-align: center;">
-                    <div style="max-width: 600px; background: white; padding: 30px; border-radius: 10px; 
-                                box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); margin: auto;">
-                        <h1 style="color: #333;">📊 Your Weekly Mood Report</h1>
-                        <p style="color: #555;">Hey <strong>${userName}</strong>, here's your mood summary for this week.</p>
-                        
-                        <h3 style="color: #4A90E2;">🌟 Key Insights</h3>
-                        <p style="color: #777;">Total Mood Entries: <strong>${moodCount}</strong></p>
-                        <p style="color: #777;">Average Mood Score: <strong>${avgScore}</strong></p>
+                                        <div style="background: #f8f9fa; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                                            <h3 style="color: #4A90E2; margin-top: 0; font-size: 22px;">💡 Mood Timeline</h3>
+                                            <ul style="list-style: none; padding: 0; text-align: left; margin: 0 auto; max-width: 400px; color: #555;">
+                                                ${moodSummary}
+                                            </ul>
+                                        </div>
 
-                        <h3 style="color: #333;">💡 Mood Breakdown</h3>
-                        <ul style="list-style: none; padding: 0; text-align: left; margin: 0 auto; max-width: 400px; color: #555;">
-                            ${moodSummary}
-                        </ul>
+                                        <p style="color: #777; font-size: 16px; margin: 30px 0; line-height: 1.6;">
+                                            Keep shining and tracking your emotions. Remember, every mood is a step in your journey! 💫
+                                        </p>
 
-                        <p style="color: #777; font-size: 14px; margin-top: 20px;">
-                            Keep journaling and tracking your emotions. Echo is always here to support you! 💙
-                        </p>
+                                        <a href="https://my-echo.space/profile"
+                                            style="display: inline-block; background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%); 
+                                                    color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px; 
+                                                    font-size: 16px; font-weight: bold; margin: 20px 0; box-shadow: 0 4px 12px rgba(74, 144, 226, 0.2);
+                                                    transition: transform 0.2s;">
+                                            View My Progress 🚀
+                                        </a>
 
-                        <a href="${process.env.NEXT_PUBLIC_BASEURL}/profile"
-                            style="display: inline-block; background: #4A90E2; color: white; text-decoration: none; 
-                                    padding: 12px 25px; border-radius: 5px; font-size: 16px; margin-top: 20px;">
-                            View My Progress 🚀
-                        </a>
+                                        <div style="border-top: 1px solid #eee; margin-top: 30px; padding-top: 20px;">
+                                            <p style="color: #aaa; font-size: 12px; margin: 0;">
+                                                This is an automated weekly report from Echo. Keep journaling and growing! 📖✨
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
 
-                        <p style="color: #aaa; font-size: 12px; margin-top: 20px;">
-                            This is an automated weekly report from Echo. Happy journaling! 📖
-                        </p>
-                    </div>
-                </div>
-            `;
+                        await resend.emails.send({
+                            from: "echo@uthsob.ninja",
+                            to: user.email,
+                            subject: `📊 Echo Weekly Mood Report for ${user.name}`,
+                            html: emailHtml,
+                        });
 
-            // Send Email
-            await resend.emails.send({
-                from: "echo@uthsob.ninja",
-                to: email,
-                subject: `📊 Echo Weekly Mood Report for ${userName}`,
-                html: emailHtml,
-            });
+                    } catch (err) {
+                        console.error(`Failed to send report to ${user.email}:`, err);
+                    }
+                })
+            );
+
+            // Respect Resend’s 2 req/sec limit
+            await new Promise(resolve => setTimeout(resolve, 1500)); // Wait 1.5 seconds between batches
         }
 
         return NextResponse.json({ message: "Weekly reports sent successfully!" }, { status: 200 });
