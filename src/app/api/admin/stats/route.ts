@@ -18,13 +18,42 @@ export async function GET(req: NextRequest) {
             );
         }
 
+        // Get all users
+        const allUsers = await UserModel.find();
 
-        const allUser = await UserModel.find();
-        const allEntry = await Entry.find();
+        // Get total entries count
+        const totalEntries = await Entry.countDocuments();
+
+        // Get mood data
         const moodData = await Mood.find().select("mood");
 
+        // Get user-wise entry counts using aggregation
+        const userEntryCounts = await Entry.aggregate([
+            {
+                $group: {
+                    _id: "$userId",
+                    entryCount: { $sum: 1 }
+                }
+            }
+        ]);
+
+        // Create a map of user IDs to entry counts
+        const entryCountMap = Object.fromEntries(
+            userEntryCounts.map(item => [item._id.toString(), item.entryCount])
+        );
+
+        // Combine user data with entry counts
+        const usersWithEntries = allUsers.map(user => ({
+            ...user.toObject(),
+            entryCount: entryCountMap[user._id.toString()] || 0
+        }));
+
         return NextResponse.json(
-            { users: allUser, entries: allEntry.length, mood: moodData },
+            {
+                users: usersWithEntries,
+                entries: totalEntries,
+                mood: moodData
+            },
             { status: 200 }
         );
 

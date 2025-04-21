@@ -30,7 +30,7 @@ export default function UsersTable({ users }) {
     }
   };
 
-  const displayKeys = ["name", "email", "subscription", "badge", "image"];
+  const displayKeys = ["name", "email", "subscription", "entryCount", "badge", "image"];
 
   if (!users || users.length === 0) {
     return <div className="text-center py-4 text-gray-500">No users found</div>;
