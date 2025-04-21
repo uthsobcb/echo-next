@@ -8,20 +8,31 @@ import { toast } from "react-toastify";
 export default function DeleteButton({ entryId, accessToken }) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
 
     const handleDelete = async () => {
+        if (isDeleting) return;
+
         try {
-            await axios.delete(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries/${entryId}`, {
-                headers: { Authorization: `Bearer ${accessToken}` },
-                withCredentials: true,
+            setIsDeleting(true);
+            const response = await axios.delete(`/api/entries/${entryId}`, {
+                headers: {
+                    'Authorization': `Bearer ${accessToken}`,
+                    'Content-Type': 'application/json'
+                }
             });
 
-            toast.success("Entry deleted successfully!");
-            router.push("/profile");
+            if (response.status === 200) {
+                toast.success("Entry deleted successfully!");
+                router.push("/profile");
+                router.refresh();
+            }
         } catch (err) {
             console.error("Error deleting entry:", err);
-            toast.error("Failed to delete entry");
+            const errorMessage = err.response?.data?.message || "Failed to delete entry";
+            toast.error(errorMessage);
         } finally {
+            setIsDeleting(false);
             setIsOpen(false);
         }
     };
@@ -30,11 +41,11 @@ export default function DeleteButton({ entryId, accessToken }) {
         <div>
             <button
                 onClick={() => setIsOpen(true)}
-                className="bg-red-500 text-white px-6 py-2 rounded-xl shadow-md font-medium hover:bg-red-600 transition"
+                className="bg-red-500 text-white px-6 py-2 rounded-xl shadow-md font-medium hover:bg-red-600 transition disabled:opacity-50"
+                disabled={isDeleting}
             >
-                Delete
+                {isDeleting ? "Deleting..." : "Delete"}
             </button>
-
 
             {isOpen && (
                 <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
@@ -46,14 +57,16 @@ export default function DeleteButton({ entryId, accessToken }) {
                             <button
                                 onClick={() => setIsOpen(false)}
                                 className="bg-gray-300 text-gray-800 px-4 py-2 rounded-lg hover:bg-gray-400 transition"
+                                disabled={isDeleting}
                             >
                                 Cancel
                             </button>
                             <button
                                 onClick={handleDelete}
-                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition"
+                                className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition disabled:opacity-50"
+                                disabled={isDeleting}
                             >
-                                Yes, Delete
+                                {isDeleting ? "Deleting..." : "Yes, Delete"}
                             </button>
                         </div>
                     </div>
