@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState } from "react";
+import { useState } from "react";
 import { CheckCircle, Star, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
-
+import JournalingSection from '@/app/components/Journaling'
 export function Card({ children, className = "" }) {
     return (
         <div className={`bg-white shadow-xl rounded-2xl p-8 transition-transform transform hover:scale-105 ${className}`}>
@@ -194,35 +194,53 @@ export default function LandingPage() {
                 }
             `}</style>
 
-            <div className="flex flex-col md:flex-row bg-white rounded-xl shadow-2xl overflow-hidden w-full max-w-5xl">
+            {/* <div className="flex flex-col md:flex-row bg-white rounded-3xl shadow-2xl overflow-hidden w-full max-w-6xl">
 
-                <section className="py-16 px-8 md:w-1/2 text-center">
+                <section className="py-16 px-8 md:w-1/2 flex flex-col justify-center text-center">
+                    <div className="max-w-md mx-auto space-y-6">
+                        <h2 className="text-5xl font-extrabold text-gray-800 leading-tight">What’s Journaling Anyway?</h2>
 
-                    <div className="max-w-lg mx-auto">
-                        <h2 className="text-4xl font-bold text-gray-800">What is Journaling?</h2>
-                        <p className="text-gray-600 mt-6 text-lg leading-relaxed">
-                            Journaling is the practice of writing down your thoughts, emotions, and daily experiences. It helps you process your feelings, track your growth, and clear your mind.
-                        </p>
-
+                        <div className="text-gray-600 text-lg leading-relaxed space-y-6">
+                            <p>Text your brain. Unfiltered. 📱</p>
+                            <p>Spill your chaos. Sort your feels.</p>
+                            <div className="flex items-center justify-center gap-3">
+                                <Smile className="w-7 h-7 text-blue-500" />
+                                <span>Connect the dots you didn’t even know were missing.</span>
+                            </div>
+                            <p>(Lowkey cheaper than therapy.)</p>
+                        </div>
                     </div>
                 </section>
-                <div className="hidden md:block w-px bg-gray-300 self-stretch mx-6"></div>
 
-                <section className="py-16 px-8 md:w-1/2">
-                    <div className="max-w-lg mx-auto">
-                        <h2 className="text-4xl font-bold text-center text-gray-800">Why Journaling is Good for Your Mental Health</h2>
-                        <ul className="mt-10 space-y-6">
-                            {["Reduces Stress & Anxiety", "Enhances Self-Awareness", "Improves Emotional Well-Being", "Boosts Creativity"].map((text, idx) => (
-                                <li key={idx} className="flex items-center text-xl font-medium text-gray-800 transition-colors duration-200 hover:text-blue-600">
-                                    <Sparkles className="text-purple-500 mr-3" size={26} />
-                                    {text}
-                                </li>
-                            ))}
+                <div className="hidden md:flex justify-center items-center mx-4">
+                    <div className="w-1 h-40 bg-gradient-to-b from-blue-400 to-teal-400 rounded-full"></div>
+                </div>
+
+                <section className="py-16 px-8 md:w-1/2 flex flex-col justify-center">
+                    <div className="max-w-md mx-auto">
+                        <h2 className="text-5xl font-extrabold text-center text-gray-800 leading-tight">Why Your Brain Loves Journaling</h2>
+
+                        <ul className="mt-10 space-y-6 text-left">
+                            <li className="flex items-center gap-4 text-xl font-medium text-gray-700">
+                                <Rocket className="w-7 h-7 text-blue-500" />
+                                <span>Stress? Blast it to Mars.</span>
+                            </li>
+                            <li className="text-xl font-medium text-gray-700">
+                                Find your realest self (no cap).
+                            </li>
+                            <li className="text-xl font-medium text-gray-700">
+                                Mood boost unlocked. Level up. ✨
+                            </li>
+                            <li className="flex items-center gap-4 text-xl font-medium text-gray-700">
+                                <Palette className="w-7 h-7 text-blue-500" />
+                                <span>Creativity unlocked. 🎨</span>
+                            </li>
                         </ul>
                     </div>
                 </section>
-            </div >
 
+            </div> */}
+            <JournalingSection />
 
             <section className="py-20 px-6 max-w-4xl">
                 <h2 className="text-4xl font-semibold text-center">Why Choose Echo?</h2>
