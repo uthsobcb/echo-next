@@ -21,13 +21,13 @@ export default async function NavBar() {
     }
     return (
         <header className="flex items-center justify-center m-3">
-            <nav className="flex items-center justify-around lg:w-2/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
+            <nav className="flex items-center justify-between lg:w-2/3 w-full border rounded-xl p-4 bg-gray-50 shadow-lg">
                 <div className="flex items-center gap-4">
                     <Link href="/" className="flex justify-center">
                         <Image src="/assets/logo.png" alt="Logo" width={46} height={100} />
                     </Link>
                     <Link href="/" className="block">
-                        <h1 className="text-cyan-900 font-bold text-lg">Echo</h1>
+                        <span className="text-xl font-bold text-sky-700">Echo</span>
                     </Link>
                 </div>
 
@@ -66,18 +66,18 @@ export default async function NavBar() {
                             <SignOut />
                         </div>
                     ) : (
-                        <div className='gap-2 flex'>
+                        <div className="flex items-center gap-3">
                             <Link
                                 href="/login"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-xl shadow-sm hover:bg-cyan-200 "
+                                className="px-5 py-2.5 text-sm font-semibold text-blue-600 border border-blue-600 rounded-xl hover:bg-blue-50 transition-colors duration-300"
                                 aria-label="Login Page"
                             >
                                 Login
                             </Link>
                             <Link
                                 href="/register"
-                                className="text-cyan-900 hover:text-cyan-700 transition duration-300 font-medium text-sm bg-cyan-100 px-4 py-2 rounded-xl shadow-sm hover:bg-cyan-200"
-                                aria-label="Login Page"
+                                className="px-5 py-2.5 text-sm font-semibold text-white bg-blue-600 rounded-xl shadow-md hover:bg-blue-700 transition-colors duration-300"
+                                aria-label="Register Page"
                             >
                                 Register
                             </Link>

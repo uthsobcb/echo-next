@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from "react";
+import React, { useState } from "react";
 import { CheckCircle, Star, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User, Lock } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -96,48 +96,35 @@ export default function LandingPage() {
     return (
         <div className="w-full min-h-screen flex flex-col items-center px-4">
             <section className="relative w-full flex flex-col items-center">
-                <div className="text-center py-20 px-6 max-w-3xl">
-                    <div className="flex justify-center m-2">
-                        <Link
-                            href="https://www.producthunt.com/posts/echo-e657689c-f521-42ce-9dec-904ae6fd47ac?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-echo-e657689c-f521-42ce-9dec-904ae6fd47ac"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                        >
-                            <Image
-                                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=947473&theme=light&t=1743937447052"
-                                alt="Echo☁️ - A Space to Write, Reflect, and Grow 🚀☁️ | Product Hunt"
-                                width={250}
-                                height={54}
-                                unoptimized // Required for external SVGs not hosted locally
-                            />
-                        </Link>
-                    </div>
-                    <h1 className="text-6xl font-extrabold text-gray-900 leading-tight">
-                        <span className="text-6xl font-bold bg-gradient-to-r from-blue-400 via-green-500 to-blue-200 text-transparent bg-clip-text">Echo </span>
-                        { }: Your AI Journaling Companion
-                    </h1>
-                    <p className="mt-6 text-xl text-gray-700 leading-relaxed">
-                        Track your thoughts, moods, and insights with Echo – the AI-powered journaling app that grows with you.
-                    </p>
+                <section className="relative bg-[#f1f7fd] py-24 px-6 overflow-hidden">
+                    <div className="max-w-4xl mx-auto text-center mt-32">
+                        <h1 className="text-4xl md:text-6xl font-extrabold text-gray-900 leading-tight">
+                            <span className="bg-gradient-to-r from-sky-500 to-indigo-500 text-transparent bg-clip-text">
+                                Echo
+                            </span>{" "}
+                            <span className="text-gray-800">: Your AI Journaling Companion</span>
+                        </h1>
+                        <p className="mt-6 text-lg md:text-xl text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                            Track your thoughts, moods, and insights with Echo — the AI-powered journaling app designed to grow with you.
+                        </p>
 
-                    <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-8">
-                        <Link
-                            href="/register"
-                            className="inline-block mt-8 bg-blue-600 text-white px-8 py-4 rounded-xl text-lg font-semibold shadow-lg hover:bg-blue-700 transition-all"
-                        >
-                            Get Started for Free
-                        </Link>
-                        <button
-                            onClick={() => document.getElementById('demoVideo').scrollIntoView({ behavior: 'smooth' })}
-                            className="inline-flex items-center mt-8 text-blue-600 px-8 py-4 rounded-xl text-lg font-semibold hover:text-blue-700 transition-all"
-                        >
-                            Watch Demo
-                            <ArrowRight className="ml-2 w-5 h-5" />
-                        </button>
+                        <div className="flex flex-col sm:flex-row justify-center items-center gap-5 mt-10">
+                            <Link
+                                href="/register"
+                                className="px-8 py-4 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-lg font-semibold shadow-lg transition-transform transform hover:scale-105"
+                            >
+                                Get Started for Free
+                            </Link>
+                            <Link
+                                href="#demoVideo"
+                                className="px-8 py-4 rounded-xl border-2 border-blue-600 text-blue-600 hover:bg-blue-50 hover:border-blue-700 text-lg font-semibold transition-transform transform hover:scale-105"
+                            >
+                                Watch Demo
+                            </Link>
+                        </div>
                     </div>
-                </div>
+                </section>
 
-                {/* Video Section */}
                 <div id="demoVideo" className="w-full max-w-6xl mx-auto px-4 mb-20">
                     <div className="relative rounded-2xl overflow-hidden shadow-xl">
                         <div
@@ -367,7 +354,6 @@ export default function LandingPage() {
                                         {testimonial.review}
                                     </p>
                                 </blockquote>
-
                             </div>
                         ))}
                     </div>
@@ -380,31 +366,53 @@ export default function LandingPage() {
                     </div>
                 </div>
             </section>
-            <section className="py-20 bg-blue-50 text-gray-900">
-                <div className="max-w-5xl mx-auto px-6 text-center">
-                    <h2 className="text-5xl font-bold">Every Entry Counts – Unlock Badges!</h2>
-                    <p className="mt-4 text-lg text-gray-700">
-                        Stay motivated by unlocking achievements as you build a consistent journaling habit.
-                    </p>
+            <section className="py-24 text-gray-900 overflow-hidden relative">
+                <div className="max-w-7xl mx-auto px-6 text-center">
+                    {/* Heading */}
+                    <h2 className="text-4xl md:text-5xl font-extrabold mb-24">
+                        Every Entry Counts — Unlock Badges!
+                    </h2>
+                    <div className="relative overflow-hidden py-10">
+                        <div className="flex items-center animate-scroll-badges">
 
-                    {/* Badge Display */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mt-12">
-                        {badges.map((badge, index) => (
-                            <div key={index} className="relative group rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition">
-                                <Image src={badge.img} alt="Badge Image" height={250} width={350} className="w-full object-cover" />
-
-                                {/* Overlay Text */}
-                                <div className="absolute bottom-0 left-0 w-full bg-black/70 text-white p-4 text-center transition-all duration-300 group-hover:bg-black/80">
-                                    <h3 className="text-xl">{badge.name}</h3>
-                                    <p className="text-sm mt-1">{badge.desc}</p>
-                                </div>
+                            <div className="relative flex-shrink-0">
+                                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-400 rounded-full animate-pulse"></div>
+                                <div className="absolute inset-0 rounded-full bg-blue-300 opacity-30 blur-2xl"></div>
                             </div>
-                        ))}
-                    </div>
 
+                            {badges.concat(badges).map((badge, index) => (
+                                <div key={index} className="flex items-center">
+
+                                    <div className="w-24 h-1 bg-gradient-to-r from-blue-400 to-teal-400 animate-pulse"></div>
+
+                                    <div className="relative w-72 h-96 rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 group -translate-y-10">
+                                        <Image
+                                            src={badge.img}
+                                            alt="Badge Image"
+                                            height={250}
+                                            width={350}
+                                            className="w-full object-cover"
+                                        />
+                                        <div className="absolute bottom-0 left-0 w-full bg-black/70 p-6 text-center text-white transition-all duration-300 group-hover:bg-black/80">
+                                            <h3 className="text-xl font-bold">{badge.name}</h3>
+                                            <p className="text-sm mt-1">{badge.desc}</p>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            ))}
+
+                            <div className="relative flex-shrink-0">
+                                <div className="w-6 h-6 bg-gradient-to-r from-blue-500 to-teal-400 rounded-full animate-pulse"></div>
+                                <div className="absolute inset-0 rounded-full bg-blue-300 opacity-30 blur-2xl"></div>
+                            </div>
+
+                        </div>
+                    </div>
 
                 </div>
             </section>
+
             <section className="w-full py-20 bg-aliceblue text-gray-900">
                 <div className="max-w-4xl mx-auto px-6">
                     <h2 className="text-5xl font-bold text-center mb-12 tracking-tight">
