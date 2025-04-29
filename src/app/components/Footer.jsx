@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import Image from 'next/image'
 export default function Footer() {
     return (
         <div>
@@ -47,6 +48,21 @@ export default function Footer() {
                                     <li>
                                         <Link href="/guide" className="hover:underline">Guide</Link>
                                     </li>
+                                    <div className="flex items-center mt-4">
+                                        <Link
+                                            href="https://www.producthunt.com/posts/echo-e657689c-f521-42ce-9dec-904ae6fd47ac"
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                        >
+                                            <Image
+                                                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=947473&theme=light&t=1743937447052"
+                                                alt="Echo - Product Hunt"
+                                                width={180}
+                                                height={40}
+                                                unoptimized
+                                            />
+                                        </Link>
+                                    </div>
                                 </ul>
                             </div>
                             <div>
@@ -74,7 +90,7 @@ export default function Footer() {
                         </div>
                     </div>
                     <div className="sm:flex sm:items-center sm:justify-between">
-                        <span className="text-sm text-gray-500 sm:text-center">© 2025 <Link href="" className="hover:underline">Echo</Link>. All Rights Reserved.
+                        <span className="text-sm text-gray-500 sm:text-center">© 2025 <Link href="" className="hover:underline">Echo</Link> Built with ❤️ by Uthsob 🇧🇩
                         </span>
                     </div>
                 </div>
