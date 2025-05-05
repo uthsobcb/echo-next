@@ -9,8 +9,8 @@ export default function GreetingsPage({ name }) {
 
     useEffect(() => {
         const hour = new Date().getHours();
-        if (hour < 12) setGreeting("Good morning");
-        else if (hour < 18) setGreeting("Good afternoon");
+        if (hour < 12) setGreeting("morning");
+        else if (hour < 18) setGreeting("afternoon");
         else setGreeting("Good evening");
     }, []);
 
@@ -42,7 +42,7 @@ export default function GreetingsPage({ name }) {
         {
             title: "Private and Encrypted",
             description: "Your data is stored securely and privately",
-            navigate: "/privacy",
+            navigate: "/legal/privacy",
             icon: <Lock className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
         },
     ];
@@ -51,7 +51,7 @@ export default function GreetingsPage({ name }) {
         <main className="min-h-screen text-gray-800 flex flex-col items-center justify-center px-6 py-16">
             <div className="text-center">
                 <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
-                    {greeting}, {name}!
+                    How is your <span className="text-indigo-500">{greeting}</span>, {name}?
                 </h1>
 
                 <div className="flex justify-center items-center gap-2 text-indigo-600 mb-4">

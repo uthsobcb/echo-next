@@ -1,6 +1,5 @@
 import mongoose, { Document, Model } from "mongoose";
 
-// Drop the existing collection to remove old schema constraints
 if (mongoose.models.Chat) {
     delete mongoose.models.Chat;
 }
@@ -14,6 +13,7 @@ export interface IMessage {
 interface IChat extends Document {
     userId: string;
     messages: IMessage[];
+    threadSummary?: string;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -44,6 +44,10 @@ const chatSchema = new mongoose.Schema({
         type: [messageSchema],
         default: []
     },
+    threadSummary: {
+        type: String,
+        default: ""
+    },
     createdAt: {
         type: Date,
         default: Date.now
@@ -53,10 +57,9 @@ const chatSchema = new mongoose.Schema({
         default: Date.now
     }
 }, {
-    strict: false // Allow additional fields temporarily for backward compatibility
+    timestamps: true
 });
 
-// Update the updatedAt timestamp on each save
 chatSchema.pre('save', function (next) {
     this.updatedAt = new Date();
     next();
@@ -64,4 +67,4 @@ chatSchema.pre('save', function (next) {
 
 const Chat: Model<IChat> = mongoose.models.Chat || mongoose.model<IChat>("Chat", chatSchema);
 
-export default Chat; 
+export default Chat;
