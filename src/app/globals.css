@@ -18,6 +18,26 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+.color-empty {
+  fill: #e6f0fa;
+}
+
+.color-github-1 {
+  fill: #c6dbef;
+}
+
+.color-github-2 {
+  fill: #9ecae1;
+}
+
+.color-github-3 {
+  fill: #6baed6;
+}
+
+.color-github-4 {
+  fill: #2171b5;
+}
+
 @keyframes fadeIn {
   from {
     opacity: 0;
