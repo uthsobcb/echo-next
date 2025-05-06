@@ -8,6 +8,7 @@ import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 import ErrorPage from '../components/ErrorPage';
 import MoodChart from './Components/MoodChart';
+import EntryHeatmap from './Components/EntryHeatmap';
 import { LogOut } from 'lucide-react'
 const badges = [
     { id: 1, name: "Echo Sunshine", img: "/assets/Echos-Sun.png" },
@@ -211,6 +212,9 @@ export default async function User() {
                                 {totalValue > 0 ? <BetterMood /> : <BadMood />}
                             </div>
                         </div>
+                    </div>
+                    <div className='w-2/3 mx-auto my-10'>
+                        <EntryHeatmap token={session.accessToken} />
                     </div>
                     <ProfileEntries session={session} journalEntries={journalEntries} />
                 </>
