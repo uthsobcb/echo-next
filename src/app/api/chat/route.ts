@@ -9,14 +9,24 @@ import type { IMessage } from "../../models/Chat";
 
 const apiKey = process.env.GEMINI_API!;
 const genAI = new GoogleGenerativeAI(apiKey);
+const SYSTEM_PROMPT = `You are Echo, an empathetic AI companion designed to support users through journaling and self-reflection.
 
-const SYSTEM_PROMPT = `You are an empathetic chatbot named Echo.
-- Respond with warmth and support.
-- Do not judge, interrupt, or assume.
-- Provide a safe space where users can share their thoughts freely.
-- Use understanding and compassionate language.
-- If a user is distressed, gently encourage self-care without diagnosing.
-- Keep user engaged by asking questions.`;
+Your role is to:
+- Respond with warmth, compassion, and non-judgmental tone.
+- Acknowledge the user's emotions without offering clinical diagnosis.
+- Encourage self-awareness, emotional insight, and gentle self-care.
+- Keep the user engaged by asking thoughtful, reflective, or open-ended questions.
+- Avoid giving direct advice unless explicitly asked.
+- Do not assume facts beyond what the user has shared.
+
+You will be given:
+1. Summaries of the user's previous conversations with Echo — use them as background knowledge to understand the user's recurring struggles, emotional patterns, or personal growth.
+2. A summary of the current conversation to date — use it to continue the chat without repeating past content.
+3. A message from the user — this is what you must directly respond to.
+
+Always aim to make the user feel heard, seen, and safe.
+
+Begin the response now.`;
 
 export async function POST(req: NextRequest) {
     try {
@@ -36,6 +46,7 @@ export async function POST(req: NextRequest) {
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
+        // Fetch or create the current chat
         let chat = chatId
             ? await Chat.findById(chatId).exec()
             : await Chat.create({
@@ -50,7 +61,21 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Chat not found" }, { status: 404 });
         }
 
-        // Add user message to history
+        // Fetch summaries from user's other chats (exclude current chat)
+        const otherChats = await Chat.find({
+            userId: user.id,
+            _id: { $ne: chat._id }
+        })
+            .select("threadSummary")
+            .lean();
+
+        const globalContext = otherChats
+            .filter(c => c.threadSummary)
+            .slice(-5) // Limit to last 5 summaries for token efficiency
+            .map((c, i) => `Chat ${i + 1} Summary: ${c.threadSummary}`)
+            .join("\n\n");
+
+        // Add new user message
         const newUserMessage: IMessage = {
             role: 'user',
             text: message,
@@ -58,10 +83,17 @@ export async function POST(req: NextRequest) {
         };
         chat.messages.push(newUserMessage);
 
-        // Add thread summary to system prompt
-        const fullPrompt = `${SYSTEM_PROMPT}\n\nConversation summary so far:\n${chat.threadSummary || "None yet."}`;
+        // Build system-level prompt with context from other chats and this one
+        const fullPrompt = `${SYSTEM_PROMPT}
 
-        // Construct the chat history for Gemini
+Here are summaries from the user's previous conversations:
+${globalContext || "No prior summaries available."}
+
+Current conversation summary so far:
+${chat.threadSummary || "No summary yet."}
+
+Now continue the conversation below.`;
+
         const chatHistory = [
             { role: "model", parts: [{ text: fullPrompt }] },
             ...chat.messages.map(msg => ({
@@ -70,7 +102,6 @@ export async function POST(req: NextRequest) {
             }))
         ];
 
-        // Generate AI response
         const response = await model.generateContent({ contents: chatHistory });
 
         const reply = response.response?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm here to listen.";
@@ -82,8 +113,8 @@ export async function POST(req: NextRequest) {
         };
         chat.messages.push(aiMessage);
 
-        // Generate updated thread summary
-        const summaryPrompt = `Summarize this conversation in 3-4 sentences as a warm, empathetic reflection:\n\n` +
+        // Update thread summary for this chat
+        const summaryPrompt = `Summarize the following conversation in 3–4 sentences, showing warmth and empathy:\n\n` +
             chat.messages.map(m => `${m.role === 'user' ? "User" : "Echo"}: ${m.text}`).join("\n");
 
         const summaryRes = await model.generateContent({
@@ -112,6 +143,7 @@ export async function POST(req: NextRequest) {
         );
     }
 }
+
 
 export async function GET(req: NextRequest) {
     try {
