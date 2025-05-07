@@ -11,7 +11,7 @@ export default function GreetingsPage({ name }) {
         const hour = new Date().getHours();
         if (hour < 12) setGreeting("morning");
         else if (hour < 18) setGreeting("afternoon");
-        else setGreeting("Good evening");
+        else setGreeting("evening");
     }, []);
 
     const today = new Date().toLocaleDateString('en-US', {
