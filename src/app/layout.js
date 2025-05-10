@@ -5,6 +5,9 @@ import ToastProvider from "./components/ToastProvider";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 // import Script from 'next/script'
+import { Inter } from "next/font/google";
+
+const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
   title: "Echo || Journal Effortlessly ||  A Space to Write, Reflect, and Grow",
@@ -38,7 +41,7 @@ export default function RootLayout({ children }) {
           strategy="beforeInteractive"
         /> */}
       </head>
-      <body>
+      <body className={inter.className}>
         <NavBar />
         <SpeedInsights />
         <Analytics />
