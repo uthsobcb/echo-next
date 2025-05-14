@@ -13,7 +13,6 @@ import {
 export default function MoodChart({ selectedData }) {
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
-    // Add index numbers instead of dates
     const processedData = selectedData.map((item, index) => ({
         ...item,
         index: `Entry ${index + 1}`
@@ -61,7 +60,7 @@ export default function MoodChart({ selectedData }) {
                     </ResponsiveContainer>
                 </div>
                 {/* Line Chart */}
-                <div className="w-full h-[300px]">
+                <div className="w-full h-[300px] my-10 lg:my-5">
                     <h3 className="text-lg font-semibold mb-2">Mood Trend</h3>
                     <ResponsiveContainer width="100%" height="100%">
                         <LineChart data={processedData}>
