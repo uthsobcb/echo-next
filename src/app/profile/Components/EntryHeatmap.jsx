@@ -27,6 +27,16 @@ export default function EntryHeatmap({ token }) {
 
         fetchEntries();
     }, [token]);
+    const currentYear = new Date().getFullYear();
+
+    // Find the earliest date in the current year
+    const firstEntryThisYear = entries
+        .map(v => new Date(v.date))
+        .filter(date => date.getFullYear() === currentYear)
+        .sort((a, b) => a - b)[0];
+
+    const startDate = firstEntryThisYear || new Date(currentYear, 0, 1);
+
 
     const heatmapData = Array.isArray(entries)
         ? entries.reduce((acc, entry) => {
@@ -39,24 +49,29 @@ export default function EntryHeatmap({ token }) {
     const values = Object.entries(heatmapData).map(([date, count]) => ({ date, count }));
 
     return (
-        <div className="w-full px-4 py-6 bg-white shadow rounded-lg">
-            <h2 className="text-xl font-semibold text-gray-800 text-center mb-4">Your Writing Streak</h2>
-            <HeatMap
-                startDate={new Date(new Date().setFullYear(new Date().getFullYear() - 1))}
-                endDate={new Date()}
-                values={values}
-                classForValue={(value) => {
-                    if (!value) return 'color-empty';
-                    if (value.count > 3) return 'color-github-4';
-                    if (value.count > 2) return 'color-github-3';
-                    if (value.count > 1) return 'color-github-2';
-                    return 'color-github-1';
-                }}
-                tooltipDataAttrs={(value) => ({
-                    'data-tip': `${value.date} — ${value.count} entries`,
-                })}
-                showWeekdayLabels
-            />
+        <div className="w-full max-w-4xl mx-auto lg:px-4 py-6 shadow rounded-xl bg-white/60">
+            <h2 className="text-xl md:text-2xl font-semibold text-gray-800 text-center mb-4">
+                Your Writing Streak
+            </h2>
+            <div className="overflow-x-auto">
+                <HeatMap
+                    startDate={startDate}
+                    endDate={new Date()}
+                    values={values}
+                    classForValue={(value) => {
+                        if (!value) return 'color-empty';
+                        if (value.count > 3) return 'color-github-4';
+                        if (value.count > 2) return 'color-github-3';
+                        if (value.count > 1) return 'color-github-2';
+                        return 'color-github-1';
+                    }}
+                    tooltipDataAttrs={(value) => ({
+                        'data-tip': `${value.date} — ${value.count} entries`,
+                    })}
+                    showWeekdayLabels
+                />
+            </div>
         </div>
+
     );
 }

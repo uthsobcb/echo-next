@@ -17,6 +17,7 @@ const badges = [
     { id: 4, name: "Thought Architect", img: "/assets/badge_3.png" },
     { id: 5, name: "Guardian of Inked Wisdom", img: "/assets/badge_4.png" }
 ];
+import BadgeModal from './Components/BadgeModal.client';
 
 export default async function User() {
     const session = await auth();
@@ -132,20 +133,24 @@ export default async function User() {
                                         </svg>
                                         Achievements
                                     </h3>
-                                    <div className='grid grid-cols-2 sm:grid-cols-3 gap-4'>
+                                    <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                         {userBadges.length > 0 ? (
-                                            userBadges.map((badge) => (
-                                                <div key={badge.id} className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                                    <Image
-                                                        src={badge.img}
-                                                        alt={`${badge.name} Badge`}
-                                                        width={60}
-                                                        height={60}
-                                                        className="rounded-full shadow-sm"
-                                                    />
-                                                    <p className="text-sm font-medium text-gray-700 mt-2 text-center">{badge.name}</p>
-                                                </div>
-                                            ))
+                                            <BadgeModal allBadges={badges} earnedBadges={userBadges} />
+
+                                            /* {userBadges.length > 0 ? (
+                                                userBadges.map((badge) => (
+                                                    <div key={badge.id} className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
+                                                        <Image
+                                                            src={badge.img}
+                                                            alt={`${badge.name} Badge`}
+                                                            width={60}
+                                                            height={60}
+                                                            className="rounded-full shadow-sm"
+                                                        />
+                                                        <p className="text-sm font-medium text-gray-700 mt-2 text-center">{badge.name}</p>
+                                                    </div>
+    
+                                                )) */
                                         ) : (
                                             <div className="col-span-full text-center py-8 bg-gray-50 rounded-lg">
                                                 <p className="text-gray-500 text-sm">No badges earned yet.</p>
@@ -175,35 +180,16 @@ export default async function User() {
                                 </div>
                             </div>
                         </div>
-                        <div className="border border-black shadow-xl bg-gray-200/60 rounded-xl w-full lg:w-2/3 my-10 p-6">
+                        <div className="border border-gray-300/40 shadow-xl bg-gray-200/60 rounded-xl w-full lg:w-2/3 my-10 p-6">
                             <div className="flex flex-col items-center p-8 rounded-lg text-center">
                                 <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
                                 <div>
                                     <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the 7 days</p>
-                                    {/* <select
-                                id="mood-range"
-                                className="text-lg text-gray-600 border rounded-md px-3 py-1 h-10"
-                                defaultValue={7}
-                            >
-                                {[7, 15, 21, 30].map((day) => (
-                                    <option key={day} value={day}>
-                                        {day} days
-                                    </option>
-                                ))}
-                            </select>*/}
+
                                 </div>
                                 <div className="w-full flex">
 
-                                    {/* <PieChart
-                                        series={[
-                                            {
-                                                data: selectedData,
-                                            },
-                                        ]}
-                                        width={800}
-                                        height={200}
-                                        className="w-full sm:max-w-lg lg:max-w-4xl"
-                                    /> */}
+
                                     <MoodChart selectedData={selectedData} />
 
 
@@ -213,7 +199,7 @@ export default async function User() {
                             </div>
                         </div>
                     </div>
-                    <div className='w-2/3 mx-auto my-10'>
+                    <div className='lg:w-2/3 lg:mx-auto my-10'>
                         <EntryHeatmap token={session.accessToken} />
                     </div>
                     <ProfileEntries session={session} journalEntries={journalEntries} />
