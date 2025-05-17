@@ -8,6 +8,8 @@ interface IMood {
     content: string;
     imgUrl: string;
     createdAt: Date;
+    todo: [String];
+
 }
 
 const MoodSchema = new mongoose.Schema<IMood>(
@@ -51,6 +53,9 @@ const MoodSchema = new mongoose.Schema<IMood>(
         imgUrl: {
             type: String,
             default: "",
+        },
+        todo: {
+            type: [String],
         },
         createdAt: {
             type: Date,

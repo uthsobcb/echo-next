@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { Resend } from "resend";
-import { env } from "process";
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -24,7 +23,7 @@ export async function POST(req: NextRequest) {
 
         // Send email with verification code
         await resend.emails.send({
-            from: "echo@uthsob.ninja",
+            from: "Echo☁️ <echo@uthsob.ninja>",
             to: email,
             subject: "Password Reset Code",
             html: `
@@ -39,7 +38,7 @@ export async function POST(req: NextRequest) {
                 </div>
                 
                 <p style="color: #555;">
-                    If you did not request a password reset, you can safely ignore this email.
+                    This code is valid for next 5 minutes. If you did not request a password reset, you can safely ignore this email.
                 </p>
                 <p style="color: #555;">
                     Thank you, <br>
@@ -47,7 +46,7 @@ export async function POST(req: NextRequest) {
                 </p>
                 <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
                 <p style="color: #777; font-size: 12px; text-align: center;">
-                    This email was sent to ${email}. If you didn’t request this, please ignore it or contact support.
+                    This email was sent to ${email} upon request. If you didn’t request this, please ignore it or contact support.
                 </p>
             </div>
         `,
