@@ -4,11 +4,12 @@ import { connect } from "@/app/lib/mongodb";
 import Mood from "@/app/models/Mood";
 import exp from "constants";
 
-export async function PATCH(req: Request, { params }: { params: { moodId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
     try {
         await connect();
         const session = await auth();
         const user = session?.user;
+        const { moodId } = await params;
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const { oldTask, newTask } = await req.json();
@@ -16,7 +17,7 @@ export async function PATCH(req: Request, { params }: { params: { moodId: string
             return NextResponse.json({ error: "Both oldTask and newTask are required." }, { status: 400 });
         }
 
-        const mood = await Mood.findOne({ _id: params.moodId, userId: user.id });
+        const mood = await Mood.findOne({ _id: moodId, userId: user.id });
         if (!mood) return NextResponse.json({ error: "Mood entry not found." }, { status: 404 });
 
         const index = mood.todo.findIndex((t: string) => t === oldTask);
@@ -31,11 +32,12 @@ export async function PATCH(req: Request, { params }: { params: { moodId: string
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-export async function DELETE(req: Request, { params }: { params: { moodId: string } }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
     try {
         await connect();
         const session = await auth();
         const user = session?.user;
+        const { moodId } = await params;
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const { task } = await req.json();
@@ -43,7 +45,7 @@ export async function DELETE(req: Request, { params }: { params: { moodId: strin
             return NextResponse.json({ error: "Task is required." }, { status: 400 });
         }
 
-        const mood = await Mood.findOne({ _id: params.moodId, userId: user.id });
+        const mood = await Mood.findOne({ _id: moodId, userId: user.id });
         if (!mood) return NextResponse.json({ error: "Mood entry not found." }, { status: 404 });
 
         const index = mood.todo.findIndex((t: string) => t === task);
