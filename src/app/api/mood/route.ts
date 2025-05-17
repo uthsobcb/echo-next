@@ -30,26 +30,18 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Unauthorized Request" }, { status: 401 });
         }
 
-        const previousEntries = await Mood.find({ userId: user?.id })
-            .sort({ createdAt: -1 })
-            .limit(3);
-
-        const decryptedEntries = previousEntries.map(entry => decrypt(entry.content));
-        const journalHistory = decryptedEntries.join("\n\n");
-
 
 
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
-        Context: Below is a brief history of this user's recent journal entries to help you understand their ongoing emotional trends:
-        ${journalHistory}
   - \`mood\`: An object containing:
   - \`label\`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.
   - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
-  - \`comment\`: A supportive message based on the mood and context of this entry and recent entries of (journalHistory) offering suggestions for improvement if needed.
-  Ensure the response is empathetic and concise.
+  - \`comment\`: A supportive message based on the mood, offering suggestions for improvement if needed.
   - \`todo\`: A list of tasks, goals, or plans explicitly or implicitly mentioned by the user in the journal entry. Extract actionable items in a clear and concise manner.
+
+Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
         const result = await model.generateContent({
@@ -129,7 +121,6 @@ Analyze the following journal entry and provide the requested JSON response: "${
             todo: parsedMood?.todo,
             createdAt: new Date(),
         });
-        console.log("Saving mood with todos:", parsedMood?.todo);
         await newMood.save();
 
         return NextResponse.json({

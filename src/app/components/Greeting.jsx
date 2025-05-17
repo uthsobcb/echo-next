@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, Lock, PencilLine, TrendingUp } from "lucide-react";
+import { CalendarDays, ListTodo, Lock, PencilLine, TrendingUp } from "lucide-react";
 
 export default function GreetingsPage({ name }) {
     const [greeting, setGreeting] = useState("");
@@ -21,6 +21,12 @@ export default function GreetingsPage({ name }) {
     });
     const features = [
 
+        {
+            title: "To Do List",
+            description: "Write down your journal entries, Echo will extract your tasks",
+            navigate: "/todo",
+            icon: <ListTodo className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
+        },
         {
             title: "Write & Reflect",
             description: "Capture your thoughts, feelings, and experiences",
