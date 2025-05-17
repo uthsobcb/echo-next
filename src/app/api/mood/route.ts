@@ -47,8 +47,9 @@ export async function POST(req: Request) {
   - \`mood\`: An object containing:
   - \`label\`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.
   - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
-  - \`comment\`: A supportive message based on the mood and context of this entry and recent entries of ${journalHistory} offering suggestions for improvement if needed.
-Ensure the response is empathetic and concise.
+  - \`comment\`: A supportive message based on the mood and context of this entry and recent entries of (journalHistory) offering suggestions for improvement if needed.
+  Ensure the response is empathetic and concise.
+  - \`todo\`: A list of tasks, goals, or plans explicitly or implicitly mentioned by the user in the journal entry. Extract actionable items in a clear and concise manner.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
         const result = await model.generateContent({
@@ -107,7 +108,6 @@ Analyze the following journal entry and provide the requested JSON response: "${
             console.error("Error parsing mood:", error);
             parsedMood = { label: "Unknown", score: 0, comment: "No valid response received." };
         }
-
         // const parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
 
         if (!mood) {
@@ -126,8 +126,10 @@ Analyze the following journal entry and provide the requested JSON response: "${
             comment: parsedMood?.comment,
             content: encryptedContent,
             imgUrl: imgUrl || "",
+            todo: parsedMood?.todo,
             createdAt: new Date(),
         });
+        console.log("Saving mood with todos:", parsedMood?.todo);
         await newMood.save();
 
         return NextResponse.json({
