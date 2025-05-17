@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { auth } from "auth";
 import { connect } from "@/app/lib/mongodb";
 import Mood from "@/app/models/Mood";
+import exp from "constants";
 
 export async function PATCH(req: Request, { params }: { params: { moodId: string } }) {
     try {
@@ -38,15 +39,18 @@ export async function DELETE(req: Request, { params }: { params: { moodId: strin
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
         const { task } = await req.json();
-        if (!task) return NextResponse.json({ error: "Task to delete is required." }, { status: 400 });
+        if (!task) {
+            return NextResponse.json({ error: "Task is required." }, { status: 400 });
+        }
 
-        const mood = await Mood.findOneAndUpdate(
-            { _id: params.moodId, userId: user.id },
-            { $pull: { todo: task } },
-            { new: true }
-        );
-
+        const mood = await Mood.findOne({ _id: params.moodId, userId: user.id });
         if (!mood) return NextResponse.json({ error: "Mood entry not found." }, { status: 404 });
+
+        const index = mood.todo.findIndex((t: string) => t === task);
+        if (index === -1) return NextResponse.json({ error: "Task not found in todo list." }, { status: 404 });
+
+        mood.todo.splice(index, 1);
+        await mood.save();
 
         return NextResponse.json({ message: "Todo deleted", todo: mood.todo });
     } catch (error) {
