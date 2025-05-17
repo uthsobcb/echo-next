@@ -57,53 +57,51 @@ export async function GET(req: NextRequest) {
             newBadge = "Guardian of Inked Wisdom";
         }
 
-        if (newBadge) {
+        if (newBadge && !dbUser.badge.includes(newBadge)) {
             await UserModel.updateOne(
                 { _id: userId },
                 { $addToSet: { badge: newBadge } }
             );
             await resend.emails.send({
-                from: "onboarding.resend.dev",
+                from: "Echo☁️ Badge System <echo@uthsob.ninja>",
                 to: email,
                 subject: `🎖️ Congratulations, ${userName}! You've Earned a New Badge!`,
                 html: `
-                    <div style="background-color: #f9f9f9; padding: 40px; text-align: center;">
-                        <div style="max-width: 600px; background: white; padding: 30px; border-radius: 10px; box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1); margin: auto;">
-                            <h1 style="color: #333;">🏆 Well Done, ${userName}!</h1>
-                            <p style="color: #555; font-size: 16px;">
-                                You've just unlocked the <strong style="color: #4A90E2;">${newBadge}</strong> badge! 🎉
+                <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="background-color: #f9f9f9; padding: 20px 0;">
+                <tr>
+                    <td align="center">
+                    <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; background: #ffffff; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding: 30px; margin: 0 auto;">
+                        <tr>
+                        <td align="center" style="padding-bottom: 20px;">
+                            <img src="https://ibb.co/rRj0Nrqt" alt="Echo Logo" width="120" style="display: block; max-width: 120px; height: auto;">
+                        </td>
+                        </tr>
+                        <tr>
+                        <td style="text-align: center; font-family: Arial, sans-serif;">
+                            <h1 style="color: #333333; font-size: 24px; margin-bottom: 20px;">🏆 Well Done, ${userName}!</h1>
+                            <p style="color: #555555; font-size: 16px; margin-bottom: 15px;">
+                            You've just unlocked the <strong style="color: #4A90E2;">${newBadge}</strong> badge! 🎉
                             </p>
-                            <p style="color: #777; font-size: 14px;">
-                                Your commitment to self-reflection and personal growth is inspiring. Keep journaling and earning more achievements!
+                            <p style="color: #777777; font-size: 14px; margin-bottom: 25px;">
+                            Your commitment to self-reflection and personal growth is inspiring. Keep journaling and earning more achievements!
                             </p>
-                            <hr style="border: none; border-top: 1px solid #ddd; margin: 20px 0;" />
-                            
-                            <h3 style="color: #333;">💡 Your Recent Mood Insights</h3>
-                            <ul style="list-style: none; padding: 0; text-align: left; margin: 0 auto; max-width: 400px; color: #555;">
-                                ${moodData
-                        .map(
-                            (mood) =>
-                                `<li style="background: #f3f3f3; padding: 8px; border-radius: 5px; margin: 5px 0;">
-                                                <strong>${mood.mood}</strong> - Score: <span style="color: #4A90E2;">${mood.score}</span>
-                                            </li>`
-                        )
-                        .join("")}
-                            </ul>
-                            
-                            <p style="color: #777; font-size: 14px; margin-top: 20px;">
-                                Keep tracking your emotions and let Echo be your guiding light. 🌟
+                            <hr style="border: none; border-top: 1px solid #dddddd; margin: 20px 0;" />
+                            <p style="color: #777777; font-size: 14px; margin-bottom: 25px;">
+                            Keep tracking your emotions and let Echo be your guiding light. 🌟
                             </p>
-                            
-                            <a href="${process.env.NEXT_PUBLIC_BASEURL}/dashboard"
-                                style="display: inline-block; background: #4A90E2; color: white; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-size: 16px; margin-top: 20px;">
-                                View My Progress 🚀
+                            <a href="${process.env.NEXT_PUBLIC_BASEURL}/profile"
+                            style="display: inline-block; background-color: #4A90E2; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-size: 16px; margin-bottom: 25px;">
+                            View My Progress 🚀
                             </a>
-            
-                            <p style="color: #aaa; font-size: 12px; margin-top: 20px;">
-                                If you didn’t earn this badge, no worries! Keep journaling and exploring your thoughts with Echo.
+                            <p style="color: #aaaaaa; font-size: 12px; margin-top: 25px;">
+                            If you didn’t earn this badge, no worries! Keep journaling and exploring your thoughts with Echo.
                             </p>
-                        </div>
-                    </div>
+                        </td>
+                        </tr>
+                    </table>
+                    </td>
+                </tr>
+                </table>
                 `,
             });
 
