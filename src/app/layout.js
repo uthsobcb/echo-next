@@ -6,6 +6,8 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import { Analytics } from "@vercel/analytics/react"
 // import Script from 'next/script'
 import { Inter } from "next/font/google";
+import Head from "next/head";
+
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,27 +21,66 @@ export const metadata = {
       { url: "/assets/logo.png", sizes: "512x512", type: "image/png" },
     ],
   },
-  themeColor: "#4A90E2",
 };
 
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <meta name="application-name" content="Echo" />
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-        <meta name="apple-mobile-web-app-title" content="Echo" />
-        <meta name="format-detection" content="telephone=no" />
-        <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#4A90E2" />
+        <Head>
+          <title>{metadata.title}</title>
+          <meta name="description" content={metadata.description} />
+          <meta name="application-name" content="Echo" />
+          <meta name="apple-mobile-web-app-capable" content="yes" />
+          <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+          <meta name="apple-mobile-web-app-title" content="Echo" />
+          <meta name="format-detection" content="telephone=no" />
+          <meta name="mobile-web-app-capable" content="yes" />
+          <meta name="theme-color" content="#4A90E2" />
 
-        <link rel="apple-touch-icon" href="/assets/logo.png" />
-        <link rel="shortcut icon" href="/favicon.ico" />
-        {/* <Script
+          <link rel="apple-touch-icon" href="/assets/logo.png" />
+          <link rel="shortcut icon" href="/favicon.ico" />
+          {/* <Script
           src="https://cdn.onesignal.com/sdks/OneSignalSDK.js"
           strategy="beforeInteractive"
         /> */}
+          <meta property="og:type" content="website" />
+          <meta property="og:title" content={metadata.title} />
+          <meta property="og:description" content={metadata.description} />
+          <meta property="og:image" content="/assets/logo.png" />
+          <meta property="og:url" content="https://www.my-echo.space/" />
+
+          {/* Twitter Card */}
+          <meta name="twitter:card" content="summary_large_image" />
+          <meta name="twitter:title" content={metadata.title} />
+          <meta name="twitter:description" content={metadata.description} />
+          <meta name="twitter:image" content="/assets/logo.png" />
+
+          {/* Icons */}
+          <link rel="apple-touch-icon" href="/assets/logo.png" />
+          <link rel="shortcut icon" href="/favicon.ico" />
+
+          {/* Preload Assets */}
+          <link rel="preload" href="/assets/logo.png" as="image" />
+          <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter&display=swap" as="style" />
+          <script
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{
+              __html: JSON.stringify({
+                "@context": "https://schema.org",
+                "@type": "WebSite",
+                name: "Echo",
+                url: "https://www.my-echo.space/",
+                potentialAction: {
+                  "@type": "SearchAction",
+                  target: "https://www.my-echo.space/search?q={search_term_string}",
+                  "query-input": "required name=search_term_string",
+                },
+              }),
+            }}
+          />
+
+        </Head>
       </head>
       <body className={inter.className}>
         <NavBar />
