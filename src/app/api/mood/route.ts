@@ -7,7 +7,8 @@ const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 import {
     GoogleGenerativeAI,
 } from "@google/generative-ai";
-import { encrypt } from "@/app/lib/encryption";
+import { decrypt, encrypt } from "@/app/lib/encryption";
+
 const apiKey = process.env.GEMINI_API;
 
 const genAI = new GoogleGenerativeAI(apiKey);
@@ -20,13 +21,33 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: "Journal entry is required." }, { status: 400 });
         }
 
+
+        await connect();
+        const session = await auth();
+        const user = session?.user;
+
+        if (!user) {
+            return NextResponse.json({ error: "Unauthorized Request" }, { status: 401 });
+        }
+
+        const previousEntries = await Mood.find({ userId: user?.id })
+            .sort({ createdAt: -1 })
+            .limit(3);
+
+        const decryptedEntries = previousEntries.map(entry => decrypt(entry.content));
+        const journalHistory = decryptedEntries.join("\n\n");
+
+
+
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
+        Context: Below is a brief history of this user's recent journal entries to help you understand their ongoing emotional trends:
+        ${journalHistory}
   - \`mood\`: An object containing:
   - \`label\`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.
   - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
-  - \`comment\`: A supportive message based on the mood, offering suggestions for improvement if needed.
+  - \`comment\`: A supportive message based on the mood and context of this entry and recent entries of ${journalHistory} offering suggestions for improvement if needed.
 Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
@@ -96,12 +117,8 @@ Analyze the following journal entry and provide the requested JSON response: "${
         await connect();
 
 
-        const session = await auth();
-        const user = session?.user;
         const encryptedContent = encrypt(content);
-        if (!user) {
-            return NextResponse.json({ error: "Unauthorized Request" }, { status: 401 });
-        }
+
         const newMood = new Mood({
             userId: user?.id,
             mood: parsedMood?.label,

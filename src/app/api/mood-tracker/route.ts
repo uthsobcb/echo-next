@@ -73,7 +73,7 @@ export async function GET(req: NextRequest) {
                     <table role="presentation" cellpadding="0" cellspacing="0" border="0" width="100%" style="max-width: 600px; background: #ffffff; border-radius: 10px; box-shadow: 0 5px 15px rgba(0,0,0,0.1); padding: 30px; margin: 0 auto;">
                         <tr>
                         <td align="center" style="padding-bottom: 20px;">
-                            <img src="https://ibb.co/rRj0Nrqt" alt="Echo Logo" width="120" style="display: block; max-width: 120px; height: auto;">
+                            <img src="https://i.ibb.co/C3c8DG4t/logov1.png" alt="Echo Logo" width="120" style="display: block; max-width: 120px; height: auto;">
                         </td>
                         </tr>
                         <tr>
