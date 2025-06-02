@@ -330,6 +330,12 @@ export default function LandingPage() {
                                 review: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
                                 image: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1"
                             },
+                            {
+                                name: "Md Mobashir Hasan",
+                                role: "from ProductHunt",
+                                review: "Love what you have built, Uthsob! Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing. Maybe voice notes could be a cool add-on for days when typing feels hard. Keep going — Echo is something special! ☁️✨",
+                                image: "https://ph-avatars.imgix.net/5085015/cfa4d47f-0001-4181-a126-440f48e1368c.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1"
+                            }
                         ].map((testimonial, index) => (
                             <div
                                 key={index}
