@@ -27,7 +27,7 @@ export default async function NavBar() {
                         <Image src="/assets/logo.png" alt="Logo" width={46} height={100} />
                     </Link>
                     <Link href="/" className="block">
-                        <span className="text-xl font-bold text-sky-700">Echo</span>
+                        <span className="text-xl font-bold text-indigo-500">Echo</span>
                     </Link>
                 </div>
 
