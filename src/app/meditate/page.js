@@ -1,14 +1,11 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 export default function BreathingSession() {
-    const totalSessionTime = 5 * 60; // in seconds (e.g. 5 mins)
-    const [sessionTimeLeft, setSessionTimeLeft] = useState(totalSessionTime);
-
     const stages = [
         { label: 'Inhale', duration: 4 },
-        { label: 'Hold', duration: 2 },
+        { label: 'Hold', duration: 4 },
         { label: 'Exhale', duration: 4 },
         { label: 'Hold', duration: 2 },
     ];
@@ -16,23 +13,13 @@ export default function BreathingSession() {
     const [stageIndex, setStageIndex] = useState(0);
     const [stageTimeLeft, setStageTimeLeft] = useState(stages[0].duration);
 
-    // Timer for total session
-    useEffect(() => {
-        const sessionTimer = setInterval(() => {
-            setSessionTimeLeft((prev) => (prev > 0 ? prev - 1 : 0));
-        }, 1000);
-        return () => clearInterval(sessionTimer);
-    }, []);
+    const backgroundAudio = useRef(null);
 
-    // Timer for current stage
     useEffect(() => {
-        if (sessionTimeLeft === 0) return;
-
-        const stageTimer = setInterval(() => {
+        const timer = setInterval(() => {
             setStageTimeLeft((prev) => {
                 if (prev > 1) return prev - 1;
 
-                // Move to next stage
                 const nextIndex = (stageIndex + 1) % stages.length;
                 setStageIndex(nextIndex);
                 setStageTimeLeft(stages[nextIndex].duration);
@@ -40,28 +27,46 @@ export default function BreathingSession() {
             });
         }, 1000);
 
-        return () => clearInterval(stageTimer);
-    }, [stageIndex, sessionTimeLeft]);
+        return () => clearInterval(timer);
+    }, [stageIndex]);
 
-    const minutes = Math.floor(sessionTimeLeft / 60);
-    const seconds = sessionTimeLeft % 60;
 
-    const progress = 1 - stageTimeLeft / stages[stageIndex].duration;
-    const radius = 100;
+
+    useEffect(() => {
+        const audio = backgroundAudio.current;
+        if (audio) {
+            audio.loop = true;
+            audio.volume = 0.6;
+            audio.play().catch(() => {
+                // Autoplay blocked — handled later on click
+            });
+        }
+    }, []);
+
+    const getCircleFill = () => {
+        const currentStage = stages[stageIndex].label;
+        const stageProgress = 1 - (stageTimeLeft / stages[stageIndex].duration);
+
+        if (currentStage === 'Inhale') {
+            return stageProgress; // fill from 0 → 1
+        } else if (currentStage === 'Hold') {
+            const prevStage = stages[(stageIndex - 1 + stages.length) % stages.length].label;
+            return prevStage === 'Inhale' ? 1 : 0;
+        } else if (currentStage === 'Exhale') {
+            return 1 - stageProgress; // unfill from 1 → 0
+        }
+
+        return 0;
+    };
+
+    const progress = getCircleFill();
+    const radius = 140;
     const circumference = 2 * Math.PI * radius;
     const strokeDashoffset = circumference * (1 - progress);
 
-    if (sessionTimeLeft === 0) {
-        return (
-            <div className="flex flex-col items-center justify-center h-screen bg-white">
-                <p className="text-3xl font-bold text-purple-600">Session Complete!</p>
-            </div>
-        );
-    }
-
     return (
-        <div className="flex flex-col items-center justify-center h-screen bg-white">
-            <div className="relative w-64 h-64">
+        <div className="flex flex-col items-center justify-center h-screen">
+            <div className="relative w-72 h-72">
                 <svg className="absolute top-0 left-0 w-full h-full transform -rotate-90">
                     <circle
                         cx="50%"
@@ -81,7 +86,7 @@ export default function BreathingSession() {
                         strokeDasharray={circumference}
                         strokeDashoffset={strokeDashoffset}
                         strokeLinecap="round"
-                        className="transition-all duration-1000 ease-linear"
+                        className="transition-all duration-1000 ease-in-out"
                     />
                 </svg>
 
@@ -92,20 +97,14 @@ export default function BreathingSession() {
                 />
             </div>
 
-            {/* Current Stage Label */}
             <p className="mt-4 text-xl text-purple-600 font-medium animate-pulse">
                 {stages[stageIndex].label}
             </p>
 
-            {/* Per-stage countdown */}
             <p className="text-lg text-gray-700">
                 {stageTimeLeft}s
             </p>
-
-            {/* Total session timer */}
-            <p className="mt-2 text-md font-semibold text-gray-500">
-                {minutes}:{seconds.toString().padStart(2, '0')} left
-            </p>
+            <audio ref={backgroundAudio} src="/meditation.mp3" />
         </div>
     );
 }
