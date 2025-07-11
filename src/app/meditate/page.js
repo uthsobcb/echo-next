@@ -5,14 +5,16 @@ import { useEffect, useState, useRef } from 'react';
 export default function BreathingSession() {
     const stages = [
         { label: 'Inhale', duration: 5 },
-        { label: 'Hold', duration: 5 },
-        { label: 'Exhale', duration: 5 },
+        { label: 'Hold', duration: 7 },
+        { label: 'Exhale', duration: 8 },
         { label: 'Hold', duration: 3 },
     ];
 
     const [stageIndex, setStageIndex] = useState(0);
     const [stageTimeLeft, setStageTimeLeft] = useState(stages[0].duration);
     const [hasStarted, setHasStarted] = useState(false);
+    const [hasFinished, setHasFinished] = useState(false);
+    const [totalSessionTime, setTotalSessionTime] = useState(0);
 
     const backgroundAudio = useRef(null);
 
@@ -43,6 +45,16 @@ export default function BreathingSession() {
             });
         }
     }, []);
+    useEffect(() => {
+        if (!hasStarted || hasFinished) return;
+
+        const timer = setInterval(() => {
+            setTotalSessionTime((prev) => prev + 1);
+        }, 1000);
+
+        return () => clearInterval(timer);
+    }, [hasStarted, hasFinished]);
+
 
     const getCircleFill = () => {
         const currentStage = stages[stageIndex].label;
@@ -66,9 +78,35 @@ export default function BreathingSession() {
     const strokeDashoffset = circumference * (1 - progress);
 
     const handleStart = () => {
+        setStageIndex(0);
+        setStageTimeLeft(stages[0].duration);
         setHasStarted(true);
         backgroundAudio.current?.play().catch(() => { });
     };
+
+    const handleFinish = () => {
+        setHasFinished(true);
+        backgroundAudio.current?.pause();
+    };
+    const formatTime = (seconds) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins}:${secs.toString().padStart(2, '0')}`;
+    };
+    if (hasFinished) {
+        return (
+            <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+                <h2 className="text-3xl font-bold text-purple-700 mb-4">You Did a Great Job!</h2>
+                <p className="text-gray-700 mb-2">
+                    Thank you for giving yourself this moment of peace and focus.
+                </p>
+                <p className="text-purple-600 font-semibold mb-6">
+                    Total Meditation Time: {formatTime(totalSessionTime)}
+                </p>
+                <p className="text-sm text-gray-500">Echo is proud of you. See you again soon!</p>
+            </div>
+        );
+    }
 
     return (
         <>
@@ -93,6 +131,8 @@ export default function BreathingSession() {
 
                         <p className="text-sm text-gray-400 mb-6">
                             Each cycle lasts around 5 seconds. Soothing background music will begin when you start.
+                            <br />
+                            Note: this is 4-7-8 method for Deep relaxation, popularized by Dr. Weil
                         </p>
 
                         <button
@@ -144,6 +184,13 @@ export default function BreathingSession() {
                     <p className="text-lg text-gray-700">
                         {stageTimeLeft}s
                     </p>
+                    <button
+                        onClick={handleFinish}
+                        className="mt-6 px-6 py-2 rounded-full bg-purple-500 text-white hover:bg-purple-600 transition"
+                    >
+                        Finish Session
+                    </button>
+
                     {/* <audio ref={backgroundAudio} src="/meditation.mp3" /> */}
                 </div>
             }
