@@ -36,9 +36,9 @@ export default function Page() {
     }, []);
 
 
-    console.log("Users:", JSON.stringify(users, null, 2));
-    console.log("Moods:", JSON.stringify(moods, null, 2));
-    console.log("Entries:", JSON.stringify(entries, null, 2));
+    // console.log("Users:", JSON.stringify(users, null, 2));
+    // console.log("Moods:", JSON.stringify(moods, null, 2));
+    // console.log("Entries:", JSON.stringify(entries, null, 2));
 
     if (loading) {
         return (
