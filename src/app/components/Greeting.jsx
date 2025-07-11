@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ListTodo, Lock, PencilLine, TrendingUp } from "lucide-react";
+import { CalendarDays, ListTodo, Lock, LucideFlower, PencilLine, TrendingUp } from "lucide-react";
+import { title } from "process";
 
 export default function GreetingsPage({ name }) {
     const [greeting, setGreeting] = useState("");
@@ -46,11 +47,18 @@ export default function GreetingsPage({ name }) {
             icon: <CalendarDays className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
         },
         {
+            title: "Meditation",
+            description: "Take a moment to meditate and clear your mind",
+            navigate: "/meditate",
+            icon: <LucideFlower className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
+        },
+        {
             title: "Private and Encrypted",
             description: "Your data is stored securely and privately",
             navigate: "/legal/privacy",
             icon: <Lock className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
         },
+
     ];
 
     return (
