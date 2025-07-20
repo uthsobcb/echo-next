@@ -3,12 +3,12 @@ import { auth } from "auth";
 import { connect } from "@/app/lib/mongodb";
 import Todo from "@/app/models/Todo";
 
-export async function PATCH(req: Request, { params }: { params: { moodId: string } }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
     try {
         await connect();
         const session = await auth();
         const user = session?.user;
-        const { moodId } = params;
+        const { moodId } = await params;
 
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -45,3 +45,36 @@ export async function PATCH(req: Request, { params }: { params: { moodId: string
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
+
+
+export async function DELETE(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
+    try {
+        await connect();
+        const session = await auth();
+        const user = session?.user;
+        const { moodId } = await params;
+
+        if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+        const { task } = await req.json();
+        if (!task) {
+            return NextResponse.json({ error: "Task is required." }, { status: 400 });
+        }
+
+        const deleted = await Todo.findOneAndDelete({
+            _id: moodId,
+            userId: user.id,
+            todo: task
+        });
+
+        if (!deleted) {
+            return NextResponse.json({ error: "Todo not found or already deleted." }, { status: 404 });
+        }
+
+        return NextResponse.json({ message: "Todo deleted", deleted });
+    } catch (error) {
+        console.error("Error deleting todo:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    }
+}
+
