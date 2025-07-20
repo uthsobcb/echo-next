@@ -51,18 +51,20 @@ export default function MobileMenu({ session, userData }) {
                             {userData.name ? (
                                 <div className="space-y-6">
                                     <div className="flex items-center gap-4 p-4 bg-gray-800 rounded-lg">
-                                        <Image
-                                            src={userData?.image}
-                                            alt={session?.user?.name}
-                                            width={50}
-                                            height={50}
-                                            unoptimized
-                                            className="rounded-full border-2 border-gray-700"
-                                        />
-                                        <div>
-                                            <div className="text-white font-medium">{userData?.name}</div>
-                                            <div className="text-gray-400 text-sm">Logged in</div>
-                                        </div>
+                                        <Link href="/profile" onClick={closeMenu} className="flex items-center gap-3">
+                                            <Image
+                                                src={userData?.image}
+                                                alt={session?.user?.name}
+                                                width={50}
+                                                height={50}
+                                                unoptimized
+                                                className="rounded-full border-2 border-gray-700"
+                                            />
+                                            <div>
+                                                <div className="text-white font-medium">{userData?.name}</div>
+                                                <div className="text-gray-400 text-sm">Logged in</div>
+                                            </div>
+                                        </Link>
                                     </div>
 
                                     <nav className="space-y-2">
