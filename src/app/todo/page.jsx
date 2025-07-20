@@ -2,97 +2,96 @@
 
 import { useEffect, useState } from 'react';
 import { Edit3, Trash2, Check } from 'lucide-react';
+import { colors } from '@mui/material';
 
-
-function ConfirmModal({ isOpen, onConfirm, onCancel }) {
-    if (!isOpen) return null;
+function StatusBadge({ status }) {
+    const colors = {
+        'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+        'in-progress': 'bg-blue-100 text-blue-700 border-blue-300',
+        'completed': 'bg-green-100 text-green-700 border-green-300',
+    };
 
     return (
-        <div className="fixed inset-0 z-50 bg-black/50 flex items-center justify-center">
-            <div className="bg-white rounded-lg shadow-lg p-6 w-full max-w-sm">
-                <h2 className="text-lg font-semibold mb-4 text-gray-800">Mark as Done?</h2>
-                <p className="text-sm text-gray-600 mb-6">This will delete the todo. Are you sure?</p>
-                <div className="flex justify-end gap-3">
-                    <button
-                        onClick={onCancel}
-                        className="px-4 py-1 text-sm text-gray-700 border border-gray-300 rounded hover:bg-gray-100"
-                    >
-                        Cancel
-                    </button>
-                    <button
-                        onClick={onConfirm}
-                        className="px-4 py-1 text-sm text-white bg-red-500 rounded hover:bg-red-600"
-                    >
-                        Delete
-                    </button>
-                </div>
-            </div>
-        </div>
+        <span className={`text-xs px-2 py-0.5 border rounded-full ${colors[status] || 'bg-gray-100 text-gray-700 border-gray-300'}`}>
+            {status}
+        </span>
     );
 }
 
-function TodoItem({ todo, onDelete, onUpdate }) {
+function TodoItem({ todo, onUpdateStatus, onDelete, onUpdateText }) {
     const [editing, setEditing] = useState(false);
     const [value, setValue] = useState(todo.task);
-    const [showModal, setShowModal] = useState(false);
+    const [status, setStatus] = useState(todo.status);
 
-    const handleCheckboxClick = (e) => {
-        e.preventDefault();
-        setShowModal(true);
+    const handleMarkAsDone = async () => {
+        const updated = await onUpdateStatus(todo.moodId, todo.task, 'completed');
+        if (updated) setStatus('completed');
     };
 
-    const handleConfirmDelete = () => {
-        onDelete(todo.moodId, todo.task);
-        setShowModal(false);
+    const handleStatusChange = async (e) => {
+        const newStatus = e.target.value;
+        const updated = await onUpdateStatus(todo.moodId, todo.task, newStatus);
+        if (updated) setStatus(newStatus);
+    };
+    const colors = {
+        'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+        'in-progress': 'bg-blue-100 text-blue-700 border-blue-300',
+        'completed': 'bg-green-100 text-green-700 border-green-300',
     };
 
     return (
-        <>
-            <li className="flex items-center justify-between gap-4">
-                <div className="flex items-center gap-3 flex-grow">
-                    <div
-                        role="checkbox"
-                        onClick={handleCheckboxClick}
-                        className="w-5 h-5 border-2 border-blue-500 rounded-sm cursor-pointer hover:bg-blue-100"
+        <li className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3 flex-grow">
+                <input
+                    type="checkbox"
+                    checked={status === 'completed'}
+                    onChange={handleMarkAsDone}
+                    className="w-5 h-5 text-blue-600 border-2 border-blue-500 rounded-sm cursor-pointer"
+                />
+                {editing ? (
+                    <input
+                        value={value}
+                        onChange={e => setValue(e.target.value)}
+                        className="w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 py-0.5"
+                        autoFocus
                     />
-                    {editing ? (
-                        <input
-                            value={value}
-                            onChange={e => setValue(e.target.value)}
-                            className="w-full border-b border-gray-300 focus:outline-none focus:border-blue-500 px-1 py-0.5"
-                            autoFocus
-                        />
-                    ) : (
-                        <span className="text-md text-gray-800">{todo.task}</span>
-                    )}
-                </div>
+                ) : (
+                    <span className={`text-md ${status === 'completed' ? 'line-through text-gray-400' : 'text-gray-800'}`}>
+                        {todo.task}
+                    </span>
+                )}
+            </div>
 
-                <div className="flex items-center gap-2">
-                    {editing ? (
-                        <button
-                            onClick={() => {
-                                onUpdate(todo.moodId, todo.task, value);
-                                setEditing(false);
-                            }}
-                        >
-                            <Check className='w-4 h-4' />
-                        </button>
-                    ) : (
-                        <>
-                            <button onClick={() => setEditing(true)}>
-                                <Edit3 className="w-4 h-4 text-gray-500 hover:text-gray-700" />
-                            </button>
-                        </>
-                    )}
-                </div>
-            </li>
+            {/* <span className={`text-xs px-2 py-0.5 border rounded-full ${colors[status] || 'bg-gray-100 text-gray-700 border-gray-300'}`}> */}
 
-            <ConfirmModal
-                isOpen={showModal}
-                onConfirm={handleConfirmDelete}
-                onCancel={() => setShowModal(false)}
-            />
-        </>
+            <div className="flex items-center gap-2">
+                <select
+                    value={status}
+                    onChange={handleStatusChange}
+                    className={`text-xs border px-2 py-0.5 rounded-full ${colors[status] || ''}`}
+                >
+                    <option value="pending">Pending</option>
+                    <option value="in-progress">In Progress</option>
+                    <option value="completed">Completed</option>
+                </select>
+                {/* <StatusBadge status={status} /> */}
+
+                {editing ? (
+                    <button
+                        onClick={async () => {
+                            await onUpdateText(todo.moodId, todo.task, value);
+                            setEditing(false);
+                        }}
+                    >
+                        <Check className='w-4 h-4' />
+                    </button>
+                ) : (
+                    <button onClick={() => setEditing(true)}>
+                        <Edit3 className="w-4 h-4 text-gray-500 hover:text-gray-700" />
+                    </button>
+                )}
+            </div>
+        </li>
     );
 }
 
@@ -104,23 +103,27 @@ export default function TodoPage() {
         async function fetchTodos() {
             const res = await fetch('/api/todo');
             const data = await res.json();
-            const todosWithState = data.todos.map(t => ({ ...t, completed: false }));
+            const todosWithState = data.todos.map(t => ({
+                ...t,
+                task: t.todo,
+                moodId: t._id,
+            }));
             setTodos(todosWithState);
             setLoading(false);
         }
         fetchTodos();
     }, []);
 
-    async function deleteTodo(moodId, task) {
-        await fetch(`/api/todo/${moodId}`, {
-            method: 'DELETE',
+    async function updateStatus(moodId, task, status) {
+        const res = await fetch(`/api/todo/${moodId}`, {
+            method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ task }),
+            body: JSON.stringify({ oldTask: task, newTask: task, status }),
         });
-        setTodos(prev => prev.filter(t => !(t.task === task && t.moodId === moodId)));
+        return res.ok;
     }
 
-    async function updateTodo(moodId, oldTask, newTask) {
+    async function updateText(moodId, oldTask, newTask) {
         const res = await fetch(`/api/todo/${moodId}`, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
@@ -153,8 +156,8 @@ export default function TodoPage() {
                         <TodoItem
                             key={index}
                             todo={todo}
-                            onDelete={deleteTodo}
-                            onUpdate={updateTodo}
+                            onUpdateStatus={updateStatus}
+                            onUpdateText={updateText}
                         />
                     ))}
                 </ul>

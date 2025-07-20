@@ -102,7 +102,7 @@ export const {
                 session.user.badge = token.badge;
                 session.accessToken = token.accessToken; // Ensure frontend gets accessToken
             }
-            console.log("Session:", session); // Debug
+            // console.log("Session:", session); // Debug
 
             return session;
         },

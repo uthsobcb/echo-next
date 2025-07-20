@@ -8,7 +8,7 @@ interface IMood {
     content: string;
     imgUrl: string;
     createdAt: Date;
-    todo: [String];
+    todo?: [String];
 
 }
 

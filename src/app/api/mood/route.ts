@@ -3,11 +3,13 @@ import OpenAI from "openai";
 import { connect } from "@/app/lib/mongodb";
 import { auth } from "auth";
 import Mood from "@/app/models/Mood";
+import Todo from "@/app/models/Todo";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 import {
     GoogleGenerativeAI,
 } from "@google/generative-ai";
 import { decrypt, encrypt } from "@/app/lib/encryption";
+import { todo } from "node:test";
 
 const apiKey = process.env.GEMINI_API;
 
@@ -39,7 +41,11 @@ export async function POST(req: Request) {
   - \`label\`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.
   - \`score\`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral negetive score indicated negative mode.
   - \`comment\`: A supportive message based on the mood, offering suggestions for improvement if needed.
-  - \`todo\`: A list of tasks, goals, or plans explicitly or implicitly mentioned by the user in the journal entry. Extract actionable items in a clear and concise manner.
+    - \`todo\`: An array of objects, where each object represents a meaningful, actionable task identified in the journal entry—either explicitly stated or reasonably inferred. Only include tasks that seem important or relevant to the user's well-being or goals; it's not necessary to list everything.
+    Each task should follow this structure:
+            - \`todo\`: A clear, concise description of the task or goal.
+            - \`type\`: The category of the task (e.g., "mental health", "general", "work", "personal").
+            - \`status\`: The current status of the task, such as "pending", "completed", or "in progress".
 
 Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
@@ -80,15 +86,27 @@ Analyze the following journal entry and provide the requested JSON response: "${
         // const mood = completion.choices[0]?.message?.content?.trim();
 
         let parsedMood;
+        let todos = [];
+
+
         try {
             const cleanedResponse = typeof mood === "string" ? cleanResponse(mood) : mood;
 
             parsedMood = typeof cleanedResponse === "string" ? JSON.parse(cleanedResponse) : cleanedResponse;
 
+
+            const extractedTodos = Array.isArray(parsedMood.todo) ? parsedMood.todo : [];
+
             // If `parsedMood` has a nested "mood" key, extract the inner mood object.
             if (parsedMood.mood) {
                 parsedMood = parsedMood.mood;
             }
+
+            todos = extractedTodos.map((item) => ({
+                todo: item.todo,
+                type: item.type,
+                status: item.status,
+            }));
 
             // OAI method
             // parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
@@ -118,14 +136,27 @@ Analyze the following journal entry and provide the requested JSON response: "${
             comment: parsedMood?.comment,
             content: encryptedContent,
             imgUrl: imgUrl || "",
-            todo: parsedMood?.todo,
+            // todo: parsedMood?.todo,
             createdAt: new Date(),
         });
         await newMood.save();
 
+        const newTodo = todos.map((item) => ({
+            userId: user?.id,
+            todo: typeof item === 'string' ? item : item.todo,
+            type: typeof item === 'string' ? 'general' : item.type,
+            status: typeof item === 'string' ? 'pending' : item.status,
+        }));
+        console.log("Todo payload before insert:", newTodo);
+
+        if (newTodo.length > 0) {
+            await Todo.insertMany(newTodo);
+            console.log("Saved todos:", newTodo);
+        }
         return NextResponse.json({
-            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score,
+            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score, todo: parsedMood.todo
         });
+
     } catch (error) {
         console.error("Error in mood route:", error);
         return NextResponse.json({ error: "Internal server error." }, { status: 500 });

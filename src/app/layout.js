@@ -9,7 +9,7 @@ import { Inter } from "next/font/google";
 import Head from "next/head";
 
 
-const inter = Inter({ subsets: ["latin"] });
+const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata = {
   title: "Echo || Journal Effortlessly ||  A Space to Write, Reflect, and Grow",
