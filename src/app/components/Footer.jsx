@@ -90,7 +90,7 @@ export default function Footer() {
                         </div>
                     </div>
                     <div className="sm:flex sm:items-center sm:justify-between">
-                        <span className="text-sm text-gray-500 sm:text-center">© 2025 <Link href="" className="hover:underline">Echo</Link> Built with ❤️ by Uthsob 🇧🇩
+                        <span className="text-sm text-gray-500 sm:text-center">© 2025 <Link href="" className="hover:underline">Echo</Link> Built with ❤️ by  <Link href="https://uthsob.me" className="hover:underline">Uthsob</Link> 🇧🇩
                         </span>
                     </div>
                 </div>
