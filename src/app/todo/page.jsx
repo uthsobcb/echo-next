@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Edit3, Trash2, Check } from 'lucide-react';
-import { colors } from '@mui/material';
+import { Edit3, Check } from 'lucide-react';
 
 function StatusBadge({ status }) {
     const colors = {
