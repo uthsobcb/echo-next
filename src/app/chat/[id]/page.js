@@ -19,10 +19,6 @@ export default function ChatDetails() {
     const [oldChats, setOldChats] = useState([]);
     const messagesEndRef = useRef(null);
 
-    const scrollToBottom = () => {
-        messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-    };
-
     // Fetch all chats for the sidebar
     useEffect(() => {
         const fetchOldChats = async () => {
@@ -44,9 +40,21 @@ export default function ChatDetails() {
         }
     }, [params.id]);
 
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest"
+            });
+        }
+    };
+
     useEffect(() => {
-        scrollToBottom();
-    }, [chat?.messages]);
+        if (chat?.messages?.length > 0) {
+            scrollToBottom();
+        }
+    }, [chat?.messages?.length]);
 
     const fetchChat = async () => {
         try {
@@ -66,6 +74,10 @@ export default function ChatDetails() {
         if (!newMessage.trim() || sending) return;
 
         setSending(true);
+
+        // Scroll to bottom immediately when user sends message
+        setTimeout(scrollToBottom, 100);
+
         try {
             const response = await axios.post('/api/chat', {
                 message: newMessage,
@@ -197,7 +209,6 @@ export default function ChatDetails() {
                             )}
                         </div>
                     ))}
-                    <div ref={messagesEndRef} />
 
                     {sending && (
                         <div className="flex justify-start items-end gap-3">
@@ -215,6 +226,8 @@ export default function ChatDetails() {
                             </div>
                         </div>
                     )}
+
+                    <div ref={messagesEndRef} className="h-1" />
                 </div>
 
                 {/* Message Input */}

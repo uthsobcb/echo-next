@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ListTodo, Lock, LucideFlower, PencilLine, TrendingUp } from "lucide-react";
+import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, TrendingUp } from "lucide-react";
 import { title } from "process";
 
 export default function GreetingsPage({ name }) {
@@ -51,6 +51,12 @@ export default function GreetingsPage({ name }) {
             description: "Take a moment to meditate and clear your mind",
             navigate: "/meditate",
             icon: <LucideFlower className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
+        },
+        {
+            title: "Chat with Echo",
+            description: "In the chaos of life, Echo is here to listen and chat with you",
+            navigate: "/chat",
+            icon: <MessageCircleHeart className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
         },
         {
             title: "Private and Encrypted",

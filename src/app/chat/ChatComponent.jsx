@@ -13,6 +13,7 @@ const ChatBox = ({ user }) => {
     const params = useParams();
     const searchParams = useSearchParams();
     const chatRef = useRef(null);
+    const messagesEndRef = useRef(null);
 
     // State management
     const [messages, setMessages] = useState([]);
@@ -64,17 +65,22 @@ const ChatBox = ({ user }) => {
         loadChat();
     }, [params.id, oldChats]);
 
-    // Handle initial entry content
+    // Handle initial entry content - fix circular dependency
     useEffect(() => {
-        if (entryContent) {
-            sendMessage(entryContent);
+        if (entryContent && !loading) {
+            const sendInitialMessage = async () => {
+                const response = await axios.post("/api/chat", {
+                    message: entryContent,
+                    chatId: null
+                });
+                setMessages(response.data.messages);
+                setCurrentChatId(response.data.chatId);
+                router.replace(`/chat/${response.data.chatId}`);
+                updateChatHistory(response.data.chatId, response.data.messages);
+            };
+            sendInitialMessage();
         }
-    }, [entryContent]);
-
-    // Auto-scroll to bottom when messages change
-    useEffect(() => {
-        chatRef.current?.scrollTo({ top: chatRef.current.scrollHeight, behavior: "smooth" });
-    }, [messages]);
+    }, [entryContent]); // Remove sendMessage dependency
 
     // Update chat history
     const updateChatHistory = (chatId, newMessages) => {
@@ -97,15 +103,34 @@ const ChatBox = ({ user }) => {
         });
     };
 
+    // Auto-scroll to bottom when messages change
+    const scrollToBottom = () => {
+        if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({
+                behavior: "smooth",
+                block: "end",
+                inline: "nearest"
+            });
+        }
+    };
+
+    useEffect(() => {
+        if (messages.length > 0) {
+            scrollToBottom();
+        }
+    }, [messages.length]); // Only trigger on message count change
+
     // Send message handler
     const sendMessage = async (text) => {
         if (!text.trim() || loading) return;
 
-        setMessages(prev => [...prev, {
+        const userMessage = {
             role: "user",
             text,
             timestamp: new Date()
-        }]);
+        };
+
+        setMessages(prev => [...prev, userMessage]);
         setInput("");
 
         try {
@@ -210,7 +235,7 @@ const ChatBox = ({ user }) => {
                 </header>
 
                 {/* Chat Messages or Welcome Screen */}
-                <div ref={chatRef} className="flex-1 overflow-y-auto bg-gray-50">
+                <div className="flex-1 overflow-y-auto bg-gray-50">
                     {messages.length === 0 ? (
                         // Welcome Screen
                         <div className="flex items-center justify-center h-full p-4">
@@ -249,7 +274,7 @@ const ChatBox = ({ user }) => {
                         // Chat Messages
                         <div className="p-4 space-y-6">
                             {messages.map((message, i) => (
-                                <MessageBubble key={i} message={message} />
+                                <MessageBubble key={`${message.role}-${i}-${message.timestamp}`} message={message} />
                             ))}
 
                             {loading && (
@@ -268,6 +293,8 @@ const ChatBox = ({ user }) => {
                                     </div>
                                 </div>
                             )}
+
+                            <div ref={messagesEndRef} className="h-1" />
                         </div>
                     )}
                 </div>
