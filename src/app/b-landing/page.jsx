@@ -1,21 +1,25 @@
 'use client';
 import { useState } from "react";
 import {
-    CheckCircle, Star, Heart, Sparkles, PenTool, ChevronDown, ArrowRight, User, Lock,
-    Camera, Upload, Brain, Calendar, BarChart3, Shield, Mail, Meditation, Search,
-    Download, MessageCircle, Edit3, TrendingUp, Smartphone, FileText, Globe, Zap,
-    Timer, Trophy, Users, Target, Layers, Settings, Headphones, RotateCcw, X
+    CheckCircle, Star, Heart, PenTool, ChevronDown, ArrowRight, User, Lock,
+    Camera, Upload, Brain, Calendar, BarChart3, Shield, Mail, Search,
+    Download, MessageCircle, Edit3, TrendingUp, Smartphone, Globe, Zap,
+    Trophy, Users, Target, Settings, Headphones, RotateCcw, X
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 
-export function Card({ children, className = "" }) {
+// Move Card component inside the file as an internal component
+function Card({ children, className = "" }) {
     return (
         <div className={`bg-white shadow-xl rounded-2xl p-8 transition-transform transform hover:scale-105 ${className}`}>
             {children}
         </div>
     );
 }
+
+// Create a placeholder Meditation icon since it's referenced but not imported
+const Meditation = Target; // Using Target as placeholder, replace with actual meditation icon
 
 const features = [
     {
@@ -593,8 +597,6 @@ export default function BLandingPage() {
                     </div>
                 </div>
             </section>
-
-            {/* Remove the unused CSS animation styles or move to a separate CSS file */}
         </div>
     );
 }
