@@ -24,7 +24,7 @@ export default function EntryCard() {
                     withCredentials: true,
                 });
                 entry = response.data;
-                console.log("Entry fetched:", response.data);
+                // console.log("Entry fetched:", response.data);
             } catch (err) {
                 setError(err.response?.data?.error || "Error fetching entry");
             }

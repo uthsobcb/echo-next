@@ -9,7 +9,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         await connect();
 
         const authHeader = req.headers.get("authorization");
-        console.log("Received Authorization Header:", authHeader);
+        // console.log("Received Authorization Header:", authHeader);
 
         if (!authHeader?.startsWith("Bearer ")) {
             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
@@ -20,7 +20,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-            console.log("Decoded Token:", decodedToken);
+            // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }
@@ -34,7 +34,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!entry) {
             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
         }
-        console.log("Entry found:", entry);
+        // console.log("Entry found:", entry);
         const decryptedEntry = {
             ...entry.toObject(),
             content: entry.content && entry.content.includes(":") ? (() => {
@@ -47,7 +47,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
             })() : entry.content  // If not encrypted, return content as is
         };
 
-        console.log("Decrypted Entry:", decryptedEntry);
+        // console.log("Decrypted Entry:", decryptedEntry);
         return NextResponse.json(decryptedEntry, { status: 200 });
     } catch (error) {
         console.error("Error fetching entry:", error);
@@ -60,7 +60,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         await connect();
 
         const authHeader = req.headers.get("authorization");
-        console.log("Received Authorization Header:", authHeader);
+        // console.log("Received Authorization Header:", authHeader);
 
         if (!authHeader?.startsWith("Bearer ")) {
             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
@@ -71,7 +71,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-            console.log("Decoded Token:", decodedToken);
+            // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }
@@ -141,7 +141,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         await connect();
 
         const authHeader = req.headers.get("authorization");
-        console.log("Received Authorization Header:", authHeader);
+        // console.log("Received Authorization Header:", authHeader);
 
         if (!authHeader?.startsWith("Bearer ")) {
             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
@@ -151,7 +151,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
-            console.log("Decoded Token:", decodedToken);
+            // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }

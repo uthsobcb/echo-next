@@ -21,7 +21,7 @@ export async function GET(req: NextRequest) {
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-            console.log("Decoded Token:", decodedToken);
+            // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }

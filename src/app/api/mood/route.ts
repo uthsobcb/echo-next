@@ -5,15 +5,24 @@ import { auth } from "auth";
 import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+const openRouterApiKey = process.env.OPENROUTER_API_KEY;
+
 import {
     GoogleGenerativeAI,
 } from "@google/generative-ai";
 import { decrypt, encrypt } from "@/app/lib/encryption";
-import { todo } from "node:test";
 
 const apiKey = process.env.GEMINI_API;
-
 const genAI = new GoogleGenerativeAI(apiKey);
+
+const openrouter = new OpenAI({
+    apiKey: openRouterApiKey,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+        'HTTP-Referer': 'https://my-echo.space',
+        'X-Title': 'Echo Space',
+    },
+});
 
 export async function POST(req: Request) {
     try {
@@ -33,7 +42,6 @@ export async function POST(req: Request) {
         }
 
 
-
         const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
 
         const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
@@ -50,18 +58,38 @@ export async function POST(req: Request) {
 Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
-        const result = await model.generateContent({
-            contents: [{
-                role: "user",
-                parts: [{ text: prompt }]
-            }]
-        });
 
+        let mood, parsedMood, todos = [];
+        try {
 
-        const response = result.response;
-        const mood = response.candidates[0].content.parts[0].text;
+            const completion = await openrouter.chat.completions.create({
+                model: "openai/gpt-4o-mini",
+                messages: [
+                    {
+                        role: "system",
+                        content: "You are an AI assistant specialized in mood analysis living inside a journal. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.\n  - `score`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral, negative score indicates negative mood.\n  - `comment`: A supportive message based on the mood, offering suggestions for improvement if needed.\n- `todo`: An array of objects, where each object represents a meaningful, actionable task identified in the journal entry—either explicitly stated or reasonably inferred. Only include tasks that seem important or relevant to the user's well-being or goals; it's not necessary to list everything.\nEach task should follow this structure:\n    - `todo`: A clear, concise description of the task or goal.\n    - `type`: The category of the task (e.g., \"mental health\", \"general\", \"work\", \"personal\").\n    - `status`: The current status of the task, such as \"pending\", \"completed\", or \"in progress\".\n\nEnsure the response is empathetic and concise."
+                    },
+                    {
+                        role: "user",
+                        content: `Analyze the following journal entry and provide the requested JSON response:\n\n"${content}"`
+                    },
+                ],
+            });
+            mood = completion.choices[0]?.message?.content?.trim();
 
-        console.log(mood);
+        } catch (geminiError) {
+            console.error("Error with Gemini API:", geminiError);
+            const result = await model.generateContent({
+                contents: [{
+                    role: "user",
+                    parts: [{ text: prompt }]
+                }]
+            });
+        }
+        // const response = result.response;
+        // const mood = response.candidates[0].content.parts[0].text;
+
+        // console.log(mood);
 
         function cleanResponse(response) {
             return response.replace(/```json|```/g, '').trim();
@@ -85,8 +113,8 @@ Analyze the following journal entry and provide the requested JSON response: "${
 
         // const mood = completion.choices[0]?.message?.content?.trim();
 
-        let parsedMood;
-        let todos = [];
+        // let parsedMood;
+        // let todos = [];
 
 
         try {
@@ -147,11 +175,11 @@ Analyze the following journal entry and provide the requested JSON response: "${
             type: typeof item === 'string' ? 'general' : item.type,
             status: typeof item === 'string' ? 'pending' : item.status,
         }));
-        console.log("Todo payload before insert:", newTodo);
+        // console.log("Todo payload before insert:", newTodo);
 
         if (newTodo.length > 0) {
             await Todo.insertMany(newTodo);
-            console.log("Saved todos:", newTodo);
+            // console.log("Saved todos:", newTodo);
         }
         return NextResponse.json({
             message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score, todo: parsedMood.todo

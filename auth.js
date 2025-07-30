@@ -67,7 +67,7 @@ export const {
             // console.log("JWT Callback - Before User Check:", token);
 
             if (user) {
-                console.log("JWT Callback - User Found:", user);
+                // console.log("JWT Callback - User Found:", user);
 
                 token.id = user.id;
                 token.name = user.name;
