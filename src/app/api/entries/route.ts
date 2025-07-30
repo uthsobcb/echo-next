@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
         await connect();
 
         const authHeader = req.headers.get("authorization");
-        console.log("Received Authorization Header:", authHeader);
+        // console.log("Received Authorization Header:", authHeader);
 
         if (!authHeader || !authHeader.startsWith("Bearer ")) {
             return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
         let decodedToken;
         try {
             decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
-            console.log("Decoded Token:", decodedToken);
+            // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }
@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
                 })() : entry.content  // If not encrypted, return content as is
             }
         });
-        console.log("Decrypted Entries:", decryptedEntries);
+        // console.log("Decrypted Entries:", decryptedEntries);
         return NextResponse.json(decryptedEntries, { status: 200 });
 
     } catch (error) {

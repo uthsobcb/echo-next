@@ -30,7 +30,7 @@ export async function POST(req: NextRequest) {
     let imageUrl = "";
     if (imageFile && imageFile.size > 0) {
       const buffer = Buffer.from(await imageFile.arrayBuffer());
-      console.log("Received image, upload logic goes here...");
+      // console.log("Received image, upload logic goes here...");
 
 
     } else {
