@@ -4,7 +4,7 @@ import {
     CheckCircle, Star, Heart, PenTool, ChevronDown, ArrowRight, User, Lock,
     Camera, Upload, Brain, Calendar, BarChart3, Shield, Mail, Search,
     Download, MessageCircle, Edit3, TrendingUp, Smartphone, Globe, Zap,
-    Trophy, Users, Target, Settings, Headphones, RotateCcw, X
+    Trophy, Target, Settings, Headphones, RotateCcw, X
 } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
@@ -71,9 +71,9 @@ const features = [
         category: "Modern Experience",
         items: [
             { title: "Progressive Web App", desc: "Install on any device, works offline, push notifications", icon: Smartphone },
-            { title: "Admin Dashboard", desc: "Comprehensive analytics for understanding user engagement and wellbeing", icon: Users },
             { title: "Cross-Platform", desc: "Seamless experience across desktop, tablet, and mobile devices", icon: Globe },
-            { title: "Background Audio", desc: "Ambient sounds and meditation music to enhance your writing experience", icon: Headphones }
+            { title: "Background Audio", desc: "Ambient sounds and meditation music to enhance your writing experience", icon: Headphones },
+            { title: "Handwritten Experience", desc: "Feel the flow on paper like interface and handwriting font", icon: PenTool }
         ]
     }
 ];
@@ -128,47 +128,33 @@ const workflows = [
 
 const testimonials = [
     {
-        name: "Dr. Sarah Chen",
-        role: "Clinical Psychologist",
-        review: "Echo's AI-powered mood analysis provides insights that would take weeks to identify in traditional therapy. The encryption and privacy features make it ideal for sensitive emotional work.",
-        image: "/assets/arafath.png",
-        rating: 5
-    },
-    {
-        name: "Evak Chan",
-        role: "ProductHunt User",
-        review: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
-        image: null, // Remove problematic external URL
-        rating: 5
-    },
-    {
-        name: "Alex Rodriguez",
-        role: "Software Engineer",
-        review: "The OCR feature is incredible - I can scan my handwritten notes and they become searchable. Echo's AI catches emotional patterns I never noticed myself.",
-        image: "/assets/shihab.png",
-        rating: 5
-    },
-    {
-        name: "Md Mobashir Hasan",
-        role: "ProductHunt User",
-        review: "Love what you have built! Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing. Maybe voice notes could be a cool add-on for days when typing feels hard. Keep going — Echo is something special! ☁️✨",
-        image: null, // Remove problematic external URL
-        rating: 5
-    },
-    {
         name: "Shihab",
         role: "Daily User",
-        review: "It's fun journaling & chatting with Echo. The meditation feature helps me center myself before writing. Very well done!",
+        review: "It's fun journaling & chatting with Echo. Very well done!",
         image: "/assets/shihab.png",
         rating: 5
     },
     {
         name: "Arafath",
         role: "Student",
-        review: "The AI insights are so helpful and spot on. The todo extraction feature helps me stay organized without extra effort.",
+        review: "The AI insights are so helpful and spot on.",
         image: "/assets/arafath.png",
         rating: 5
-    }
+    },
+    {
+        name: "Evak Chan",
+        role: "from ProductHunt",
+        review: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
+        image: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+        rating: 5
+    },
+    {
+        name: "Md Mobashir Hasan",
+        role: "from ProductHunt",
+        review: "Love what you have built, Uthsob! Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing. Maybe voice notes could be a cool add-on for days when typing feels hard. Keep going — Echo is something special! ☁️✨",
+        image: "https://ph-avatars.imgix.net/5085015/cfa4d47f-0001-4181-a126-440f48e1368c.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+        rating: 5
+    },
 ];
 
 const faqs = [
@@ -225,7 +211,7 @@ const pricingPlans = [
     },
     {
         name: "Echo Plus",
-        price: "$9",
+        price: "$0",
         period: "month",
         description: "Advanced features for serious journalers",
         features: [
@@ -239,26 +225,8 @@ const pricingPlans = [
             "Advanced analytics",
             "Progress badges"
         ],
-        cta: "Start Plus Trial",
+        cta: "Free for Early User",
         highlighted: true
-    },
-    {
-        name: "Echo Pro",
-        price: "$99",
-        period: "year",
-        description: "Ultimate journaling experience with all features",
-        features: [
-            "Everything in Plus",
-            "Admin dashboard access",
-            "Custom AI prompts",
-            "Advanced export options",
-            "White-label options",
-            "API access",
-            "Custom integrations",
-            "Premium support"
-        ],
-        cta: "Go Pro",
-        highlighted: false
     }
 ];
 
@@ -277,7 +245,7 @@ export default function BLandingPage() {
                 <div className="max-w-6xl mx-auto text-center">
                     <h1 className="text-5xl md:text-7xl font-extrabold text-gray-900 leading-tight mb-6">
                         <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 text-transparent bg-clip-text">
-                            Echo 2.0
+                            Echo
                         </span>
                         <br />
                         <span className="text-gray-800">The Future of Journaling</span>
