@@ -3,7 +3,7 @@ import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import UserModel from "@/app/models/User";
 import { auth } from "auth";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 
 export async function GET(req: NextRequest) {
     try {
@@ -20,7 +20,9 @@ export async function GET(req: NextRequest) {
 
         let decodedToken;
         try {
-            decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+            const { payload } = await jwtVerify(token, secret);
+            decodedToken = payload;
             // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });

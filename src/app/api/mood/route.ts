@@ -92,7 +92,12 @@ Analyze the following journal entry and provide the requested JSON response: "${
         // console.log(mood);
 
         function cleanResponse(response) {
-            return response.replace(/```json|```/g, '').trim();
+            // Remove markdown code blocks
+            let cleaned = response.replace(/```json|```/g, '').trim();
+            // Replace control characters (newlines, tabs, etc.) within string values
+            // This regex finds strings and replaces control characters within them
+            cleaned = cleaned.replace(/\\n/g, ' ').replace(/\\r/g, '').replace(/\\t/g, ' ');
+            return cleaned;
         }
 
         //OAI method

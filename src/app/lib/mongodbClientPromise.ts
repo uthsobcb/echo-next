@@ -31,6 +31,8 @@ if (process.env.NODE_ENV === "development") {
     client = new MongoClient(uri, options)
 }
 
-// Export a module-scoped MongoClient. By doing this in a
+// Export a module-scoped MongoClient promise. By doing this in a
 // separate module, the client can be shared across functions.
-export default client
+const clientPromise = client.connect()
+
+export default clientPromise

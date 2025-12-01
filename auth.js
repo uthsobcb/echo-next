@@ -6,7 +6,8 @@ import CredentialsProvider from "next-auth/providers/credentials";
 import UserModel from "@/app/models/User";
 import { connect } from "@/app/lib/mongodb";
 import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
+import { SignJWT } from "jose";
+
 export const {
     handlers: { GET, POST },
     auth,
@@ -74,19 +75,20 @@ export const {
                 token.email = user.email;
                 token.image = user.image;
                 token.subscription = user.subscription;
-                token.badge = user.badge;
+                token.badge = Array.isArray(user.badge) ? [...user.badge] : user.badge;
                 // console.log("Badges in Session Callback:", token.badge);
 
                 // Generate a signed JWT access token
-                const generateToken = jwt.sign(
-                    { userId: user.id, email: user.email },
-                    process.env.NEXTAUTH_SECRET,
-                    { expiresIn: "30d" }
-                );
+                const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+                const generateToken = await new SignJWT({ userId: user.id, email: user.email })
+                    .setProtectedHeader({ alg: 'HS256' })
+                    .setIssuedAt()
+                    .setExpirationTime('30d')
+                    .sign(secret);
 
                 token.accessToken = generateToken;
             }
-            // console.log("JWT Callback - After Token Generation:", token);
+            console.log("JWT Callback - After Token Generation:", token);
             return { ...token, accessToken: token.accessToken };
 
         },
@@ -102,8 +104,8 @@ export const {
                 session.user.badge = token.badge;
                 session.accessToken = token.accessToken; // Ensure frontend gets accessToken
             }
-            // console.log("Session:", session); // Debug
 
+            console.log("Session Callback - After Token Assignment:", session);
             return session;
         },
     },

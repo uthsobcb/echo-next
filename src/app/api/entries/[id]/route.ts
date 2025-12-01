@@ -1,7 +1,7 @@
 import { NextResponse, NextRequest } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
-import jwt from "jsonwebtoken";
+import { jwtVerify } from "jose";
 import mongoose from "mongoose";
 import { encrypt, decrypt } from "@/app/lib/encryption";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
@@ -19,7 +19,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
 
         let decodedToken;
         try {
-            decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+            const { payload } = await jwtVerify(token, secret);
+            decodedToken = payload;
             // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
@@ -70,7 +72,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
 
         let decodedToken;
         try {
-            decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET);
+            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
+            const { payload } = await jwtVerify(token, secret);
+            decodedToken = payload;
             // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
@@ -150,7 +154,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
         let decodedToken;
         try {
-            decodedToken = jwt.verify(token, process.env.NEXTAUTH_SECRET!);
+            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!);
+            const { payload } = await jwtVerify(token, secret);
+            decodedToken = payload;
             // console.log("Decoded Token:", decodedToken);
         } catch (err) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
