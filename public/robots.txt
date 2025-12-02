@@ -1,3 +1,9 @@
+# *
 User-agent: *
 Allow: /
+
+# Host
+Host: https://my-echo.space
+
+# Sitemaps
 Sitemap: https://my-echo.space/sitemap.xml
