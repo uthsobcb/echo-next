@@ -2,6 +2,7 @@
 
 import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import Image from "next/image";
 import {
     Sparkles, Brain, Lock, TrendingUp, Heart, Camera, MessageCircleHeart,
     ListTodo, LucideFlower, CalendarDays, PencilLine, ChevronDown,
@@ -328,118 +329,83 @@ export default function LandingPage() {
 
                         {/* Right: Animated Mockup */}
                         <motion.div
-                            initial={{ opacity: 0, scale: 0.8 }}
-                            animate={{ opacity: 1, scale: 1 }}
-                            transition={{ delay: 0.4 }}
-                            className="relative"
+                            initial={{ opacity: 0, scale: 0.8, x: 20 }}
+                            animate={{ opacity: 1, scale: 1, x: 0 }}
+                            transition={{ delay: 0.4, duration: 0.8 }}
+                            className="relative z-10"
                         >
-                            {/* Phone Mockup */}
-                            <div className="relative mx-auto w-[300px] h-[600px]">
-                                {/* Phone Frame */}
-                                <div className="absolute inset-0 bg-gray-900 rounded-[3rem] shadow-2xl p-3">
-                                    {/* Screen */}
-                                    <div className="w-full h-full bg-white rounded-[2.5rem] overflow-hidden relative">
-                                        {/* Status Bar */}
-                                        <div className="h-8 bg-gray-50 flex items-center justify-between px-6 text-xs">
-                                            <span>9:41</span>
-                                            <div className="flex gap-1">
-                                                <div className="w-4 h-4 bg-green-500 rounded-full" />
-                                            </div>
-                                        </div>
 
-                                        {/* App Content */}
-                                        <div className="p-4 space-y-4">
-                                            {/* Header */}
-                                            <div className="flex items-center justify-between">
-                                                <h3 className="font-bold text-lg">Today's Entry</h3>
-                                                <Sparkles className="w-5 h-5 text-indigo-600" />
-                                            </div>
 
-                                            {/* Mood Selector */}
-                                            <div className="flex gap-2">
-                                                {["😊", "😐", "😢", "😴", "🎉"].map((emoji, i) => (
-                                                    <motion.div
-                                                        key={i}
-                                                        whileHover={{ scale: 1.2 }}
-                                                        className={`w-10 h-10 rounded-full ${i === 0 ? 'bg-gradient-to-br from-blue-500 to-indigo-500' : 'bg-gray-100'} flex items-center justify-center text-xl cursor-pointer`}
-                                                    >
-                                                        {emoji}
-                                                    </motion.div>
-                                                ))}
-                                            </div>
+                            <motion.div
+                                animate={{ y: [0, -15, 0] }}
+                                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
+                                className="relative rounded-3xl overflow-hidden backdrop-blur-sm"
+                            >
+                                <Image
+                                    src="/assets/image.png"
+                                    alt="Echo App Interface"
+                                    width={800}
+                                    height={800}
+                                    className="w-full h-auto object-cover rounded-2xl"
+                                    priority
+                                />
 
-                                            {/* Journal Text */}
-                                            <div className="bg-gray-50 rounded-2xl p-4 space-y-2">
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: "100%" }}
-                                                    transition={{ delay: 1, duration: 1 }}
-                                                    className="h-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded"
-                                                />
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: "80%" }}
-                                                    transition={{ delay: 1.2, duration: 1 }}
-                                                    className="h-3 bg-gradient-to-r from-indigo-600 to-purple-600 rounded"
-                                                />
-                                                <motion.div
-                                                    initial={{ width: 0 }}
-                                                    animate={{ width: "60%" }}
-                                                    transition={{ delay: 1.4, duration: 1 }}
-                                                    className="h-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded"
-                                                />
-                                            </div>
+                                {/* Glass Reflection Effect */}
+                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none rounded-2xl" />
+                            </motion.div>
 
-                                            {/* AI Insight Card */}
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                transition={{ delay: 2 }}
-                                                className="bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl p-4 text-white"
-                                            >
-                                                <div className="flex items-center gap-2 mb-2">
-                                                    <Brain className="w-4 h-4" />
-                                                    <span className="text-sm font-semibold">AI Insight</span>
-                                                </div>
-                                                <p className="text-xs opacity-90">Your mood is trending positive this week! 📈</p>
-                                            </motion.div>
-
-                                            {/* Todo Items */}
-                                            <div className="space-y-2">
-                                                {["Review project notes", "Call mom"].map((task, i) => (
-                                                    <motion.div
-                                                        key={i}
-                                                        initial={{ opacity: 0, x: -20 }}
-                                                        animate={{ opacity: 1, x: 0 }}
-                                                        transition={{ delay: 2.2 + i * 0.2 }}
-                                                        className="flex items-center gap-2 bg-gray-50 rounded-xl p-3"
-                                                    >
-                                                        <div className="w-4 h-4 rounded border-2 border-indigo-600" />
-                                                        <span className="text-sm">{task}</span>
-                                                    </motion.div>
-                                                ))}
-                                            </div>
-                                        </div>
+                            {/* Floating Element: Mood Analysis */}
+                            <motion.div
+                                initial={{ opacity: 0, x: 20 }}
+                                animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
+                                transition={{ delay: 0.8, duration: 4, repeat: Infinity, repeatDelay: 1 }}
+                                className="absolute -right-8 top-12 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-green-100 rounded-full">
+                                        <Sparkles className="w-5 h-5 text-green-600" />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500 font-medium">Current Mood</div>
+                                        <div className="text-sm font-bold text-gray-800">Productive & Calm</div>
                                     </div>
                                 </div>
+                            </motion.div>
 
-                                {/* Floating Elements */}
-                                <motion.div
-                                    animate={{ y: [0, -10, 0] }}
-                                    transition={{ duration: 3, repeat: Infinity }}
-                                    className="absolute -right-4 top-20 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-3 shadow-xl"
-                                >
-                                    <Heart className="w-6 h-6 text-white" />
-                                </motion.div>
+                            {/* Floating Element: Heart/Likes */}
+                            <motion.div
+                                animate={{ y: [0, -10, 0] }}
+                                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
+                                className="absolute -right-4 bottom-40 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-3 shadow-xl"
+                            >
+                                <Heart className="w-6 h-6 text-white" />
+                            </motion.div>
 
-                                <motion.div
-                                    animate={{ y: [0, 10, 0] }}
-                                    transition={{ duration: 4, repeat: Infinity }}
-                                    className="absolute -left-4 bottom-32 bg-gradient-to-br from-green-500 to-emerald-500 rounded-2xl p-3 shadow-xl"
-                                >
-                                    <ListTodo className="w-6 h-6 text-white" />
-                                </motion.div>
-                            </div>
+                            {/* Floating Element: Task Completion */}
+                            <motion.div
+                                animate={{ y: [0, 10, 0] }}
+                                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
+                                className="absolute -left-8 bottom-20 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50"
+                            >
+                                <div className="flex items-center gap-3">
+                                    <div className="p-2 bg-blue-100 rounded-full">
+                                        <ListTodo className="w-5 h-5 text-blue-600" />
+                                    </div>
+                                    <div>
+                                        <div className="text-xs text-gray-500 font-medium">Daily Tasks</div>
+                                        <div className="text-sm font-bold text-gray-800">4/5 Completed</div>
+                                    </div>
+                                </div>
+                            </motion.div>
+
+                            {/* Floating Element: Streak */}
+                            <motion.div
+                                initial={{ opacity: 0, scale: 0.8 }}
+                                animate={{ opacity: 1, scale: 1, rotate: [0, 5, 0] }}
+                                transition={{ delay: 1, duration: 5, repeat: Infinity }}
+                                className="absolute -left-4 top-24 bg-gradient-to-br from-orange-400 to-amber-500 text-white p-3 rounded-2xl shadow-lg"
+                            ></motion.div>
+
                         </motion.div>
                     </div>
 
@@ -459,10 +425,10 @@ export default function LandingPage() {
                         </motion.div>
                     </motion.div>
                 </div>
-            </section>
+            </section >
 
             {/* Features Section */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -501,10 +467,10 @@ export default function LandingPage() {
                         </motion.div>
                     ))}
                 </div>
-            </section>
+            </section >
 
             {/* Comparison Table */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -570,10 +536,10 @@ export default function LandingPage() {
                         </table>
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Use Cases */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -617,10 +583,10 @@ export default function LandingPage() {
                         </motion.div>
                     ))}
                 </div>
-            </section>
+            </section >
 
             {/* Stats Section with Animated Counters */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -655,10 +621,10 @@ export default function LandingPage() {
                         ))}
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Testimonials */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -706,10 +672,10 @@ export default function LandingPage() {
                         </motion.div>
                     ))}
                 </div>
-            </section>
+            </section >
 
             {/* Video Demo */}
-            <section id="demo" className="relative z-10 container mx-auto px-6 py-20">
+            < section id="demo" className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -740,10 +706,10 @@ export default function LandingPage() {
                         </div>
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* FAQ Section */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -801,10 +767,10 @@ export default function LandingPage() {
                         ))}
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Trust Badges */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -837,10 +803,10 @@ export default function LandingPage() {
                         ))}
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Newsletter Signup */}
-            <section className="relative z-10 container mx-auto px-6 py-20">
+            < section className="relative z-10 container mx-auto px-6 py-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -896,10 +862,10 @@ export default function LandingPage() {
                         )}
                     </div>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Final CTA Section */}
-            <section className="relative z-10 container mx-auto px-6 py-20 mb-20">
+            < section className="relative z-10 container mx-auto px-6 py-20 mb-20" >
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
@@ -919,10 +885,10 @@ export default function LandingPage() {
                         Get Started for Free
                     </Link>
                 </motion.div>
-            </section>
+            </section >
 
             {/* Footer */}
-            <footer className="relative z-10 border-t border-gray-200 bg-white/50 backdrop-blur-sm py-12">
+            < footer className="relative z-10 border-t border-gray-200 bg-white/50 backdrop-blur-sm py-12" >
                 <div className="container mx-auto px-6">
                     <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                         <div className="flex items-center gap-2">
@@ -947,7 +913,7 @@ export default function LandingPage() {
                         </p>
                     </div>
                 </div>
-            </footer>
-        </div>
+            </footer >
+        </div >
     );
 }
