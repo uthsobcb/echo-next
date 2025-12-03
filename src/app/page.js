@@ -1,5 +1,5 @@
 // import LandingPage from "@/app/landing/landing";
-import BLandingPage from "@/app/b-landing/page"
+import LandingPage from "@/app/a-landing/page"
 import { auth } from "auth";
 import GreetingsPage from "@/app/components/Greeting";
 export default async function Home() {
@@ -8,6 +8,6 @@ export default async function Home() {
   if (session?.user) {
     return <GreetingsPage name={name} />;
   } else {
-    return <BLandingPage />;
+    return <LandingPage />;
   }
 }
