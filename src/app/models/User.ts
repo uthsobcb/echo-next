@@ -9,6 +9,7 @@ interface IUser {
     badge: string[];
     resetPasswordCode?: string;
     resetPasswordExpires?: Date;
+    wantsWeeklyReport?: boolean;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -54,6 +55,10 @@ const UserSchema = new Schema<IUser>({
         type: Date,
         required: false,
         default: null
+    },
+    wantsWeeklyReport: {
+        type: Boolean,
+        default: true
     }
 });
 

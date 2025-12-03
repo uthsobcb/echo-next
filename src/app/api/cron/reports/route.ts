@@ -9,7 +9,7 @@ export async function GET(req: NextRequest) {
         await connect();
         const resend = new Resend(process.env.RESEND_API_KEY);
 
-        const users = await UserModel.find({});
+        const users = await UserModel.find({ wantsWeeklyReport: { $ne: false } });
         const oneWeekAgo = new Date();
         oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
 

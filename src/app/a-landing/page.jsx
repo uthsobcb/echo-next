@@ -110,63 +110,104 @@ export default function LandingPage() {
         }
     ];
 
+    // const testimonials = [
+    //     {
+    //         name: "Sarah Chen",
+    //         role: "Graduate Student",
+    //         content: "Echo has transformed how I process my thoughts. The AI insights are incredibly accurate and have helped me understand my emotional patterns better.",
+    //         rating: 5,
+    //         avatar: "SC"
+    //     },
+    //     {
+    //         name: "Marcus Johnson",
+    //         role: "Software Engineer",
+    //         content: "The todo extraction feature is a game-changer. I no longer lose track of tasks buried in my journal entries. Absolutely love it!",
+    //         rating: 5,
+    //         avatar: "MJ"
+    //     },
+    //     {
+    //         name: "Emily Rodriguez",
+    //         role: "Therapist",
+    //         content: "I recommend Echo to all my clients. The mood tracking and analytics provide valuable insights that complement our therapy sessions.",
+    //         rating: 5,
+    //         avatar: "ER"
+    //     },
+    //     {
+    //         name: "David Kim",
+    //         role: "Entrepreneur",
+    //         content: "Best journaling app I've ever used. The OCR feature lets me digitize my handwritten notes instantly. Worth every penny!",
+    //         rating: 5,
+    //         avatar: "DK"
+    //     }
+    // ];
+
     const testimonials = [
         {
-            name: "Sarah Chen",
-            role: "Graduate Student",
-            content: "Echo has transformed how I process my thoughts. The AI insights are incredibly accurate and have helped me understand my emotional patterns better.",
-            rating: 5,
-            avatar: "SC"
+            name: "Shihab",
+            role: "Daily User",
+            content: "It's fun journaling & chatting with Echo. Very well done!",
+            avatar: "/assets/shihab.png",
+            rating: 5
         },
         {
-            name: "Marcus Johnson",
-            role: "Software Engineer",
-            content: "The todo extraction feature is a game-changer. I no longer lose track of tasks buried in my journal entries. Absolutely love it!",
-            rating: 5,
-            avatar: "MJ"
+            name: "Arafath",
+            role: "Student",
+            content: "The AI insights are so helpful and spot on.",
+            avatar: "/assets/arafath.png",
+            rating: 5
         },
         {
-            name: "Emily Rodriguez",
-            role: "Therapist",
-            content: "I recommend Echo to all my clients. The mood tracking and analytics provide valuable insights that complement our therapy sessions.",
-            rating: 5,
-            avatar: "ER"
+            name: "Evak Chan",
+            role: "from ProductHunt",
+            content: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
+            avatar: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+            rating: 5
         },
         {
-            name: "David Kim",
-            role: "Entrepreneur",
-            content: "Best journaling app I've ever used. The OCR feature lets me digitize my handwritten notes instantly. Worth every penny!",
-            rating: 5,
-            avatar: "DK"
-        }
+            name: "Md Mobashir Hasan",
+            role: "from ProductHunt",
+            content: "Love what you have built, Uthsob! Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing. Maybe voice notes could be a cool add-on for days when typing feels hard. Keep going — Echo is something special! ☁️✨",
+            avatar: "https://ph-avatars.imgix.net/5085015/cfa4d47f-0001-4181-a126-440f48e1368c.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
+            rating: 5
+        },
     ];
 
     const faqs = [
         {
-            question: "Is Echo really free?",
-            answer: "Yes! Echo offers a generous free tier with all core features including journaling, mood tracking, and AI analysis. Premium features like advanced analytics and unlimited OCR scans are available in our paid plans."
+            question: "How does Echo's AI mood analysis work?",
+            answer: "Echo uses advanced natural language processing to analyze the emotional tone, sentiment, and psychological patterns in your writing. It provides real-time insights while maintaining complete privacy through end-to-end encryption."
         },
         {
-            question: "How secure is my data?",
-            answer: "Your privacy is our top priority. All journal entries are encrypted end-to-end using AES-256 encryption. We never read your entries, and you're the only one with access to your data."
+            question: "Can I scan handwritten journal pages?",
+            answer: "Yes! Echo includes advanced OCR (Optical Character Recognition) technology. Simply use your device's camera to scan handwritten notes, and they'll be converted to searchable digital text automatically."
         },
         {
-            question: "Can I export my journal entries?",
-            answer: "Absolutely! You can export all your entries in multiple formats including PDF, Markdown, and JSON. Your data is always yours to keep."
+            question: "How does the smart todo extraction work?",
+            answer: "Echo's AI reads your journal entries and automatically identifies actionable tasks, goals, and commitments. These are organized into categories like 'personal', 'work', or 'mental health' and tracked separately from your journal."
         },
         {
-            question: "Does the AI read all my entries?",
-            answer: "The AI processes your entries locally on your device for mood analysis. Only anonymized, encrypted metadata is used to improve our models. Your actual journal content never leaves your device unencrypted."
+            question: "Is my data really private and secure?",
+            answer: "Absolutely. Echo uses military-grade end-to-end encryption. Your journal content is encrypted before it leaves your device, and even we can't read it. You have full control over your data with export capabilities."
         },
         {
-            question: "What makes Echo different from other journaling apps?",
-            answer: "Echo combines traditional journaling with cutting-edge AI features like mood analysis, smart todo extraction, OCR scanning, and a conversational AI companion. Plus, we prioritize privacy with end-to-end encryption."
+            question: "What makes Echo's AI chat different from other chatbots?",
+            answer: "Echo remembers your conversation history and learns from your journaling patterns to provide personalized, contextual support. It's designed specifically for emotional wellness and mental health conversations."
         },
         {
-            question: "Can I use Echo on multiple devices?",
-            answer: "Yes! Echo syncs seamlessly across all your devices - phone, tablet, and computer. Your entries are always up-to-date wherever you are."
+            question: "Can I use Echo offline?",
+            answer: "Yes! Echo is a Progressive Web App (PWA) that works offline. You can write entries without an internet connection, and they'll sync when you're back online."
+        },
+        {
+            question: "How do the guided meditations work?",
+            answer: "Echo includes built-in breathing exercises with visual guides, ambient sounds, and customizable durations. It's designed to help you center yourself before journaling or whenever you need a moment of calm."
+        },
+        {
+            question: "Can I export my data?",
+            answer: "Yes! You own your data completely. You can export all your entries, mood data, and insights in standard formats anytime. No vendor lock-in, ever."
         }
     ];
+
+
 
     const useCases = [
         {
@@ -224,41 +265,6 @@ export default function LandingPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
-
-            {/* Navigation */}
-            <nav className="relative z-10 bg-white/50 backdrop-blur-md border-b border-gray-200 sticky top-0">
-                <div className="container mx-auto px-6 py-4">
-                    <div className="flex items-center justify-between">
-                        <motion.div
-                            initial={{ opacity: 0, x: -20 }}
-                            animate={{ opacity: 1, x: 0 }}
-                            className="flex items-center gap-2"
-                        >
-                            <Sparkles className="w-8 h-8 text-indigo-600" />
-                            <span className="text-2xl font-bold bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                Echo
-                            </span>
-                        </motion.div>
-
-                        <div className="flex items-center gap-4">
-                            <div className="hidden md:flex gap-4">
-                                <Link
-                                    href="/login"
-                                    className="px-6 py-2 rounded-full border border-indigo-300 hover:border-indigo-500 transition-all duration-300 hover:shadow-lg hover:shadow-indigo-200"
-                                >
-                                    Sign In
-                                </Link>
-                                <Link
-                                    href="/register"
-                                    className="px-6 py-2 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-300 shadow-lg shadow-indigo-300 hover:shadow-indigo-400"
-                                >
-                                    Get Started
-                                </Link>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </nav>
 
             {/* Hero Section */}
             <section className="relative z-10 container mx-auto px-6 py-20 md:py-32">
@@ -653,9 +659,7 @@ export default function LandingPage() {
                             className="p-6 rounded-2xl bg-white/80 border-gray-200 border backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
                         >
                             <div className="flex items-center gap-3 mb-4">
-                                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
-                                    {testimonial.avatar}
-                                </div>
+                                <Image src={testimonial.avatar} alt={testimonial.name} width={40} height={40} className="rounded-full" />
                                 <div>
                                     <div className="font-semibold">{testimonial.name}</div>
                                     <div className="text-sm text-gray-600">{testimonial.role}</div>
@@ -769,100 +773,7 @@ export default function LandingPage() {
                 </motion.div>
             </section >
 
-            {/* Trust Badges */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-5xl mx-auto"
-                >
-                    <h3 className="text-center text-lg text-gray-600 mb-8">
-                        Trusted by users worldwide
-                    </h3>
-                    <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-                        {[
-                            { icon: Shield, label: "AES-256 Encrypted" },
-                            { icon: Lock, label: "GDPR Compliant" },
-                            { icon: Award, label: "Best App 2024" },
-                            { icon: Users, label: "10K+ Users" }
-                        ].map((badge, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="flex flex-col items-center gap-3 p-6 rounded-2xl bg-white/50 backdrop-blur-sm"
-                            >
-                                <badge.icon className="w-10 h-10 text-indigo-600" />
-                                <span className="text-sm font-semibold text-center text-gray-700">
-                                    {badge.label}
-                                </span>
-                            </motion.div>
-                        ))}
-                    </div>
-                </motion.div>
-            </section >
 
-            {/* Newsletter Signup */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-2xl mx-auto text-center"
-                >
-                    <div className="p-12 rounded-3xl bg-white/80 border-gray-200 border backdrop-blur-sm">
-                        <Mail className="w-12 h-12 text-indigo-600 mx-auto mb-6" />
-                        <h2 className="text-3xl md:text-4xl font-bold mb-4">
-                            Stay Updated
-                        </h2>
-                        <p className="text-gray-700 mb-8">
-                            Get the latest features, tips, and insights delivered to your inbox
-                        </p>
-
-                        <form onSubmit={handleNewsletterSubmit} className="flex flex-col sm:flex-row gap-4">
-                            <input
-                                type="email"
-                                value={email}
-                                onChange={(e) => setEmail(e.target.value)}
-                                placeholder="Enter your email"
-                                className="flex-1 px-6 py-4 rounded-full bg-white border-gray-300 text-gray-900 border focus:outline-none focus:ring-2 focus:ring-indigo-600"
-                                required
-                            />
-                            <button
-                                type="submit"
-                                className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold transition-all duration-300 hover:scale-105 shadow-lg"
-                            >
-                                Subscribe
-                            </button>
-                        </form>
-
-                        {newsletterStatus === "success" && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-4 text-green-600 flex items-center justify-center gap-2"
-                            >
-                                <Check className="w-5 h-5" />
-                                <span>Thanks for subscribing!</span>
-                            </motion.div>
-                        )}
-
-                        {newsletterStatus === "error" && (
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                className="mt-4 text-red-600 flex items-center justify-center gap-2"
-                            >
-                                <X className="w-5 h-5" />
-                                <span>Please enter a valid email</span>
-                            </motion.div>
-                        )}
-                    </div>
-                </motion.div>
-            </section >
 
             {/* Final CTA Section */}
             < section className="relative z-10 container mx-auto px-6 py-20 mb-20" >
@@ -887,33 +798,6 @@ export default function LandingPage() {
                 </motion.div>
             </section >
 
-            {/* Footer */}
-            < footer className="relative z-10 border-t border-gray-200 bg-white/50 backdrop-blur-sm py-12" >
-                <div className="container mx-auto px-6">
-                    <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-                        <div className="flex items-center gap-2">
-                            <Sparkles className="w-6 h-6 text-indigo-600" />
-                            <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                                Echo
-                            </span>
-                        </div>
-                        <div className="flex gap-8 text-gray-600">
-                            <Link href="/legal/privacy" className="hover:text-indigo-600 transition-colors">
-                                Privacy
-                            </Link>
-                            <Link href="/legal/terms" className="hover:text-indigo-600 transition-colors">
-                                Terms
-                            </Link>
-                            <Link href="/guide" className="hover:text-indigo-600 transition-colors">
-                                Guide
-                            </Link>
-                        </div>
-                        <p className="text-gray-600 text-sm">
-                            © 2024 Echo. All rights reserved.
-                        </p>
-                    </div>
-                </div>
-            </footer >
         </div >
     );
 }

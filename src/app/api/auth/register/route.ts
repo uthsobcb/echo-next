@@ -20,6 +20,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
 
+    if (password.length < 6) {
+      return NextResponse.json({ message: "Password must be at least 6 characters long" }, { status: 400 });
+    }
     const existingUser = await UserModel.findOne({ email });
     if (existingUser) {
       return NextResponse.json({ message: "User already exists" }, { status: 400 });
@@ -113,7 +116,7 @@ export async function POST(req: NextRequest) {
     `;
 
     await resend.emails.send({
-      from: "Echo☁️<echo@uthsob.ninja>",
+      from: "Echo☁️<welcome@my-echo.space>",
       to: email,
       subject: "Welcome to Echo - Your AI Journaling Companion!",
       html: emailHtml,

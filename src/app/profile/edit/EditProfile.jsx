@@ -11,6 +11,7 @@ export default function EditProfile({ user }) {
     const [name, setName] = useState(user.name);
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+    const [wantsWeeklyReport, setWantsWeeklyReport] = useState(user.wantsWeeklyReport ?? true);
     const [isUpdating, setIsUpdating] = useState(false);
 
     const handleImageUpload = async (event) => {
@@ -46,6 +47,7 @@ export default function EditProfile({ user }) {
                 image: profileImage,
                 currentPassword: currentPassword || undefined, // Only send if entered
                 newPassword: newPassword || undefined, // Only send if entered
+                wantsWeeklyReport,
             });
 
             if (response.status === 200) {
@@ -147,6 +149,28 @@ export default function EditProfile({ user }) {
                                             disabled
                                         />
                                         <p className="mt-2 text-sm text-gray-500">Email cannot be changed</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* Preferences Section */}
+                            <div className="bg-white rounded-xl">
+                                <h2 className="text-xl font-semibold text-gray-900 mb-6">Preferences</h2>
+                                <div className="space-y-6">
+                                    <div className="flex items-center justify-between">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700">Weekly Mood Report</label>
+                                            <p className="text-sm text-gray-500">Receive a weekly summary of your mood entries via email.</p>
+                                        </div>
+                                        <label className="relative inline-flex items-center cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                className="sr-only peer"
+                                                checked={wantsWeeklyReport}
+                                                onChange={(e) => setWantsWeeklyReport(e.target.checked)}
+                                            />
+                                            <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-blue-300 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
+                                        </label>
                                     </div>
                                 </div>
                             </div>
