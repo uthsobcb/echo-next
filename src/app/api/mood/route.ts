@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { connect } from "@/app/lib/mongodb";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });

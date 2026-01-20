@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import Chat from "../../models/Chat";
 import { connect } from "../../lib/mongodb";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import mongoose from "mongoose";
 
 import type { IMessage } from "../../models/Chat";

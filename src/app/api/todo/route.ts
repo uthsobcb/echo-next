@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import { connect } from "@/app/lib/mongodb";
 import Todo from "@/app/models/Todo";
 

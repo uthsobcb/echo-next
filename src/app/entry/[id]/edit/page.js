@@ -1,5 +1,5 @@
 import axios from "axios";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from "react-toastify";

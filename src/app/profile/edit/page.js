@@ -1,4 +1,4 @@
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import EditProfile from "./EditProfile";
 
 export default async function ProfilePage() {

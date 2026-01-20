@@ -6,7 +6,7 @@ import axios from "axios";
 import Link from "next/link";
 import { toast } from "react-toastify";
 import Image from "next/image";
-import { signIn } from "next-auth/react";
+
 export default function SignupPage() {
     const router = useRouter();
     const [error, setError] = useState("");
@@ -42,8 +42,8 @@ export default function SignupPage() {
     };
 
     async function handleGoogleSignIn() {
-        setLoading(true);
-        signIn("google", { callbackUrl: "/entry" });
+        // Google OAuth will be implemented separately if needed
+        toast.info("Google Sign-in coming soon!");
     }
     return (
         <div className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 lg:p-12">

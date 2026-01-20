@@ -1,7 +1,7 @@
 
 
 import Image from 'next/image';
-import { signIn, signOut, auth } from 'auth';
+import { auth } from '@/app/lib/auth';
 import Link from 'next/link';
 import SignOut from './SignOut';
 import MobileMenu from './MobileMenu';
@@ -9,15 +9,18 @@ import axios from 'axios';
 import { Brain } from 'lucide-react';
 export default async function NavBar() {
     const session = await auth();
-    let userData = [];
-    try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/profile`, {
-            headers: { Authorization: `Bearer ${session.accessToken}` },
-            withCredentials: true,
-        });
-        userData = response.data.user;
-    } catch (error) {
-        console.log("Error fetching entries:", error.response?.data || error.message);
+    let userData = null;
+
+    if (session?.accessToken) {
+        try {
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/profile`, {
+                headers: { Authorization: `Bearer ${session.accessToken}` },
+                withCredentials: true,
+            });
+            userData = response.data.user;
+        } catch (error) {
+            console.log("Error fetching profile:", error.response?.data || error.message);
+        }
     }
     return (
         <header className="flex items-center justify-center m-3">

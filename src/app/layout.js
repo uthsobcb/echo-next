@@ -39,6 +39,11 @@ export const metadata = {
     "journaling for mental health",
     "journaling for self-reflection",
     "journaling for personal growth",
+    "best journaling apps",
+    "best journaling apps 2025 features",
+    "Day One: Daily Journal & Diary",
+    "Reddit: Best Journaling Apps",
+    "Duolingo for journaling"
   ],
   icons: {
     apple: [

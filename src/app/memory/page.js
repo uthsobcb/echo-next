@@ -1,4 +1,4 @@
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import ProfileEntries from '../profile/Components/ProfileEntries'
 import axios from "axios";
 import { BookOpenCheck, CalendarDays, Quote } from "lucide-react";

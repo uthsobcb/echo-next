@@ -1,7 +1,6 @@
 import Link from 'next/link';
 import Image from 'next/image';
-import { auth } from "auth";
-import { doSignOut } from '../action';
+import { auth } from "@/app/lib/auth";
 import axios from 'axios';
 import ProfileEntries from './Components/ProfileEntries';
 import BetterMood from './Components/BetterMood';

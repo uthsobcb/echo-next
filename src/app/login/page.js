@@ -2,7 +2,6 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
-import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import Image from "next/image";
@@ -20,20 +19,21 @@ export default function Login() {
         setLoading(true);
 
         try {
-            const result = await signIn("credentials", {
-                redirect: false,
-                email,
-                password,
+            const response = await fetch("/api/auth/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email, password }),
             });
 
-            if (result?.error) {
-                setError(result.error);
-                toast.error("Your mail or password is incorrect. Please Try with correct mail and password.");
+            const data = await response.json();
 
+            if (!response.ok) {
+                setError(data.error || "Login failed");
+                toast.error(data.error || "Your mail or password is incorrect. Please try with correct mail and password.");
             } else {
-                router.push("/entry", { replace: true });
+                toast.success("Login successful!");
+                router.push("/entry");
                 router.refresh();
-
             }
         } catch (error) {
             setError("Login failed. Please try again.");
@@ -44,8 +44,8 @@ export default function Login() {
     }
 
     async function handleGoogleSignIn() {
-        setLoading(true);
-        signIn("google", { callbackUrl: "/entry" });
+        // Google OAuth will be implemented separately if needed
+        toast.info("Google Sign-in coming soon!");
     }
 
     return (

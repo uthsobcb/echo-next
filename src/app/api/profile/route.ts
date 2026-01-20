@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import UserModel from "@/app/models/User";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 import { jwtVerify } from "jose";
 
 export async function GET(req: NextRequest) {

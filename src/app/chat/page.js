@@ -1,5 +1,7 @@
 import ChatBox from "./ChatComponent";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
+
+export const dynamic = 'force-dynamic';
 
 export default async function page() {
     const session = await auth();

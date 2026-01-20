@@ -1,10 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import bcrypt from "bcrypt";
-import { SignJWT } from "jose";
-import { connect } from "../../../lib/mongodb";
-import User from "../../../models/User";
-
-const JWT_SECRET = process.env.JWT_SECRET || "";
+import bcrypt from "bcryptjs";
+import { connect } from "@/app/lib/mongodb";
+import User from "@/app/models/User";
+import { createToken, setAuthCookie } from "@/app/lib/auth";
 
 export async function POST(req: NextRequest) {
     try {
@@ -29,15 +27,29 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
         }
 
-        // Generate a JWT
-        const secret = new TextEncoder().encode(JWT_SECRET);
-        const token = await new SignJWT({ userId: user._id.toString() })
-            .setProtectedHeader({ alg: 'HS256' })
-            .setIssuedAt()
-            .setExpirationTime('1h')
-            .sign(secret);
+        // Generate a JWT with user info
+        const token = await createToken({
+            userId: user._id.toString(),
+            name: user.name,
+            email: user.email,
+            image: user.image,
+            subscription: user.subscription,
+            badge: user.badge,
+        });
 
-        return NextResponse.json({ token, message: "Login successful." });
+        // Set the auth cookie
+        await setAuthCookie(token);
+
+        return NextResponse.json({
+            token,
+            message: "Login successful.",
+            user: {
+                id: user._id.toString(),
+                name: user.name,
+                email: user.email,
+                image: user.image,
+            }
+        });
     } catch (error) {
         console.error("Error in login route:", error);
         return NextResponse.json({ error: "Internal server error." }, { status: 500 });

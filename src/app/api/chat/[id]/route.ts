@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Chat from "@/app/models/Chat";
 import { connect } from "@/app/lib/mongodb";
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {

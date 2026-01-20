@@ -3,7 +3,7 @@ import { connect } from "@/app/lib/mongodb";
 import UserModel from '@/app/models/User';
 import Entry from '@/app/models/Mood';
 import Mood from '@/app/models/Mood';
-import { auth } from "auth";
+import { auth } from "@/app/lib/auth";
 
 export async function GET(req: NextRequest) {
     try {
