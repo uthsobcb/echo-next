@@ -719,10 +719,12 @@ export default function LandingPage() {
                         >
                             <Play className="w-8 h-8 text-indigo-600 ml-1" />
                         </motion.div>
-                        <div className="absolute bottom-8 left-8 right-8 text-left">
-                            <div className="text-white text-2xl font-bold mb-2">Echo Product Demo</div>
-                            <div className="text-white/80">3 minutes • Full feature walkthrough</div>
-                        </div>
+                        <Link href="https://app.supademo.com/demo/cm81zjbhu0hsbicgem08esrl5?utm_source=link" className="absolute inset-0" >
+                            <div className="absolute bottom-8 left-8 right-8 text-left">
+                                <div className="text-white text-2xl font-bold mb-2">Echo Product Demo</div>
+                                <div className="text-white/80">3 minutes • Full feature walkthrough</div>
+                            </div>
+                        </Link>
                     </div>
                 </motion.div>
             </section >
