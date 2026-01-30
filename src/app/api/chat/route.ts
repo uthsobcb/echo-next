@@ -1,14 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import Chat from "../../models/Chat";
 import { connect } from "../../lib/mongodb";
 import { auth } from "@/app/lib/auth";
-import mongoose from "mongoose";
+import { encrypt, decrypt } from "@/app/lib/encryption";
+import OpenAI from "openai";
 
 import type { IMessage } from "../../models/Chat";
 
-const apiKey = process.env.GEMINI_API!;
-const genAI = new GoogleGenerativeAI(apiKey);
+const openai = new OpenAI({
+    apiKey: process.env.OPENROUTER_API_KEY,
+    baseURL: "https://openrouter.ai/api/v1",
+    defaultHeaders: {
+        "HTTP-Referer": "https://echo-companion.vercel.app", // Change this to your site's URL
+        "X-Title": "Echo Companion",
+    },
+});
+
 const SYSTEM_PROMPT = `You are Echo, an empathetic AI companion designed to support users through journaling and self-reflection.
 
 Your role is to:
@@ -24,9 +31,7 @@ You will be given:
 2. A summary of the current conversation to date — use it to continue the chat without repeating past content.
 3. A message from the user — this is what you must directly respond to.
 
-Always aim to make the user feel heard, seen, and safe.
-
-Begin the response now.`;
+Always aim to make the user feel heard, seen, and safe.`;
 
 export async function POST(req: NextRequest) {
     try {
@@ -44,8 +49,6 @@ export async function POST(req: NextRequest) {
 
         await connect();
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
-
         // Fetch or create the current chat
         let chat = chatId
             ? await Chat.findById(chatId).exec()
@@ -61,6 +64,13 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Chat not found" }, { status: 404 });
         }
 
+        // Decrypt history for AI context
+        const decryptedThreadSummary = chat.threadSummary ? decrypt(chat.threadSummary) : "";
+        const decryptedMessages = chat.messages.map(m => ({
+            ...m,
+            text: decrypt(m.text)
+        }));
+
         // Fetch summaries from user's other chats (exclude current chat)
         const otherChats = await Chat.find({
             userId: user.id,
@@ -72,58 +82,64 @@ export async function POST(req: NextRequest) {
         const globalContext = otherChats
             .filter(c => c.threadSummary)
             .slice(-5) // Limit to last 5 summaries for token efficiency
-            .map((c, i) => `Chat ${i + 1} Summary: ${c.threadSummary}`)
+            .map((c, i) => `Chat ${i + 1} Summary: ${decrypt(c.threadSummary as string)}`)
             .join("\n\n");
 
-        // Add new user message
+        // Add new user message (Encrypted for storage)
         const newUserMessage: IMessage = {
             role: 'user',
-            text: message,
+            text: encrypt(message),
             timestamp: new Date()
         };
         chat.messages.push(newUserMessage);
 
-        // Build system-level prompt with context from other chats and this one
-        const fullPrompt = `${SYSTEM_PROMPT}
+        // Build system-level prompt
+        const fullSystemPrompt = `${SYSTEM_PROMPT}
 
 Here are summaries from the user's previous conversations:
 ${globalContext || "No prior summaries available."}
 
 Current conversation summary so far:
-${chat.threadSummary || "No summary yet."}
+${decryptedThreadSummary || "No summary yet."}`;
 
-Now continue the conversation below.`;
-
-        const chatHistory = [
-            { role: "model", parts: [{ text: fullPrompt }] },
-            ...chat.messages.map(msg => ({
-                role: msg.role === 'user' ? 'user' : 'model',
-                parts: [{ text: msg.text }]
-            }))
+        // Prepare messages for OpenRouter (OpenAI compatible)
+        const chatHistory: any[] = [
+            { role: "system", content: fullSystemPrompt },
+            ...decryptedMessages.map(msg => ({
+                role: msg.role === 'user' ? 'user' : 'assistant',
+                content: msg.text
+            })),
+            { role: "user", content: message }
         ];
 
-        const response = await model.generateContent({ contents: chatHistory });
+        const response = await openai.chat.completions.create({
+            model: "z-ai/glm-4.5-air:free", // Updated to the user's preferred free model
+            messages: chatHistory,
+        });
 
-        const reply = response.response?.candidates?.[0]?.content?.parts?.[0]?.text || "I'm here to listen.";
+        const reply = response.choices[0]?.message?.content || "I'm here to listen.";
 
         const aiMessage: IMessage = {
             role: 'ai',
-            text: reply,
+            text: encrypt(reply),
             timestamp: new Date()
         };
         chat.messages.push(aiMessage);
 
-        // Update thread summary for this chat
+        // Update thread summary
+        const allDecryptedMessages = [...decryptedMessages, { role: 'user', text: message }, { role: 'ai', text: reply }];
         const summaryPrompt = `Summarize the following conversation in 3–4 sentences, showing warmth and empathy:\n\n` +
-            chat.messages.map(m => `${m.role === 'user' ? "User" : "Echo"}: ${m.text}`).join("\n");
+            allDecryptedMessages.map(m => `${m.role === 'user' ? "User" : "Echo"}: ${m.text}`).join("\n");
 
-        const summaryRes = await model.generateContent({
-            contents: [{ role: "user", parts: [{ text: summaryPrompt }] }]
+        const summaryRes = await openai.chat.completions.create({
+            model: "z-ai/glm-4.5-air:free",
+            messages: [{ role: "user", content: summaryPrompt }],
+            max_tokens: 150
         });
 
-        const newSummary = summaryRes.response?.candidates?.[0]?.content?.parts?.[0]?.text;
+        const newSummary = summaryRes.choices[0]?.message?.content;
         if (newSummary) {
-            chat.threadSummary = newSummary;
+            chat.threadSummary = encrypt(newSummary);
         }
 
         chat.updatedAt = new Date();
@@ -132,11 +148,14 @@ Now continue the conversation below.`;
         return NextResponse.json({
             reply,
             chatId: chat._id,
-            messages: chat.messages
+            messages: [...decryptedMessages, { role: 'user', text: message, timestamp: newUserMessage.timestamp }, aiMessage].map(m => ({
+                ...m,
+                text: typeof m.text === 'string' && m.text.includes(':') ? decrypt(m.text) : m.text
+            }))
         });
 
     } catch (error) {
-        console.error("API Error:", error);
+        console.error("OpenRouter API Error:", error);
         return NextResponse.json(
             { error: "Failed to process request" },
             { status: 500 }
@@ -164,7 +183,13 @@ export async function GET(req: NextRequest) {
             .lean()
             .exec();
 
-        return NextResponse.json(chats);
+        // Decrypt thread summaries for the list view
+        const decryptedChats = chats.map(chat => ({
+            ...chat,
+            threadSummary: chat.threadSummary ? decrypt(chat.threadSummary) : ""
+        }));
+
+        return NextResponse.json(decryptedChats);
     } catch (error) {
         console.error("Error fetching chat history:", error);
         return NextResponse.json(

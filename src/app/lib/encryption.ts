@@ -16,12 +16,22 @@ export const encrypt = (text: string) => {
     return iv.toString('hex') + ':' + encrypted;  // Return the IV and encrypted data
 };
 
-// Decrypt function
+// Decrypt function with fallback for unencrypted data
 export const decrypt = (encryptedText: string) => {
-    const [ivHex, encrypted] = encryptedText.split(':');  // Split IV and encrypted data
-    const iv = Buffer.from(ivHex, 'hex');  // Convert IV from hex to buffer
-    const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);  // Use the 32-byte key
-    let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
-    decrypted += decipher.final('utf-8');
-    return decrypted;
+    try {
+        if (!encryptedText || !encryptedText.includes(':')) {
+            return encryptedText;
+        }
+        const [ivHex, encrypted] = encryptedText.split(':');  // Split IV and encrypted data
+        if (!ivHex || !encrypted) return encryptedText;
+
+        const iv = Buffer.from(ivHex, 'hex');  // Convert IV from hex to buffer
+        const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);  // Use the 32-byte key
+        let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
+        decrypted += decipher.final('utf-8');
+        return decrypted;
+    } catch (error) {
+        // console.error("Decryption failed, returning original text:", error);
+        return encryptedText;
+    }
 };

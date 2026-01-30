@@ -28,6 +28,10 @@ const config = {
                 protocol: 'https',
                 hostname: 'ph-avatars.imgix.net',
             },
+            {
+                protocol: 'https',
+                hostname: 'images.unsplash.com',
+            }
         ],
         dangerouslyAllowSVG: true,
     },
