@@ -9,6 +9,7 @@ interface Entry {
     _id: string;
     mood: string;
     content: string;
+    comment?: string;
     createdAt?: string;
 }
 
