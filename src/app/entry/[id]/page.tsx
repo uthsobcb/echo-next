@@ -2,7 +2,7 @@ import Link from "next/link";
 import { auth } from "@/app/lib/auth";
 import axios from "axios";
 import { format } from "date-fns";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 import DeleteButton from "@/app/components/DeleteButon";
 import Image from "next/image";
 export default async function EntryCard({ params }) {

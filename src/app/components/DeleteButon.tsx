@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 
 export default function DeleteButton({ entryId, accessToken }) {
     const router = useRouter();

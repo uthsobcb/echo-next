@@ -3,7 +3,7 @@
 import { MoreHorizontal } from "lucide-react";
 import Image from "next/image";
 import React, { useState, useEffect } from "react";
-import { toast } from "react-toastify";
+import { toast } from "sonner";
 
 export interface AdminUser {
   _id: string;

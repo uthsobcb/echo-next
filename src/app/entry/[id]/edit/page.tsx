@@ -2,7 +2,7 @@ import axios from "axios";
 import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
-import { toast } from "react-toastify";
+import { toast } from 'sonner';
 
 export default async function EditEntryPage({ params }) {
     const session = await auth();

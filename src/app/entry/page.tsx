@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
-import { toast } from 'react-toastify';
+import { toast } from 'sonner';
 
 import JournalPrompt from '@/app/components/JournalPrompt';
 import ScanComponent from '@/app/components/ScanComponent';
