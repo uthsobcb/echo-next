@@ -49,8 +49,7 @@ export default function Login() {
     }
 
     async function handleGoogleSignIn() {
-        // Google OAuth will be implemented separately if needed
-        toast.info("Google Sign-in coming soon!");
+        window.location.href = "/api/auth/google";
     }
 
     return (

@@ -49,7 +49,7 @@ export default function Register() {
     }
 
     async function handleGoogleSignIn() {
-        toast.info("Google Sign-in coming soon!");
+        window.location.href = "/api/auth/google";
     }
 
     return (
