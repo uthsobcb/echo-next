@@ -47,12 +47,30 @@ export async function verifyToken(token: string) {
 }
 
 /**
- * Get the current session from cookies (for server components and API routes)
+ * Get the current session from cookies or Authorization header.
+ * Supports both browser-based requests (cookies) and API-based requests (headers).
  */
-export async function auth(): Promise<Session | null> {
+export async function auth(req?: Request): Promise<Session | null> {
     try {
-        const cookieStore = await cookies();
-        const token = cookieStore.get(TOKEN_NAME)?.value;
+        let token: string | undefined;
+
+        // 1. Check Authorization Header (Bearer Token)
+        if (req) {
+            const authHeader = req.headers.get("authorization");
+            if (authHeader?.startsWith("Bearer ")) {
+                token = authHeader.split(" ")[1];
+            }
+        }
+
+        // 2. Check Cookies if no header token
+        if (!token) {
+            try {
+                const cookieStore = await cookies();
+                token = cookieStore.get(TOKEN_NAME)?.value;
+            } catch (e) {
+                // Ignore errors if called in a context where cookies() is not available
+            }
+        }
 
         if (!token) {
             return null;
@@ -81,6 +99,14 @@ export async function auth(): Promise<Session | null> {
         console.error("Auth error:", error);
         return null;
     }
+}
+
+/**
+ * Convenience helper to get only the userId from a request.
+ */
+export async function getUserIdFromRequest(req: Request): Promise<string | null> {
+    const session = await auth(req);
+    return session?.user?.id || null;
 }
 
 /**

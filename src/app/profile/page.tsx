@@ -7,7 +7,7 @@ import BetterMood from './Components/BetterMood';
 import BadMood from './Components/BadMood';
 import ErrorPage from '../components/ErrorPage';
 import MoodChart from './Components/MoodChart';
-import EntryHeatmap from './Components/EntryHeatmap';
+import StreakCard from './Components/StreakCard';
 import { LogOut } from 'lucide-react'
 
 import type { User as UserInterface } from "@/types/ProfileTypes";
@@ -134,10 +134,6 @@ export default async function User() {
                                         <p className="text-2xl font-bold text-blue-600">{userBadges.length}</p>
                                         <p className="text-sm text-gray-600">Badges</p>
                                     </div>
-                                    <div className="text-center">
-                                        <p className="text-2xl font-bold text-blue-600">{entryCount}</p>
-                                        <p className="text-sm text-gray-600">Entries</p>
-                                    </div>
 
                                 </div>
 
@@ -191,27 +187,24 @@ export default async function User() {
                                 </div>
                             </div>
                         </div>
-                        <div className="border border-gray-300/40 shadow-xl bg-gray-200/60 rounded-xl w-full lg:w-2/3 my-10 p-6">
-                            <div className="flex flex-col items-center p-8 rounded-lg text-center">
-                                <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
-                                <div>
-                                    <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the 7 days</p>
+                        <div className="w-full lg:w-2/3 my-10 space-y-8">
+                            {/* Streak Card */}
+                            <StreakCard entries={journalEntries} />
 
+                            {/* Mood Tracker */}
+                            <div className="border border-gray-300/40 shadow-xl bg-gray-200/60 rounded-3xl p-6">
+                                <div className="flex flex-col items-center p-8 rounded-lg text-center">
+                                    <h1 className="text-4xl font-bold text-gray-800 mb-4">Mood Tracker</h1>
+                                    <div>
+                                        <p className="text-lg text-gray-600 mb-6 leading-none">Mood over the 7 days</p>
+                                    </div>
+                                    <div className="w-full flex">
+                                        <MoodChart selectedData={selectedData} />
+                                    </div>
+                                    {totalValue > 0 ? <BetterMood /> : <BadMood />}
                                 </div>
-                                <div className="w-full flex">
-
-
-                                    <MoodChart selectedData={selectedData} />
-
-
-                                </div>
-
-                                {totalValue > 0 ? <BetterMood /> : <BadMood />}
                             </div>
                         </div>
-                    </div>
-                    <div className='lg:w-2/3 lg:mx-auto my-10'>
-                        <EntryHeatmap token={session.accessToken} />
                     </div>
                     <ProfileEntries session={session} journalEntries={journalEntries} />
                 </>

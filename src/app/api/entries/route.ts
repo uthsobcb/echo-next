@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
-import { jwtVerify } from "jose";
+import { auth } from "@/app/lib/auth";
 import { decrypt } from "@/app/lib/encryption";
 export async function GET(req: NextRequest) {
     try {
@@ -10,29 +10,12 @@ export async function GET(req: NextRequest) {
 
         await connect();
 
-        const authHeader = req.headers.get("authorization");
-        // console.log("Received Authorization Header:", authHeader);
-
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+        const session = await auth(req);
+        if (!session?.user?.id) {
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = (decodedToken as { userId: string }).userId;
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
-        }
+        const userId = session.user.id;
 
         const query: Record<string, any> = {
             userId

@@ -85,3 +85,77 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* Heatmap Styles */
+.react-calendar-heatmap .color-empty {
+  fill: #ebedf0;
+}
+
+.react-calendar-heatmap .color-github-1 {
+  fill: #d6e685;
+}
+
+.react-calendar-heatmap .color-github-2 {
+  fill: #8cc665;
+}
+
+.react-calendar-heatmap .color-github-3 {
+  fill: #44a340;
+}
+
+.react-calendar-heatmap .color-github-4 {
+  fill: #1e6823;
+}
+
+/* Indigo/Blue version to match Echo UI */
+.color-empty {
+  fill: #f3f4f6;
+}
+
+/* gray-100 */
+.color-github-1 {
+  fill: #e0e7ff;
+}
+
+/* indigo-100 */
+.color-github-2 {
+  fill: #a5b4fc;
+}
+
+/* indigo-300 */
+.color-github-3 {
+  fill: #6366f1;
+}
+
+/* indigo-500 */
+.color-github-4 {
+  fill: #3730a3;
+}
+
+/* indigo-900 */
+
+/* Duolingo Streak Styles */
+.streak-fire-gradient {
+  background: linear-gradient(135deg, #ff9d00 0%, #ff5e00 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@keyframes pulse-glow {
+  0% {
+    filter: drop-shadow(0 0 2px rgba(255, 157, 0, 0.4));
+  }
+
+  50% {
+    filter: drop-shadow(0 0 8px rgba(255, 94, 0, 0.7));
+  }
+
+  100% {
+    filter: drop-shadow(0 0 2px rgba(255, 157, 0, 0.4));
+  }
+}
+
+.animate-pulse-glow {
+  animation: pulse-glow 2s infinite ease-in-out;
+}

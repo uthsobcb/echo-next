@@ -1,38 +1,21 @@
 import { NextRequest, NextResponse } from "next/server";
 import Mood from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
-import { jwtVerify } from "jose";
+import { auth } from "@/app/lib/auth";
 import UserModel from "@/app/models/User";
-import { Resend } from 'resend';
+import { sendEmail } from "@/app/lib/email";
 
 // import { sendMail } from "@/app/lib/mailer";
 export async function GET(req: NextRequest) {
     try {
         await connect();
-        const resend = new Resend(process.env.RESEND_API_KEY);
 
-        const authHeader = req.headers.get("authorization");
-
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+        const session = await auth(req);
+        if (!session?.user?.id) {
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = decodedToken.userId;
-        if (!userId) {
-            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
-        }
+        const userId = session.user.id;
 
         const moodData = await Mood.find({ userId }).sort({ createdAt: 1 }).select('mood score');
 
@@ -64,7 +47,7 @@ export async function GET(req: NextRequest) {
                 { _id: userId },
                 { $addToSet: { badge: newBadge } }
             );
-            await resend.emails.send({
+            await sendEmail({
                 from: "Echo☁️ Badge System <echo@uthsob.ninja>",
                 to: email,
                 subject: `🎖️ Congratulations, ${userName}! You've Earned a New Badge!`,

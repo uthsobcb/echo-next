@@ -1,15 +1,19 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
-import { Resend } from "resend";
-
-const resend = new Resend(process.env.RESEND_API_KEY);
+import { sendEmail } from "@/app/lib/email";
 
 export async function POST(req: NextRequest) {
     try {
         await connect();
         const { email } = await req.json();
-        const user = await User.findOne({ email });
+
+        if (!email) {
+            return NextResponse.json({ message: "Email is required" }, { status: 400 });
+        }
+
+        const normalizedEmail = email.toLowerCase().trim();
+        const user = await User.findOne({ email: normalizedEmail });
 
         if (!user) {
             return NextResponse.json({ message: "User not found" }, { status: 400 });
@@ -18,13 +22,12 @@ export async function POST(req: NextRequest) {
         // Generate a 6-digit verification code
         const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
         user.resetPasswordCode = verificationCode;
-        user.resetPasswordExpires = new Date(Date.now() + 6400000); // Code expires in 5 minutes
+        user.resetPasswordExpires = new Date(Date.now() + 300000); // Code expires in 5 minutes (300,000ms)
         await user.save();
 
         // Send email with verification code
-        await resend.emails.send({
-            from: "Echo☁️ <system@my-echo.space>",
-            to: email,
+        const { error } = await sendEmail({
+            to: normalizedEmail,
             subject: "Password Reset Code",
             html: `
             <div style="font-family: Arial, sans-serif; max-width: 600px; margin: auto; padding: 20px; border-radius: 8px; border: 1px solid #e0e0e0; background-color: #ffffff;">
@@ -46,14 +49,20 @@ export async function POST(req: NextRequest) {
                 </p>
                 <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 20px 0;">
                 <p style="color: #777; font-size: 12px; text-align: center;">
-                    This email was sent to ${email} upon request. If you didn’t request this, please ignore it or contact support.
+                    This email was sent to ${normalizedEmail} upon request. If you didn’t request this, please ignore it or contact support.
                 </p>
             </div>
         `,
         });
 
+        if (error) {
+            console.error("Failed to send reset email:", error);
+            return NextResponse.json({ message: "Failed to send verification code. Please try again later." }, { status: 500 });
+        }
+
         return NextResponse.json({ message: "Verification code sent to email." });
     } catch (error) {
-        return NextResponse.json({ message: "Error sending email." }, { status: 500 });
+        console.error("Forgot password error:", error);
+        return NextResponse.json({ message: "Error processing request." }, { status: 500 });
     }
 }

@@ -30,14 +30,18 @@ export async function POST(req: NextRequest) {
         }
 
         // Generate a JWT with user info
-        const token = await createToken({
+        // We use plain objects/strings to avoid DataCloneError in jose/SignJWT
+        const tokenPayload = {
             userId: user._id.toString(),
             name: user.name,
             email: user.email,
             image: user.image,
             subscription: user.subscription,
-            badge: user.badge,
-        });
+            // Spread the array to ensure it's a plain JS array, not a Mongoose array
+            badge: Array.isArray(user.badge) ? [...user.badge] : [],
+        };
+
+        const token = await createToken(tokenPayload);
 
         // Set the auth cookie
         await setAuthCookie(token);

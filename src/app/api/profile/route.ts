@@ -9,26 +9,12 @@ export async function GET(req: NextRequest) {
     try {
         await connect();
 
-        const authHeader = req.headers.get("authorization");
-
-
-        if (!authHeader || !authHeader.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
+        const session = await auth(req);
+        if (!session?.user?.id) {
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = decodedToken.userId;
+        const userId = session.user.id;
 
         const user = await UserModel.findOne({ _id: userId });
         // const user = await UserModel.findById(userId);

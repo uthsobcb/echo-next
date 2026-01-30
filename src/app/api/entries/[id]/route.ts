@@ -1,35 +1,16 @@
 import { NextResponse, NextRequest } from "next/server";
 import Entry from "@/app/models/Mood";
 import { connect } from "@/app/lib/mongodb";
-import { jwtVerify } from "jose";
+import { auth, getUserIdFromRequest } from "@/app/lib/auth";
 import mongoose from "mongoose";
 import { encrypt, decrypt } from "@/app/lib/encryption";
 export async function GET(req: NextRequest, { params }: { params: Promise<{ id: string }> }) {
     try {
         await connect();
 
-        const authHeader = req.headers.get("authorization");
-        // console.log("Received Authorization Header:", authHeader);
-
-        if (!authHeader?.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = decodedToken.userId;
+        const userId = await getUserIdFromRequest(req);
         if (!userId) {
-            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
         const entry = await Entry.findOne({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
@@ -61,28 +42,9 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
     try {
         await connect();
 
-        const authHeader = req.headers.get("authorization");
-        // console.log("Received Authorization Header:", authHeader);
-
-        if (!authHeader?.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
-        }
-
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = decodedToken.userId;
+        const userId = await getUserIdFromRequest(req);
         if (!userId) {
-            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
         const deletedEntry = await Entry.findByIdAndDelete({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
@@ -144,27 +106,9 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
     try {
         await connect();
 
-        const authHeader = req.headers.get("authorization");
-        // console.log("Received Authorization Header:", authHeader);
-
-        if (!authHeader?.startsWith("Bearer ")) {
-            return NextResponse.json({ message: "Unauthorized - No token provided" }, { status: 401 });
-        }
-        const token = authHeader.split(" ")[1];
-
-        let decodedToken;
-        try {
-            const secret = new TextEncoder().encode(process.env.NEXTAUTH_SECRET!);
-            const { payload } = await jwtVerify(token, secret);
-            decodedToken = payload;
-            // console.log("Decoded Token:", decodedToken);
-        } catch (err) {
-            return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
-        }
-
-        const userId = (decodedToken as { userId: string }).userId;
+        const userId = await getUserIdFromRequest(req);
         if (!userId) {
-            return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
+            return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
         // Parse the request body to extract update data
