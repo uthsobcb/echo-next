@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, TrendingUp } from "lucide-react";
+import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, Sparkles, TrendingUp } from "lucide-react";
 export default function GreetingsPage({ name }: { name: string }) {
     const [greeting, setGreeting] = useState("");
 
@@ -62,6 +62,12 @@ export default function GreetingsPage({ name }: { name: string }) {
             navigate: "/legal/privacy",
             icon: <Lock className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
         },
+        {
+            title: "Space",
+            description: "Share your thoughts with the world",
+            navigate: "/space",
+            icon: <Sparkles className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
+        }
 
     ];
 

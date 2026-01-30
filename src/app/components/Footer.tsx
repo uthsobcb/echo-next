@@ -36,7 +36,7 @@ export default function Footer() {
                                     <Link href="/guide" className="hover:text-indigo-600 transition-colors">Guide</Link>
                                 </li>
                                 <li>
-                                    <Link href="/blog" className="hover:text-indigo-600 transition-colors">Blog</Link>
+                                    <Link href="/space" className="hover:text-indigo-600 transition-colors">Space</Link>
                                 </li>
                             </ul>
                         </div>
