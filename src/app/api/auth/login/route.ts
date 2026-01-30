@@ -18,12 +18,14 @@ export async function POST(req: NextRequest) {
         // Find the user
         const user = await User.findOne({ email });
         if (!user) {
+            console.log(`Login failed: User with email ${email} not found.`);
             return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
         }
 
         // Verify the password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
+            console.log(`Login failed: Password mismatch for user ${email}.`);
             return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
         }
 
@@ -50,8 +52,8 @@ export async function POST(req: NextRequest) {
                 image: user.image,
             }
         });
-    } catch (error) {
-        console.error("Error in login route:", error);
+    } catch (error: any) {
+        console.error("Error in login route:", error.message, error.stack);
         return NextResponse.json({ error: "Internal server error." }, { status: 500 });
     }
 }
