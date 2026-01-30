@@ -22,12 +22,25 @@ const badges = [
 import BadgeModal from './Components/BadgeModal.client';
 import SignOutButton from './Components/SignOutButton';
 
+interface MoodData {
+    mood: string;
+    score: number;
+}
+
+interface UserData {
+    image?: string;
+    name?: string;
+    email?: string;
+    subscription?: string;
+    badge?: string[];
+}
+
 export default async function User() {
     const session = await auth();
     const user = session?.user || null;
-    let moodData: any[] = [];
+    let moodData: MoodData[] = [];
     let journalEntries: any[] = [];
-    let userData: any = {};
+    let userData: UserData = {};
 
     if (session) {
         try {

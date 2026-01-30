@@ -5,16 +5,15 @@ import { format } from "date-fns";
 import { toast } from 'sonner';
 import DeleteButton from "@/app/components/DeleteButon";
 import Image from "next/image";
-export default async function EntryCard({ params }) {
+export default async function EntryCard({ params }: { params: Promise<{ id: string }> }) {
     const session = await auth();
-    let entry = [];
+    let entry: any = [];
     if (!session) {
         return <p className="text-red-500">Unauthorized - Please log in</p>;
-        toast.error("Unauthorized - Please log in");
     }
     try {
-        const parID = await params.id;
-        const response = await axios.get(`${process.env.BASEURL}/api/entries/${parID}`, {
+        const { id } = await params;
+        const response = await axios.get(`${process.env.BASEURL}/api/entries/${id}`, {
             headers: { Authorization: `Bearer ${session.accessToken}` },
             withCredentials: true,
         });

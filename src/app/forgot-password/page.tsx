@@ -12,7 +12,7 @@ export default function ForgotPassword() {
     const [step, setStep] = useState(1); // Step 1: Enter email, Step 2: Enter code & new password
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const handleSendCode = async (e) => {
+    const handleSendCode = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");
@@ -30,7 +30,7 @@ export default function ForgotPassword() {
         setLoading(false);
     };
 
-    const handleResetPassword = async (e) => {
+    const handleResetPassword = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
         setMessage("");

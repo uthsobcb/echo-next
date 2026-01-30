@@ -8,8 +8,8 @@ import "react-calendar-heatmap/dist/styles.css";
 const HeatMap = dynamic(() => import('react-calendar-heatmap'), { ssr: false });
 
 
-export default function EntryHeatmap({ token }) {
-    const [entries, setEntries] = useState([]);
+export default function EntryHeatmap({ token }: { token: string }) {
+    const [entries, setEntries] = useState<any[]>([]);
 
     useEffect(() => {
         const fetchEntries = async () => {
@@ -33,17 +33,17 @@ export default function EntryHeatmap({ token }) {
     const firstEntryThisYear = entries
         .map(v => new Date(v.date))
         .filter(date => date.getFullYear() === currentYear)
-        .sort((a, b) => a - b)[0];
+        .sort((a: Date, b: Date) => a.getTime() - b.getTime())[0];
 
     const startDate = firstEntryThisYear || new Date(currentYear, 0, 1);
 
 
     const heatmapData = Array.isArray(entries)
-        ? entries.reduce((acc, entry) => {
+        ? entries.reduce((acc: any, entry: any) => {
             const date = new Date(entry.createdAt).toISOString().split('T')[0];
             acc[date] = (acc[date] || 0) + 1;
             return acc;
-        }, {})
+        }, {} as any)
         : {};
 
     const values = Object.entries(heatmapData).map(([date, count]) => ({ date, count }));
@@ -65,9 +65,14 @@ export default function EntryHeatmap({ token }) {
                         if (value.count > 1) return 'color-github-2';
                         return 'color-github-1';
                     }}
-                    tooltipDataAttrs={(value) => ({
-                        'data-tip': `${value.date} — ${value.count} entries`,
-                    })}
+                    tooltipDataAttrs={(value: any) => {
+                        if (!value || !value.date) {
+                            return {};
+                        }
+                        return {
+                            'data-tip': `${value.date} — ${value.count} entries`,
+                        } as any;
+                    }}
                     showWeekdayLabels
                 />
             </div>

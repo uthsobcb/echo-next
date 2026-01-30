@@ -16,7 +16,7 @@ export default function BreathingSession() {
     const [hasFinished, setHasFinished] = useState(false);
     const [totalSessionTime, setTotalSessionTime] = useState(0);
 
-    const backgroundAudio = useRef(null);
+    const backgroundAudio = useRef<HTMLAudioElement>(null);
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -88,7 +88,7 @@ export default function BreathingSession() {
         setHasFinished(true);
         backgroundAudio.current?.pause();
     };
-    const formatTime = (seconds) => {
+    const formatTime = (seconds: number) => {
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins}:${secs.toString().padStart(2, '0')}`;

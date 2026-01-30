@@ -10,7 +10,12 @@ import {
     Legend
 } from 'recharts';
 
-export default function MoodChart({ selectedData }) {
+interface MoodDataItem {
+    label: string;
+    value: number;
+}
+
+export default function MoodChart({ selectedData }: { selectedData: MoodDataItem[] }) {
     const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#8884d8', '#82ca9d', '#ffc658'];
 
     const processedData = selectedData.map((item, index) => ({

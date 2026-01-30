@@ -13,7 +13,7 @@ const TOKEN_NAME = "auth_token";
 /**
  * Create a signed JWT token
  */
-export async function createToken(payload, expiresIn = "30d") {
+export async function createToken(payload: any, expiresIn = "30d") {
     const token = await new SignJWT(payload)
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
@@ -25,7 +25,7 @@ export async function createToken(payload, expiresIn = "30d") {
 /**
  * Verify and decode a JWT token
  */
-export async function verifyToken(token) {
+export async function verifyToken(token: string) {
     try {
         const { payload } = await jwtVerify(token, JWT_SECRET);
         return payload;
@@ -71,7 +71,7 @@ export async function auth() {
 /**
  * Set the auth token in cookies
  */
-export async function setAuthCookie(token) {
+export async function setAuthCookie(token: string) {
     const cookieStore = await cookies();
     cookieStore.set(TOKEN_NAME, token, {
         httpOnly: true,

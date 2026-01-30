@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { format } from 'date-fns';
 
-function ProfileEntries({ session, journalEntries }) {
+interface ProfileEntriesProps {
+    session: any;
+    journalEntries: any[];
+}
+
+function ProfileEntries({ session, journalEntries }: ProfileEntriesProps) {
     const [searchQuery, setSearchQuery] = useState("");
     const [filteredEntries, setFilteredEntries] = useState(journalEntries);
 

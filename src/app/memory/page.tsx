@@ -14,7 +14,7 @@ export default async function page() {
                 withCredentials: true,
             });
             journalEntries = response.data;
-        } catch (error) {
+        } catch (error: any) {
 
             console.log("Error fetching entries:", error.response?.data || error.message);
         }
