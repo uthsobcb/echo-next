@@ -5,12 +5,19 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import axios from "axios";
 
+interface Entry {
+    _id: string;
+    mood: string;
+    content: string;
+    createdAt?: string;
+}
+
 export default function EntryCard() {
     const router = useRouter();
     const { _id } = useParams();
 
-    const [entry, setEntry] = useState<any>(null);
-    const [error, setError] = useState(null);
+    const [entry, setEntry] = useState<Entry | null>(null);
+    const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
         if (!_id) return;

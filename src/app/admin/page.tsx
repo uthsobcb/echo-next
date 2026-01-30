@@ -6,7 +6,7 @@ import UsersTable, { AdminUser } from './component/users-table';
 
 interface AdminStats {
     users: AdminUser[];
-    mood: any[]; // Using any[] for moods as structure is not fully verified yet, or specific type if known
+    mood: { mood: string }[];
     entries: number;
 }
 
@@ -15,7 +15,7 @@ export default function Page() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [users, setUsers] = useState<AdminUser[]>([]);
-    const [moods, setMoods] = useState<any[]>([]); // Keep as any[] if mood structure is complex/unknown
+    const [moods, setMoods] = useState<{ mood: string }[]>([]);
     const [entries, setEntries] = useState(0);
 
     useEffect(() => {

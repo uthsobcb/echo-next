@@ -162,7 +162,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }
 
-        const userId = (decodedToken as any).userId;
+        const userId = (decodedToken as { userId: string }).userId;
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }

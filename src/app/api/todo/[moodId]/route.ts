@@ -17,7 +17,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ moodId
         const { oldTask, newTask, status } = await req.json();
 
         // Build dynamic update object
-        const updateData: any = {};
+        const updateData: { todo?: string; status?: string } = {};
         if (newTask) updateData.todo = newTask;
         if (status) updateData.status = status;
 

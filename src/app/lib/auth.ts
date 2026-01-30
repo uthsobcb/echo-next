@@ -10,6 +10,18 @@ if (!secret) {
 const JWT_SECRET = new TextEncoder().encode(secret);
 const TOKEN_NAME = "auth_token";
 
+export interface Session {
+    user: {
+        id: string;
+        name: string;
+        email: string;
+        image?: string;
+        subscription?: string;
+        badge?: string[];
+    };
+    accessToken: string;
+}
+
 /**
  * Create a signed JWT token
  */
@@ -37,7 +49,7 @@ export async function verifyToken(token: string) {
 /**
  * Get the current session from cookies (for server components and API routes)
  */
-export async function auth() {
+export async function auth(): Promise<Session | null> {
     try {
         const cookieStore = await cookies();
         const token = cookieStore.get(TOKEN_NAME)?.value;
@@ -46,23 +58,26 @@ export async function auth() {
             return null;
         }
 
-        const payload = await verifyToken(token);
+        const payload = await verifyToken(token) as any;
         if (!payload) {
             return null;
         }
 
         return {
             user: {
-                id: payload.userId,
-                name: payload.name,
-                email: payload.email,
-                image: payload.image,
-                subscription: payload.subscription,
-                badge: payload.badge,
+                id: payload.userId as string,
+                name: payload.name as string,
+                email: payload.email as string,
+                image: payload.image as string,
+                subscription: payload.subscription as string,
+                badge: payload.badge as string[],
             },
             accessToken: token,
         };
-    } catch (error) {
+    } catch (error: any) {
+        if (error.digest === 'DYNAMIC_SERVER_USAGE' || error.message?.includes('Dynamic server usage')) {
+            throw error;
+        }
         console.error("Auth error:", error);
         return null;
     }

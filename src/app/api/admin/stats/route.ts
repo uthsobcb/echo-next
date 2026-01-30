@@ -11,7 +11,7 @@ export async function GET(req: NextRequest) {
 
         const userSession = await auth();
 
-        if (!userSession?.user || (userSession.user as any).subscription !== "admin") {
+        if (!userSession?.user || userSession.user.subscription !== "admin") {
             return NextResponse.json(
                 { message: "Unauthorized: Admin access only" },
                 { status: 403 }

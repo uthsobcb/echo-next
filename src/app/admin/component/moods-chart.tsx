@@ -13,7 +13,7 @@ import React from "react";
 
 type Mood =
   | string
-  | { type?: string; count?: number; name?: string; mood?: string;[key: string]: any };
+  | { type?: string; count?: number; name?: string; mood?: string };
 
 export default function MoodsChart({ moods }: { moods: Mood[] }) {
   if (!moods || !Array.isArray(moods) || moods.length === 0) {

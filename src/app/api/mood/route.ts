@@ -162,7 +162,13 @@ Analyze the following journal entry and provide the requested JSON response: "${
         });
         await newMood.save();
 
-        const newTodo = todos.map((item: any) => ({
+        interface TodoItem {
+            todo: string;
+            type: string;
+            status: string;
+        }
+
+        const newTodo = todos.map((item: TodoItem | string) => ({
             userId: user?.id,
             todo: typeof item === 'string' ? item : item.todo,
             type: typeof item === 'string' ? 'general' : item.type,

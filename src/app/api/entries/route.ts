@@ -29,14 +29,14 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Unauthorized - Invalid token" }, { status: 401 });
         }
 
-        const userId = decodedToken.userId;
+        const userId = (decodedToken as { userId: string }).userId;
         if (!userId) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
 
-        const query: any = {
+        const query: Record<string, any> = {
             userId
-        }
+        };
 
         if (search) {
             query["$or"] = [{ content: { $regex: search, $options: "i" } }, { mood: { $regex: search, $options: "i" } }]

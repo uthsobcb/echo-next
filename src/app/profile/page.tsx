@@ -111,10 +111,10 @@ export default async function User() {
                                     {userData?.image && (
                                         <div className="relative">
                                             <Image
-                                                src={userData.image}
+                                                src={userData.image || "/assets/logo.png"}
                                                 height={120}
                                                 width={120}
-                                                alt={userData?.name}
+                                                alt={userData.name || "User Profile"}
                                                 className='rounded-full border-4 border-white shadow-lg object-cover'
                                             />
                                             <div className="absolute -bottom-2 left-1/2 transform -translate-x-1/2 bg-green-500 text-white text-xs px-3 py-1 rounded-full">

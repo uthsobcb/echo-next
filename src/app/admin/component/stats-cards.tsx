@@ -1,12 +1,12 @@
 "use client";
 
 import { Users, BarChart, FileText } from "lucide-react";
-import React from "react";
+import { AdminUser } from "./users-table";
 
-type Mood = { type?: string; name?: string; mood?: string;[key: string]: any } | string;
+type Mood = { type?: string; name?: string; mood?: string } | string;
 
 interface StatsCardsProps {
-  users: any[];
+  users: AdminUser[];
   moods: Mood[];
   entries: number;
 }
