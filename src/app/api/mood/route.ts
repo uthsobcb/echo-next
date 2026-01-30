@@ -4,16 +4,11 @@ import { connect } from "@/app/lib/mongodb";
 import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
+import { decrypt, encrypt } from "@/app/lib/encryption";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
-import {
-    GoogleGenerativeAI,
-} from "@google/generative-ai";
-import { decrypt, encrypt } from "@/app/lib/encryption";
 
-const apiKey = process.env.GEMINI_API;
-const genAI = new GoogleGenerativeAI(apiKey);
 
 const openrouter = new OpenAI({
     apiKey: openRouterApiKey,
@@ -42,7 +37,7 @@ export async function POST(req: Request) {
         }
 
 
-        const model = genAI.getGenerativeModel({ model: "gemini-2.0-flash-exp" });
+
 
         const prompt = `You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:
   - \`mood\`: An object containing:
@@ -61,13 +56,12 @@ Analyze the following journal entry and provide the requested JSON response: "${
 
         let mood, parsedMood, todos = [];
         try {
-
             const completion = await openrouter.chat.completions.create({
                 model: "openai/gpt-4o-mini",
                 messages: [
                     {
                         role: "system",
-                        content: "You are an AI assistant specialized in mood analysis living inside a journal. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single, commonly used word that represents the overall emotional tone, avoiding complex or overly paraphrased terms.\n  - `score`: A numerical rating out of 10, where positive scores indicate positive mood, 0 means neutral, negative score indicates negative mood.\n  - `comment`: A supportive message based on the mood, offering suggestions for improvement if needed.\n- `todo`: An array of objects, where each object represents a meaningful, actionable task identified in the journal entry—either explicitly stated or reasonably inferred. Only include tasks that seem important or relevant to the user's well-being or goals; it's not necessary to list everything.\nEach task should follow this structure:\n    - `todo`: A clear, concise description of the task or goal.\n    - `type`: The category of the task (e.g., \"mental health\", \"general\", \"work\", \"personal\").\n    - `status`: The current status of the task, such as \"pending\", \"completed\", or \"in progress\".\n\nEnsure the response is empathetic and concise."
+                        content: prompt.replace("Analyze the following journal entry and provide the requested JSON response: \"${content}\"", "")
                     },
                     {
                         role: "user",
@@ -76,22 +70,16 @@ Analyze the following journal entry and provide the requested JSON response: "${
                 ],
             });
             mood = completion.choices[0]?.message?.content?.trim();
-
-        } catch (geminiError) {
-            console.error("Error with Gemini API:", geminiError);
-            const result = await model.generateContent({
-                contents: [{
-                    role: "user",
-                    parts: [{ text: prompt }]
-                }]
-            });
+        } catch (error) {
+            console.error("Error with OpenRouter API:", error);
+            return NextResponse.json({ error: "Failed to process mood analysis." }, { status: 500 });
         }
         // const response = result.response;
         // const mood = response.candidates[0].content.parts[0].text;
 
         // console.log(mood);
 
-        function cleanResponse(response) {
+        function cleanResponse(response: string) {
             // Remove markdown code blocks
             let cleaned = response.replace(/```json|```/g, '').trim();
             // Replace control characters (newlines, tabs, etc.) within string values
@@ -135,7 +123,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
                 parsedMood = parsedMood.mood;
             }
 
-            todos = extractedTodos.map((item) => ({
+            todos = extractedTodos.map((item: any) => ({
                 todo: item.todo,
                 type: item.type,
                 status: item.status,
@@ -174,7 +162,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
         });
         await newMood.save();
 
-        const newTodo = todos.map((item) => ({
+        const newTodo = todos.map((item: any) => ({
             userId: user?.id,
             todo: typeof item === 'string' ? item : item.todo,
             type: typeof item === 'string' ? 'general' : item.type,

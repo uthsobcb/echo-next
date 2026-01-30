@@ -15,7 +15,12 @@ import {
     SheetClose
 } from "@/components/ui/sheet";
 
-export default function MobileMenu({ session, userData }) {
+interface MobileMenuProps {
+    session: any;
+    userData: any;
+}
+
+export default function MobileMenu({ session, userData }: MobileMenuProps) {
     return (
         <Sheet>
             <SheetTrigger asChild>

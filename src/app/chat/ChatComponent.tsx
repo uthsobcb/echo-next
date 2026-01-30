@@ -8,20 +8,40 @@ import Image from "next/image";
 import Link from "next/link";
 import Sidebar from "./components/Sidebar";
 
-const ChatBox = ({ user }) => {
+interface Message {
+    role: "user" | "ai";
+    text: string;
+    timestamp: Date | string;
+}
+
+interface Chat {
+    _id: string;
+    messages: Message[];
+    updatedAt: Date | string;
+}
+
+interface ChatBoxProps {
+    user: {
+        image?: string;
+        name?: string;
+        email?: string;
+    } | null;
+}
+
+const ChatBox = ({ user }: ChatBoxProps) => {
     const router = useRouter();
     const params = useParams();
     const searchParams = useSearchParams();
-    const chatRef = useRef(null);
-    const messagesEndRef = useRef(null);
+    const chatRef = useRef<HTMLDivElement>(null);
+    const messagesEndRef = useRef<HTMLDivElement>(null);
 
     // State management
-    const [messages, setMessages] = useState([]);
+    const [messages, setMessages] = useState<Message[]>([]);
     const [input, setInput] = useState("");
     const [loading, setLoading] = useState(false);
     const [userImageError, setUserImageError] = useState(false);
-    const [oldChats, setOldChats] = useState([]);
-    const [currentChatId, setCurrentChatId] = useState(null);
+    const [oldChats, setOldChats] = useState<Chat[]>([]);
+    const [currentChatId, setCurrentChatId] = useState<string | null>(null);
 
     // Constants
     const botImage = "/assets/loading.png";
@@ -83,7 +103,7 @@ const ChatBox = ({ user }) => {
     }, [entryContent]); // Remove sendMessage dependency
 
     // Update chat history
-    const updateChatHistory = (chatId, newMessages) => {
+    const updateChatHistory = (chatId: string, newMessages: Message[]) => {
         setOldChats(prev => {
             const chatIndex = prev.findIndex(c => c._id === chatId);
             if (chatIndex >= 0) {
@@ -121,10 +141,10 @@ const ChatBox = ({ user }) => {
     }, [messages.length]); // Only trigger on message count change
 
     // Send message handler
-    const sendMessage = async (text) => {
+    const sendMessage = async (text: string) => {
         if (!text.trim() || loading) return;
 
-        const userMessage = {
+        const userMessage: Message = {
             role: "user",
             text,
             timestamp: new Date()
@@ -161,18 +181,18 @@ const ChatBox = ({ user }) => {
     };
 
     // Handle form submission
-    const handleSubmit = (e) => {
+    const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         sendMessage(input);
     };
 
     // Handle quick suggestion
-    const handleQuickSuggestion = (text) => {
+    const handleQuickSuggestion = (text: string) => {
         setInput(text);
     };
 
     // Message bubble component
-    const MessageBubble = ({ message }) => {
+    const MessageBubble = ({ message }: { message: Message }) => {
         const isUser = message.role === "user";
         return (
             <div className={`flex ${isUser ? "justify-end" : "justify-start"} items-end gap-3`}>
@@ -193,7 +213,7 @@ const ChatBox = ({ user }) => {
                         </p>
                     </div>
                     <span className="text-xs text-gray-500 mt-1">
-                        {isUser ? "You" : "Echo Bot"} • {new Date(message.timestamp).toLocaleTimeString()}
+                        {isUser ? "You" : "Echo Bot"} • {new Date(message.timestamp).toLocaleString()}
                     </span>
                 </div>
                 {isUser && (
@@ -202,7 +222,7 @@ const ChatBox = ({ user }) => {
                             <User className="w-6 h-6 text-gray-500" />
                         ) : (
                             <Image
-                                src={userImage}
+                                src={userImage || ""}
                                 alt="User"
                                 width={40}
                                 height={40}

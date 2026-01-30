@@ -21,7 +21,7 @@ export async function PATCH(req: NextRequest) {
 
         return NextResponse.json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error", details: (error as Error).message }, { status: 500 });
     }
 }
 export async function DELETE(req: NextRequest) {
@@ -42,6 +42,6 @@ export async function DELETE(req: NextRequest) {
 
         return NextResponse.json({ message: "User deleted successfully", user: deletedUser });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error", details: error.message }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error", details: (error as Error).message }, { status: 500 });
     }
 }

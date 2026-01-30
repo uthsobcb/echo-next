@@ -19,7 +19,7 @@ export default async function NavBar() {
                 withCredentials: true,
             });
             userData = response.data.user;
-        } catch (error) {
+        } catch (error: any) {
             console.log("Error fetching profile:", error.response?.data || error.message);
         }
     }

@@ -4,15 +4,18 @@ import { redirect } from "next/navigation";
 import { format } from "date-fns";
 import { toast } from 'sonner';
 
-export default async function EditEntryPage({ params }) {
+export default async function EditEntryPage({ params }: { params: any }) {
     const session = await auth();
     if (!session) {
         return <p className="text-red-500">Unauthorized - Please log in</p>;
     }
 
     let entry;
+    // @ts-ignore
+    const { id } = params;
+
     try {
-        const response = await axios.get(`${process.env.BASEURL}/api/entries/${params.id}`, {
+        const response = await axios.get(`${process.env.BASEURL}/api/entries/${id}`, {
             headers: { Authorization: `Bearer ${session.accessToken}` },
             withCredentials: true,
         });
@@ -28,10 +31,15 @@ export default async function EditEntryPage({ params }) {
         ? format(new Date(entry.createdAt), "EEE, h:mm a")
         : "Unknown Date";
 
-    async function updateEntry(formData) {
+    async function updateEntry(formData: FormData) {
         "use server";
         const id = formData.get("id")?.toString();
         const content = formData.get("content")?.toString();
+
+        if (!session?.accessToken) {
+            throw new Error("Unauthorized");
+        }
+
         if (!id || !content) {
             throw new Error("Missing id or content");
         }

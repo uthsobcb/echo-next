@@ -2,13 +2,13 @@
 import { useSearchParams, usePathname, useRouter } from "next/navigation";
 
 
-export default function SearchBar({ onSearch }) {
+export default function SearchBar({ onSearch }: { onSearch: (term: string) => void }) {
 
     const searchParams = useSearchParams();
     const pathName = usePathname();
     const { replace } = useRouter();
 
-    function handleSearch(term) {
+    function handleSearch(term: string) {
         const params = new URLSearchParams(searchParams);
         if (term) {
             params.set('q', term);

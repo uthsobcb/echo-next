@@ -128,6 +128,6 @@ export async function GET(req: NextRequest) {
 
     } catch (error) {
         console.error("Error sending weekly reports:", error);
-        return NextResponse.json({ message: "Error sending reports", error: error.message }, { status: 500 });
+        return NextResponse.json({ message: "Error sending reports", error: (error as Error).message }, { status: 500 });
     }
 }

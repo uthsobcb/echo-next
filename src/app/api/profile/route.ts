@@ -39,7 +39,7 @@ export async function GET(req: NextRequest) {
     }
     catch (error) {
         console.error("Error fetching profile:", error);
-        return NextResponse.json({ message: "Server error. Please try again later.", error: error.message }, { status: 500 });
+        return NextResponse.json({ message: "Server error. Please try again later.", error: (error as Error).message }, { status: 500 });
     }
 }
 
@@ -84,6 +84,6 @@ export async function PUT(req: NextRequest) {
 
     } catch (error) {
         console.error("Error updating profile:", error);
-        return NextResponse.json({ message: "Server error. Please try again later.", error: error.message }, { status: 500 });
+        return NextResponse.json({ message: "Server error. Please try again later.", error: (error as Error).message }, { status: 500 });
     }
 }

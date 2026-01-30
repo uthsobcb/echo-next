@@ -3,9 +3,7 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, TrendingUp } from "lucide-react";
-import { title } from "process";
-
-export default function GreetingsPage({ name }) {
+export default function GreetingsPage({ name }: { name: string }) {
     const [greeting, setGreeting] = useState("");
 
     useEffect(() => {

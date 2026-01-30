@@ -5,7 +5,12 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from 'sonner';
 
-export default function DeleteButton({ entryId, accessToken }) {
+interface DeleteButtonProps {
+    entryId: string;
+    accessToken: string;
+}
+
+export default function DeleteButton({ entryId, accessToken }: DeleteButtonProps) {
     const router = useRouter();
     const [isOpen, setIsOpen] = useState(false);
     const [isDeleting, setIsDeleting] = useState(false);
@@ -27,7 +32,7 @@ export default function DeleteButton({ entryId, accessToken }) {
                 router.push("/profile");
                 router.refresh();
             }
-        } catch (err) {
+        } catch (err: any) {
             console.error("Error deleting entry:", err);
             const errorMessage = err.response?.data?.message || "Failed to delete entry";
             toast.error(errorMessage);

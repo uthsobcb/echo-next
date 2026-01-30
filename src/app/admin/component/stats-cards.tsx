@@ -3,11 +3,19 @@
 import { Users, BarChart, FileText } from "lucide-react";
 import React from "react";
 
-export default function StatsCards({ users, moods, entries }) {
-  const uniqueMoodTypes = new Set();
+type Mood = { type?: string; name?: string; mood?: string;[key: string]: any } | string;
 
-  moods.forEach((mood) => {
-    const name = mood.type || mood.name || mood.mood || String(mood);
+interface StatsCardsProps {
+  users: any[];
+  moods: Mood[];
+  entries: number;
+}
+
+export default function StatsCards({ users, moods, entries }: StatsCardsProps) {
+  const uniqueMoodTypes = new Set<string>();
+
+  moods.forEach((mood: Mood) => {
+    const name = (typeof mood === 'object' ? (mood.type || mood.name || mood.mood) : String(mood)) || String(mood);
     uniqueMoodTypes.add(name);
   });
 

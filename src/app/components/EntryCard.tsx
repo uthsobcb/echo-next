@@ -9,23 +9,17 @@ export default function EntryCard() {
     const router = useRouter();
     const { _id } = useParams();
 
-    // const [entry, setEntry] = useState(null);
+    const [entry, setEntry] = useState<any>(null);
     const [error, setError] = useState(null);
-    let entry = [];
 
     useEffect(() => {
         if (!_id) return;
 
         const fetchEntry = async () => {
             try {
-                const session = await auth();
-                const response = await axios.get(`/api/entries/${_id}`, {
-                    headers: { Authorization: `Bearer ${session.accessToken}` },
-                    withCredentials: true,
-                });
-                entry = response.data;
-                // console.log("Entry fetched:", response.data);
-            } catch (err) {
+                const response = await axios.get(`/api/entries/${_id}`);
+                setEntry(response.data);
+            } catch (err: any) {
                 setError(err.response?.data?.error || "Error fetching entry");
             }
         };

@@ -11,7 +11,11 @@ import {
 } from "recharts";
 import React from "react";
 
-export default function MoodsChart({ moods }) {
+type Mood =
+  | string
+  | { type?: string; count?: number; name?: string; mood?: string;[key: string]: any };
+
+export default function MoodsChart({ moods }: { moods: Mood[] }) {
   if (!moods || !Array.isArray(moods) || moods.length === 0) {
     return (
       <div className="flex h-[300px] items-center justify-center text-gray-400">
@@ -48,7 +52,7 @@ export default function MoodsChart({ moods }) {
             cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
           />
           <Bar dataKey="count" radius={[4, 4, 0, 0]}>
-            {chartData.map((entry, index) => (
+            {chartData.map((entry: any, index: number) => (
               <Cell
                 key={`cell-${index}`}
                 fill={colors[index % colors.length]}
@@ -62,20 +66,20 @@ export default function MoodsChart({ moods }) {
 }
 
 // Count moods and format them for Recharts
-function processChartData(moods) {
-  if (moods.length > 0 && "type" in moods[0] && "count" in moods[0]) {
-    return moods.map((mood) => ({
+function processChartData(moods: Mood[]) {
+  if (moods.length > 0 && typeof moods[0] === 'object' && moods[0] !== null && "type" in moods[0] && "count" in moods[0]) {
+    return moods.map((mood: any) => ({
       name: mood.type,
       count: mood.count,
     }));
   }
 
-  if (moods.length > 0 && "name" in moods[0] && "count" in moods[0]) {
+  if (moods.length > 0 && typeof moods[0] === 'object' && moods[0] !== null && "name" in moods[0] && "count" in moods[0]) {
     return moods;
   }
 
-  const moodCounts = {};
-  moods.forEach((mood) => {
+  const moodCounts: Record<string, number> = {};
+  moods.forEach((mood: any) => {
     const moodName = mood.type || mood.name || mood.mood || String(mood);
     moodCounts[moodName] = (moodCounts[moodName] || 0) + 1;
   });
@@ -84,7 +88,7 @@ function processChartData(moods) {
 }
 
 // Simple color palette generator
-function generateColors(count) {
+function generateColors(count: number) {
   const baseColors = [
     "#0ea5e9", // sky-500
     "#10b981", // emerald-500

@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ message: "Unauthorized - Invalid user" }, { status: 401 });
         }
 
-        const query = {
+        const query: any = {
             userId
         }
 

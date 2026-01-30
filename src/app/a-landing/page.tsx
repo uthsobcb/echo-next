@@ -9,13 +9,13 @@ import {
     Check, X, Play, Users,
     ArrowRight, Star
 } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, FormEvent } from "react";
 
 export default function LandingPage() {
     const [showStickyCTA, setShowStickyCTA] = useState(false);
     const [email, setEmail] = useState("");
-    const [newsletterStatus, setNewsletterStatus] = useState(null);
-    const [openFAQ, setOpenFAQ] = useState(null);
+    const [newsletterStatus, setNewsletterStatus] = useState<string | null>(null);
+    const [openFAQ, setOpenFAQ] = useState<number | null>(null);
     const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
     const { scrollYProgress } = useScroll();
@@ -32,7 +32,7 @@ export default function LandingPage() {
     }, []);
 
     // Newsletter submission
-    const handleNewsletterSubmit = (e) => {
+    const handleNewsletterSubmit = (e: FormEvent) => {
         e.preventDefault();
         if (email && email.includes("@")) {
             setNewsletterStatus("success");

@@ -2,7 +2,7 @@ import { Upload } from "lucide-react";
 import axios from "axios";
 import { toast } from 'sonner';
 
-export default function UploadIcon({ OnImageUpload }) {
+export default function UploadIcon({ OnImageUpload }: { OnImageUpload: (url: string) => void }) {
     const uploadImageAction = async () => {
         try {
             const fileInput = document.createElement("input");

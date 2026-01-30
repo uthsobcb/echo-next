@@ -24,7 +24,7 @@ export default function NewChat() {
         fetchChats();
     }, []);
 
-    const startChat = async (e) => {
+    const startChat = async (e: React.FormEvent) => {
         e.preventDefault();
         if (!message.trim() || sending) return;
 
@@ -41,7 +41,7 @@ export default function NewChat() {
 
     return (
         <div className="flex h-screen bg-gray-50">
-            <Sidebar chats={chats} />
+            <Sidebar chats={chats} currentChatId={null} />
 
             <main className="flex-1 flex flex-col">
                 <div className="flex-1 flex items-center justify-center p-4">

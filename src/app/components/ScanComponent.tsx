@@ -2,14 +2,14 @@ import React, { useEffect, useRef, useState } from "react";
 import { ScanText, Camera, X, Repeat } from "lucide-react";
 import Tesseract from "tesseract.js";
 
-const ScanComponent = ({ onScanComplete }) => {
-    const videoRef = useRef(null);
-    const canvasRef = useRef(null);
-    const [capturedImage, setCapturedImage] = useState(null);
-    const [scannedText, setScannedText] = useState(null);
+const ScanComponent = ({ onScanComplete }: { onScanComplete: (text: string) => void }) => {
+    const videoRef = useRef<HTMLVideoElement>(null);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
+    const [capturedImage, setCapturedImage] = useState<string | null>(null);
+    const [scannedText, setScannedText] = useState<string | null>(null);
     const [loading, setLoading] = useState(false);
     const [isCameraOpen, setIsCameraOpen] = useState(false);
-    const [videoDevices, setVideoDevices] = useState([]);
+    const [videoDevices, setVideoDevices] = useState<MediaDeviceInfo[]>([]);
     const [currentDeviceIndex, setCurrentDeviceIndex] = useState(0);
 
     useEffect(() => {
@@ -53,7 +53,8 @@ const ScanComponent = ({ onScanComplete }) => {
 
         // Stop current stream
         if (videoRef.current?.srcObject) {
-            videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+            const stream = videoRef.current.srcObject as MediaStream;
+            stream.getTracks().forEach((track) => track.stop());
         }
 
         // Start new camera
@@ -74,7 +75,7 @@ const ScanComponent = ({ onScanComplete }) => {
 
             // Stop the camera stream
             if (videoRef.current.srcObject) {
-                const stream = videoRef.current.srcObject;
+                const stream = videoRef.current.srcObject as MediaStream;
                 stream.getTracks().forEach((track) => track.stop());
             }
         }
@@ -133,7 +134,8 @@ const ScanComponent = ({ onScanComplete }) => {
                         onClick={() => {
                             setIsCameraOpen(false);
                             if (videoRef.current?.srcObject) {
-                                videoRef.current.srcObject.getTracks().forEach((track) => track.stop());
+                                const stream = videoRef.current.srcObject as MediaStream;
+                                stream.getTracks().forEach((track) => track.stop());
                             }
                         }}
                         className="absolute top-4 right-4 bg-red-500 text-white p-3 rounded-full"
