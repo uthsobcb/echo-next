@@ -312,7 +312,7 @@ export default function LandingPage() {
                                     <span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
                                 </span>
                                 <span className="text-sm font-medium text-green-700">
-                                    📱 Android App Coming Soon!
+                                    Android App Coming Soon!
                                 </span>
                             </motion.div>
                         </div>
