@@ -8,7 +8,7 @@ Echo is an AI-powered journaling companion that helps users track their mood, cr
 
 ## Authentication
 
-Echo uses NextAuth.js with JWT tokens for authentication. All protected endpoints require a Bearer token in the Authorization header.
+Echo uses custom JWT (JSON Web Tokens) for authentication. All protected endpoints require a Bearer token in the Authorization header or a session cookie.
 
 ### Authentication Header Format
 ```
@@ -397,6 +397,134 @@ Delete a todo item.
 
 ---
 
+### 📝 Blog (Posts) Endpoints
+
+#### GET `/posts`
+Retrieve published blog posts.
+
+**Query Parameters:**
+```typescript
+all?: string;           // Optional: If "true", returns all posts (Admin only)
+```
+
+**Response:** `200 OK`
+```json
+[
+  {
+    "_id": "post_id",
+    "title": "Post Title",
+    "slug": "post-slug",
+    "content": "Post content...",
+    "excerpt": "Short summary",
+    "coverImage": "image_url",
+    "author": "Admin",
+    "tags": ["tag1", "tag2"],
+    "published": true,
+    "createdAt": "2024-01-01T00:00:00.000Z"
+  }
+]
+```
+
+#### POST `/posts`
+Create a new blog post.
+
+**Headers:** `Authorization: Bearer <token>`
+**Required:** Admin subscription level
+
+**Request Body:** `application/json`
+```typescript
+{
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage?: string;
+  tags?: string[];
+  published?: boolean;
+}
+```
+
+#### GET `/posts/:id`
+Get a specific blog post by ID or slug.
+
+**Response:** `200 OK`
+
+#### PATCH `/posts/:id`
+Update a blog post.
+
+**Headers:** `Authorization: Bearer <token>`
+**Required:** Admin subscription level
+
+#### DELETE `/posts/:id`
+Delete a blog post.
+
+**Headers:** `Authorization: Bearer <token>`
+**Required:** Admin subscription level
+
+---
+
+### 🌌 Space (Ethereal Sanctuary) Endpoints
+
+#### GET `/space/draw`
+Check drawing status and rate limits for the current user.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response:** `200 OK`
+```json
+{
+  "drawCount": 1,
+  "canDraw": true,
+  "requiresMessage": true,
+  "nextAvailableAt": "2024-01-01T00:05:00.000Z"
+}
+```
+
+#### POST `/space/draw`
+Record a drawing activity in the sanctuary.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Features:**
+- Rate limited to 2 draws every 5 minutes.
+- Second draw requires posting a positive message first.
+
+#### GET `/space/message`
+Retrieve a random positive message from another user.
+
+**Headers:** `Authorization: Bearer <token>`
+
+#### POST `/space/message`
+Post a new positive message to the sanctuary.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Request Body:** `application/json`
+```typescript
+{
+  content: string;        // Required: Message text (min 5 chars)
+}
+```
+
+#### GET `/space/leaderboard`
+Get the top contributors to the Ethereal Sanctuary.
+
+**Response:** `200 OK`
+```json
+{
+  "data": [
+    {
+      "_id": "user_id",
+      "count": 15,
+      "name": "User Name",
+      "image": "profile_image_url"
+    }
+  ]
+}
+```
+
+---
+
 ### 🔒 Admin Endpoints
 
 #### GET `/admin/stats`
@@ -513,6 +641,41 @@ interface ITodo {
 }
 ```
 
+### Blog Post Schema
+```typescript
+interface IPost {
+  title: string;
+  slug: string;
+  content: string;
+  excerpt: string;
+  coverImage: string;
+  author: string;
+  tags: string[];
+  published: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Space Message Schema
+```typescript
+interface ISpaceMessage {
+  content: string;
+  author: ObjectId;
+  createdAt: Date;
+  updatedAt: Date;
+}
+```
+
+### Space Draw Schema
+```typescript
+interface ISpaceDraw {
+  user: ObjectId;
+  timestamp: Date;
+  contributionId?: ObjectId; // Link to message that unlocked draw
+}
+```
+
 ## Badge System
 
 Echo features a progressive badge system to encourage consistent journaling:
@@ -593,12 +756,12 @@ GOOGLE_CLIENT_SECRET=your_google_oauth_secret
 ```
 
 ### Tech Stack
-- **Framework:** Next.js 15
+- **Framework:** Next.js 16 (App Router)
 - **Database:** MongoDB with Mongoose ODM
-- **Authentication:** NextAuth.js v5
-- **AI:** Google Generative AI, OpenAI
+- **Authentication:** Custom JWT with `jose`
+- **AI:** Google Generative AI (Gemini 2.0 Flash), OpenAI
 - **Email:** Resend
-- **Encryption:** Node.js crypto module
+- **Encryption:** Node.js crypto module (AES-256-CBC)
 - **Deployment:** Vercel
 
 This API documentation provides a complete reference for integrating with the Echo platform's backend services.
