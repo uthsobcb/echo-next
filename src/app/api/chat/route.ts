@@ -148,10 +148,11 @@ ${decryptedThreadSummary || "No summary yet."}`;
         return NextResponse.json({
             reply,
             chatId: chat._id,
-            messages: [...decryptedMessages, { role: 'user', text: message, timestamp: newUserMessage.timestamp }, aiMessage].map(m => ({
-                ...m,
-                text: typeof m.text === 'string' && m.text.includes(':') ? decrypt(m.text) : m.text
-            }))
+            messages: [
+                ...decryptedMessages,
+                { role: 'user', text: message, timestamp: newUserMessage.timestamp },
+                { role: 'ai', text: reply, timestamp: aiMessage.timestamp }
+            ]
         });
 
     } catch (error) {
