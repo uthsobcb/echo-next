@@ -4,20 +4,18 @@ import { connect } from "@/app/lib/mongodb";
 import UserModel from "@/app/models/User";
 import { auth } from "@/app/lib/auth";
 import { jwtVerify } from "jose";
+import { getUserProfile } from "@/app/lib/user-data";
 
 export async function GET(req: NextRequest) {
     try {
-        await connect();
-
         const session = await auth(req);
         if (!session?.user?.id) {
             return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
         const userId = session.user.id;
+        const user = await getUserProfile(userId);
 
-        const user = await UserModel.findOne({ _id: userId });
-        // const user = await UserModel.findById(userId);
         if (!user) {
             return NextResponse.json({ message: "User not found." }, { status: 404 });
         }

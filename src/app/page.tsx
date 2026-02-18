@@ -2,7 +2,7 @@ import LandingPage from "@/app/a-landing/page"
 import { auth } from "@/app/lib/auth";
 import GreetingsPage from "@/app/components/Greeting";
 
-export const dynamic = 'force-dynamic';
+
 
 export default async function Home() {
   const session = await auth();
