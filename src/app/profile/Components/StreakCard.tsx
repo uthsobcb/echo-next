@@ -1,74 +1,23 @@
 "use client";
 
-import { Flame, Trophy, CheckCircle2, Circle } from "lucide-react";
+import { Flame, Trophy, CheckCircle2, Circle, Star } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface StreakCardProps {
     entries: any[];
+    currentStreak: number;
+    maxStreak: number;
+    totalXp: number;
 }
 
-export default function StreakCard({ entries }: StreakCardProps) {
+export default function StreakCard({ entries, currentStreak, maxStreak, totalXp }: StreakCardProps) {
     const currentYear = new Date().getFullYear();
 
-    // 1. Calculate Streak
-    const calculateStreaks = () => {
-        if (!entries.length) return { current: 0, longest: 0, activeDates: new Set<string>() };
-
-        const dates = [...new Set(entries.map(e => new Date(e.createdAt).toISOString().split('T')[0]))].sort().reverse();
+    // 1. Weekly Status (S M T W T F S)
+    const getWeeklyStatus = () => {
+        const dates = [...new Set(entries.map(e => new Date(e.createdAt).toISOString().split('T')[0]))];
         const activeDates = new Set(dates);
 
-        let currentStreak = 0;
-        let longestStreak = 0;
-        let tempStreak = 0;
-
-        const today = new Date().toISOString().split('T')[0];
-        const yesterday = new Date(Date.now() - 86400000).toISOString().split('T')[0];
-
-        // Check if streak is active (today or yesterday)
-        const latestEntry = dates[0];
-        const isActive = latestEntry === today || latestEntry === yesterday;
-
-        if (isActive) {
-            let nextExpected = latestEntry;
-            for (const date of dates) {
-                if (date === nextExpected) {
-                    currentStreak++;
-                    const d = new Date(date);
-                    d.setDate(d.getDate() - 1);
-                    nextExpected = d.toISOString().split('T')[0];
-                } else {
-                    break;
-                }
-            }
-        }
-
-        // Longest streak
-        const sortedDates = [...dates].reverse();
-        let prevDate: string | null = null;
-        for (const date of sortedDates) {
-            if (!prevDate) {
-                tempStreak = 1;
-            } else {
-                const prev: Date = new Date(prevDate);
-                prev.setDate(prev.getDate() + 1);
-                const expected = prev.toISOString().split('T')[0];
-                if (date === expected) {
-                    tempStreak++;
-                } else {
-                    tempStreak = 1;
-                }
-            }
-            longestStreak = Math.max(longestStreak, tempStreak);
-            prevDate = date;
-        }
-
-        return { current: currentStreak, longest: longestStreak, activeDates };
-    };
-
-    const { current: streak, longest: maxStreak, activeDates } = calculateStreaks();
-
-    // 2. Weekly Status (S M T W T F S)
-    const getWeeklyStatus = () => {
         const days = [];
         const now = new Date();
         const currentDay = now.getDay(); // 0 is Sunday
@@ -93,7 +42,7 @@ export default function StreakCard({ entries }: StreakCardProps) {
 
     const weeklyDays = getWeeklyStatus();
 
-    // 3. Milestone calculation
+    // 2. Milestone calculation
     const getNextMilestone = () => {
         const count = entries.length;
         if (count < 7) return { target: 7, name: "Pen Whisperer", start: 0 };
@@ -134,7 +83,7 @@ export default function StreakCard({ entries }: StreakCardProps) {
 
                         <div>
                             <h3 className="text-5xl font-black text-gray-900 leading-none mb-2">
-                                {streak}
+                                {currentStreak}
                             </h3>
                             <p className="text-gray-500 font-bold uppercase tracking-widest text-sm">
                                 Day Streak
@@ -142,14 +91,26 @@ export default function StreakCard({ entries }: StreakCardProps) {
                         </div>
                     </div>
 
-                    {/* Record Section */}
-                    <div className="bg-gray-50 rounded-2xl px-6 py-4 flex items-center gap-4 border border-gray-100">
-                        <div className="bg-orange-100 p-3 rounded-xl">
-                            <Trophy className="text-orange-600" size={24} />
+                    {/* Stats Section */}
+                    <div className="flex flex-col sm:flex-row gap-4">
+                        <div className="bg-gray-50 rounded-2xl px-6 py-4 flex items-center gap-4 border border-gray-100">
+                            <div className="bg-orange-100 p-3 rounded-xl">
+                                <Trophy className="text-orange-600" size={24} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 font-bold uppercase mb-1">Personal Best</p>
+                                <p className="text-xl font-black text-gray-900">{maxStreak} Days</p>
+                            </div>
                         </div>
-                        <div>
-                            <p className="text-xs text-gray-500 font-bold uppercase mb-1">Personal Best</p>
-                            <p className="text-xl font-black text-gray-900">{maxStreak} Days</p>
+
+                        <div className="bg-gray-50 rounded-2xl px-6 py-4 flex items-center gap-4 border border-gray-100">
+                            <div className="bg-blue-100 p-3 rounded-xl">
+                                <Star className="text-blue-600" size={24} />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500 font-bold uppercase mb-1">Total XP</p>
+                                <p className="text-xl font-black text-gray-900">{totalXp}</p>
+                            </div>
                         </div>
                     </div>
                 </div>

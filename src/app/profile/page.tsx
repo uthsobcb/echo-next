@@ -33,6 +33,9 @@ interface UserData {
     email?: string;
     subscription?: string;
     badge?: string[];
+    currentStreak?: number;
+    maxStreak?: number;
+    totalXp?: number;
 }
 
 export default async function User() {
@@ -189,7 +192,12 @@ export default async function User() {
                         </div>
                         <div className="w-full lg:w-2/3 my-10 space-y-8">
                             {/* Streak Card */}
-                            <StreakCard entries={journalEntries} />
+                            <StreakCard
+                                entries={journalEntries}
+                                currentStreak={userData.currentStreak || 0}
+                                maxStreak={userData.maxStreak || 0}
+                                totalXp={userData.totalXp || 0}
+                            />
 
                             {/* Mood Tracker */}
                             <div className="border border-gray-300/40 shadow-xl bg-gray-200/60 rounded-3xl p-6">

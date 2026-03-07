@@ -12,7 +12,11 @@ export async function getUserProfile(userId: string) {
             name: user.name,
             email: user.email,
             image: user.image,
-            // Add other fields as necessary for the UI
+            currentStreak: user.currentStreak,
+            maxStreak: user.maxStreak,
+            totalXp: user.totalXp,
+            subscription: user.subscription,
+            badge: user.badge,
         };
     } catch (error) {
         console.error("Error fetching user profile:", error);

@@ -2,15 +2,35 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, Sparkles, TrendingUp } from "lucide-react";
+import { CalendarDays, ListTodo, Lock, LucideFlower, MessageCircleHeart, PencilLine, Sparkles, TrendingUp, Flame, Star } from "lucide-react";
+import axios from "axios";
+
 export default function GreetingsPage({ name }: { name: string }) {
     const [greeting, setGreeting] = useState("");
+    const [userData, setUserData] = useState<{ currentStreak: number, totalXp: number } | null>(null);
 
     useEffect(() => {
         const hour = new Date().getHours();
         if (hour < 12) setGreeting("morning");
         else if (hour < 18) setGreeting("afternoon");
         else setGreeting("evening");
+
+        // Fetch user data for streaks and XP
+        const fetchUserData = async () => {
+            try {
+                const response = await axios.get("/api/profile");
+                if (response.data.success) {
+                    setUserData({
+                        currentStreak: response.data.user.currentStreak || 0,
+                        totalXp: response.data.user.totalXp || 0
+                    });
+                }
+            } catch (error) {
+                console.error("Error fetching user data for greeting:", error);
+            }
+        };
+
+        fetchUserData();
     }, []);
 
     const today = new Date().toLocaleDateString('en-US', {
@@ -20,6 +40,12 @@ export default function GreetingsPage({ name }: { name: string }) {
     });
     const features = [
 
+        {
+            title: "Insights Dashboard",
+            description: "Deep dive into your mood patterns, topics, and writing habits",
+            navigate: "/insights",
+            icon: <TrendingUp className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" />,
+        },
         {
             title: "To Do List",
             description: "Write down your journal entries, Echo will extract your tasks",
@@ -74,6 +100,21 @@ export default function GreetingsPage({ name }: { name: string }) {
     return (
         <main className="min-h-screen text-gray-800 flex flex-col items-center justify-center px-6 py-16">
             <div className="text-center">
+                <div className="flex justify-center items-center gap-4 mb-6">
+                    {userData && (
+                        <>
+                            <div className="flex items-center gap-1.5 bg-orange-50 text-orange-600 px-4 py-1.5 rounded-full border border-orange-100 shadow-sm animate-in fade-in slide-in-from-top-4 duration-700">
+                                <Flame className="w-5 h-5 fill-current" />
+                                <span className="font-bold text-lg">{userData.currentStreak}d Streak</span>
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-blue-50 text-blue-600 px-4 py-1.5 rounded-full border border-blue-100 shadow-sm animate-in fade-in slide-in-from-top-4 duration-700 delay-150">
+                                <Star className="w-5 h-5 fill-current" />
+                                <span className="font-bold text-lg">{userData.totalXp} XP</span>
+                            </div>
+                        </>
+                    )}
+                </div>
+
                 <h1 className="text-4xl md:text-5xl font-extrabold mb-4 tracking-tight">
                     How is your <span className="text-indigo-500">{greeting}</span>, {name}?
                 </h1>
@@ -112,7 +153,6 @@ export default function GreetingsPage({ name }: { name: string }) {
                     >
                         <div className="flex gap-4 items-start">
                             <div className="bg-indigo-100 p-3 rounded-full">
-                                {/* <PencilLine className="text-indigo-600 w-5 h-5 group-hover:scale-110 transition-transform" /> */}
                                 {feature.icon}
                             </div>
                             <div>

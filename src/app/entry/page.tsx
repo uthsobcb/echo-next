@@ -5,6 +5,7 @@ import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
 import { toast } from 'sonner';
+import { Flame } from 'lucide-react';
 
 import JournalPrompt from '@/app/components/JournalPrompt';
 import ScanComponent from '@/app/components/ScanComponent';
@@ -21,6 +22,9 @@ const Entry = () => {
     const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+
+    const [streakData, setStreakData] = useState<any>(null);
+    const [todoSuggestions, setTodoSuggestions] = useState<any[]>([]);
 
     const handleScannedText = (text: string) => {
         setJournalEntry((prev) => prev + "\n" + text);
@@ -43,10 +47,19 @@ const Entry = () => {
                 imgUrl: imageUrl,
             });
 
-            setMood(response.data.mood);
-            setComment(response.data.comment);
-            setScore(response.data.score);
-            toast.success('Successfully Stored!');
+            const { mood, comment, score, streakData, todo } = response.data;
+            setMood(mood);
+            setComment(comment);
+            setScore(score);
+            setStreakData(streakData);
+            setTodoSuggestions(todo || []);
+
+            toast.success(`Entry saved! +10 XP earned.`);
+            if (streakData?.milestoneReached) {
+                toast.success(`Milestone! ${streakData.streak} days streak celebration!`, {
+                    description: streakData.milestoneMessage
+                });
+            }
         } catch (err: unknown) {
             let errorMessage = 'An error occurred while analyzing your mood.';
             if (axios.isAxiosError(err)) {
@@ -136,7 +149,7 @@ const Entry = () => {
                             </div>
                         ) : (
                             <div className="space-y-6 w-full">
-                                <div className="flex justify-center">
+                                <div className="flex justify-center relative">
                                     <Image
                                         src={numericScore < 0 ? "/assets/echo-sad.png" : "/assets/loved-echo.png"}
                                         alt="Mood Avatar"
@@ -144,7 +157,24 @@ const Entry = () => {
                                         height={120}
                                         className="object-contain drop-shadow-lg"
                                     />
+                                    {streakData && (
+                                        <div className="absolute -top-4 -right-2 bg-orange-500 text-white rounded-full p-2 shadow-lg animate-bounce duration-1000">
+                                            <Flame className="w-6 h-6 fill-current" />
+                                        </div>
+                                    )}
                                 </div>
+
+                                {streakData && (
+                                    <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-2xl p-4 text-white shadow-md">
+                                        <p className="text-xs font-black uppercase tracking-widest opacity-80">Current Streak</p>
+                                        <h4 className="text-3xl font-black">{streakData.streak} Days 🔥</h4>
+                                        {streakData.milestoneMessage && (
+                                            <p className="text-sm font-bold mt-1 bg-white/20 px-2 py-0.5 rounded-lg inline-block italic">
+                                                {streakData.milestoneMessage}
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div className="space-y-2">
                                     {mood && (
@@ -157,12 +187,34 @@ const Entry = () => {
                                     </p>
                                 </div>
 
-                                <Link
-                                    href="/chat"
-                                    className="inline-block text-indigo-600 hover:text-indigo-800 font-semibold hover:underline"
-                                >
-                                    Talk to Echo about this? →
-                                </Link>
+                                {todoSuggestions.length > 0 && (
+                                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-left">
+                                        <p className="text-xs font-bold text-blue-600 uppercase mb-2">Echo's Recommendations</p>
+                                        <ul className="space-y-2">
+                                            {todoSuggestions.slice(0, 2).map((t, i) => (
+                                                <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                                                    <div className="w-4 h-4 rounded-full bg-blue-500 mt-1 shrink-0" />
+                                                    {t.task}
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                )}
+
+                                <div className="flex gap-4">
+                                    <Link
+                                        href="/insights"
+                                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-md hover:shadow-lg"
+                                    >
+                                        View Insights
+                                    </Link>
+                                    <Link
+                                        href="/"
+                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 rounded-xl border border-gray-200 transition-all"
+                                    >
+                                        Done
+                                    </Link>
+                                </div>
                             </div>
                         )}
                     </div>
