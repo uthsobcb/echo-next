@@ -1021,6 +1021,35 @@ export const openApiSpec: any = {
                                             type: 'string',
                                             description: 'Entry count change vs previous equal-length period',
                                             example: '+23%'
+                                        },
+                                        badgeProgress: {
+                                            type: 'object',
+                                            properties: {
+                                                earned: { type: 'array', items: { type: 'string' } },
+                                                nextBadge: { type: 'string', nullable: true },
+                                                nextBadgeAt: { type: 'integer', nullable: true },
+                                                entriesUntilNext: { type: 'integer' },
+                                                milestones: {
+                                                    type: 'array',
+                                                    items: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            name: { type: 'string' },
+                                                            threshold: { type: 'integer' },
+                                                            earned: { type: 'boolean' }
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        },
+                                        xpStatus: {
+                                            type: 'object',
+                                            properties: {
+                                                totalXp: { type: 'integer' },
+                                                currentStreak: { type: 'integer' },
+                                                maxStreak: { type: 'integer' },
+                                                subscription: { type: 'string' }
+                                            }
                                         }
                                     }
                                 }

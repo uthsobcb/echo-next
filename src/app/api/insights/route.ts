@@ -184,10 +184,15 @@ export async function GET(req: NextRequest) {
         const avgWordCount = totalEntries === 0 ? 0 :
             Math.round(decryptedEntries.reduce((sum, e) => sum + countWords(e.content), 0) / totalEntries);
 
+        // Count all entries ever (for badge progress — not just range)
+        const allTimeEntryCount = await Mood.countDocuments({ userId });
+
         const stats = {
             totalEntries,
+            allTimeEntries: allTimeEntryCount,
             currentStreak: dbUser.currentStreak ?? 0,
             bestStreak: dbUser.maxStreak ?? 0,
+            totalXp: dbUser.totalXp ?? 0,
             avgWordCount,
         };
 
@@ -269,11 +274,45 @@ export async function GET(req: NextRequest) {
         for (const m of moodLabels) moodFreq[m] = (moodFreq[m] ?? 0) + 1;
         const dominantMood = Object.entries(moodFreq).sort((a, b) => b[1] - a[1])[0]?.[0] ?? "neutral";
         const moodSummary = `dominant mood this period is ${dominantMood}, average score ${moodLabels.length > 0
-                ? (currentEntries.reduce((s, e) => s + (e.score ?? 0), 0) / currentEntries.length).toFixed(1)
-                : "0"
+            ? (currentEntries.reduce((s, e) => s + (e.score ?? 0), 0) / currentEntries.length).toFixed(1)
+            : "0"
             }/10 across ${totalEntries} entries`;
 
         const aiInsights = await getAiInsights(userId, moodSummary, topTopics);
+
+        // ── Badge Progress ─────────────────────────────────────────────────────
+        const BADGE_MILESTONES = [
+            { name: "Echo Sunshine", threshold: 1 },
+            { name: "Pen Whisperer", threshold: 7 },
+            { name: "Mindful Scribe", threshold: 30 },
+            { name: "Thought Architect", threshold: 45 },
+            { name: "Guardian of Inked Wisdom", threshold: 60 },
+        ];
+
+        const earnedBadges: string[] = dbUser.badge ?? [];
+
+        // Find the next badge the user hasn't unlocked yet
+        const nextBadge = BADGE_MILESTONES.find(b => !earnedBadges.includes(b.name)) ?? null;
+
+        const badgeProgress = {
+            earned: earnedBadges,
+            nextBadge: nextBadge ? nextBadge.name : null,
+            nextBadgeAt: nextBadge ? nextBadge.threshold : null,
+            entriesUntilNext: nextBadge ? Math.max(0, nextBadge.threshold - allTimeEntryCount) : 0,
+            milestones: BADGE_MILESTONES.map(b => ({
+                name: b.name,
+                threshold: b.threshold,
+                earned: earnedBadges.includes(b.name),
+            })),
+        };
+
+        // ── XP / Account Status ────────────────────────────────────────────────
+        const xpStatus = {
+            totalXp: dbUser.totalXp ?? 0,
+            currentStreak: dbUser.currentStreak ?? 0,
+            maxStreak: dbUser.maxStreak ?? 0,
+            subscription: dbUser.subscription ?? "free",
+        };
 
         // ── Response ───────────────────────────────────────────────────────────
         return NextResponse.json({
@@ -286,6 +325,8 @@ export async function GET(req: NextRequest) {
             activityCalendar,
             aiInsights,
             writingTrendComparison,
+            badgeProgress,
+            xpStatus,
         });
 
     } catch (error) {
