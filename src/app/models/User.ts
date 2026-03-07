@@ -10,6 +10,12 @@ interface IUser {
     resetPasswordCode?: string;
     resetPasswordExpires?: Date;
     wantsWeeklyReport?: boolean;
+    currentStreak: number;
+    maxStreak: number;
+    totalXp: number;
+    lastEntryDate?: Date;
+    timezone: string;
+    pushToken?: string;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -59,6 +65,30 @@ const UserSchema = new Schema<IUser>({
     wantsWeeklyReport: {
         type: Boolean,
         default: true
+    },
+    currentStreak: {
+        type: Number,
+        default: 0
+    },
+    maxStreak: {
+        type: Number,
+        default: 0
+    },
+    totalXp: {
+        type: Number,
+        default: 0
+    },
+    lastEntryDate: {
+        type: Date,
+        default: null
+    },
+    timezone: {
+        type: String,
+        default: 'UTC'
+    },
+    pushToken: {
+        type: String,
+        default: null
     }
 });
 

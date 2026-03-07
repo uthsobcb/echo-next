@@ -4,6 +4,7 @@ import { connect } from "@/app/lib/mongodb";
 import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
+import UserModel from "@/app/models/User";
 import { decrypt, encrypt } from "@/app/lib/encryption";
 const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 const openRouterApiKey = process.env.OPENROUTER_API_KEY;
@@ -147,6 +148,55 @@ Analyze the following journal entry and provide the requested JSON response: "${
 
         await connect();
 
+        const dbUser = await UserModel.findById(user?.id);
+        if (!dbUser) {
+            return NextResponse.json({ error: "User not found." }, { status: 404 });
+        }
+
+        const userTimezone = dbUser.timezone || "UTC";
+
+        // Gamification Logic
+        const now = new Date();
+        const currentDateStr = new Intl.DateTimeFormat('en-CA', { timeZone: userTimezone }).format(now);
+
+        let newStreak = dbUser.currentStreak || 0;
+        let maxStreak = dbUser.maxStreak || 0;
+        let totalXp = dbUser.totalXp || 0;
+        let milestoneMessage = null;
+
+        if (!dbUser.lastEntryDate) {
+            newStreak = 1;
+            totalXp += 10;
+        } else {
+            const lastEntryStr = new Intl.DateTimeFormat('en-CA', { timeZone: userTimezone }).format(dbUser.lastEntryDate);
+
+            const currentDt = new Date(currentDateStr);
+            const lastDt = new Date(lastEntryStr);
+            const diffTime = currentDt.getTime() - lastDt.getTime();
+            const diffDays = Math.round(diffTime / (1000 * 60 * 60 * 24));
+
+            if (diffDays === 0) {
+                totalXp += 10;
+            } else if (diffDays === 1) {
+                newStreak += 1;
+                totalXp += 10;
+                if (newStreak % 7 === 0) {
+                    totalXp += 50;
+                    milestoneMessage = `Wow! ${newStreak} Day Streak! +50 Bonus XP!`;
+                }
+            } else {
+                newStreak = 1;
+                totalXp += 10;
+            }
+        }
+
+        maxStreak = Math.max(maxStreak, newStreak);
+
+        dbUser.currentStreak = newStreak;
+        dbUser.maxStreak = maxStreak;
+        dbUser.totalXp = totalXp;
+        dbUser.lastEntryDate = now;
+        await dbUser.save();
 
         const encryptedContent = encrypt(content);
 
@@ -181,7 +231,16 @@ Analyze the following journal entry and provide the requested JSON response: "${
             // console.log("Saved todos:", newTodo);
         }
         return NextResponse.json({
-            message: "Mood saved successfully.", mood: parsedMood.label, comment: parsedMood.comment, score: parsedMood.score, todo: parsedMood.todo
+            message: "Mood saved successfully.",
+            mood: parsedMood.label,
+            comment: parsedMood.comment,
+            score: parsedMood.score,
+            todo: parsedMood.todo,
+            streakData: {
+                currentStreak: newStreak,
+                totalXp: totalXp,
+                milestone: milestoneMessage
+            }
         });
 
     } catch (error) {
