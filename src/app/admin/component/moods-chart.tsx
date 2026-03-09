@@ -7,7 +7,8 @@ import {
   XAxis,
   YAxis,
   Tooltip,
-  Cell
+  Cell,
+  CartesianGrid
 } from "recharts";
 import React from "react";
 
@@ -18,44 +19,71 @@ type Mood =
 export default function MoodsChart({ moods }: { moods: Mood[] }) {
   if (!moods || !Array.isArray(moods) || moods.length === 0) {
     return (
-      <div className="flex h-[300px] items-center justify-center text-gray-400">
-        No mood data available
+      <div className="flex h-[300px] items-center justify-center text-gray-400 font-medium italic">
+        No mood data available yet...
       </div>
     );
   }
 
   const chartData = processChartData(moods);
-  const colors = generateColors(chartData.length);
+  const colors = [
+    "#3b82f6", // blue-500
+    "#10b981", // emerald-500
+    "#f59e0b", // amber-500
+    "#ef4444", // red-500
+    "#8b5cf6", // violet-500
+    "#ec4899", // pink-500
+    "#06b6d4", // cyan-500
+    "#84cc16", // lime-500
+  ];
 
   return (
-    <div className="h-[300px] w-full bg-white dark:bg-gray-900 rounded-md shadow-sm p-4">
+    <div className="h-[350px] w-full bg-transparent">
       <ResponsiveContainer width="100%" height="100%">
         <BarChart
           data={chartData}
-          margin={{ top: 10, right: 30, left: 0, bottom: 20 }}
+          margin={{ top: 10, right: 10, left: -20, bottom: 0 }}
         >
+          <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" opacity={0.3} />
           <XAxis
             dataKey="name"
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 11, fill: "#94a3b8", fontWeight: 500 }}
             tickLine={false}
             axisLine={false}
+            dy={10}
           />
           <YAxis
-            tick={{ fontSize: 12 }}
+            tick={{ fontSize: 11, fill: "#94a3b8", fontWeight: 500 }}
             tickLine={false}
             axisLine={false}
             tickFormatter={(value) => `${value}`}
           />
           <Tooltip
-            contentStyle={{ backgroundColor: "#111827", border: "none" }}
-            labelStyle={{ color: "#fff" }}
-            cursor={{ fill: "rgba(0, 0, 0, 0.05)" }}
+            cursor={{ fill: "#f1f5f9", opacity: 0.4 }}
+            content={({ active, payload, label }) => {
+              if (active && payload && payload.length) {
+                return (
+                  <div className="bg-[#1e293b] text-white p-3 rounded-xl shadow-2xl border border-slate-700/50 backdrop-blur-md">
+                    <p className="text-[10px] uppercase tracking-wider font-bold text-slate-400 mb-1">{label}</p>
+                    <p className="text-lg font-black">{payload[0].value} <span className="text-xs font-normal text-slate-400">entries</span></p>
+                  </div>
+                );
+              }
+              return null;
+            }}
           />
-          <Bar dataKey="count" radius={[4, 4, 0, 0]}>
+          <Bar
+            dataKey="count"
+            radius={[6, 6, 0, 0]}
+            barSize={40}
+            animationBegin={200}
+            animationDuration={1500}
+          >
             {chartData.map((entry: any, index: number) => (
               <Cell
                 key={`cell-${index}`}
                 fill={colors[index % colors.length]}
+                fillOpacity={0.8}
               />
             ))}
           </Bar>
@@ -80,30 +108,11 @@ function processChartData(moods: Mood[]) {
 
   const moodCounts: Record<string, number> = {};
   moods.forEach((mood: any) => {
-    const moodName = mood.type || mood.name || mood.mood || String(mood);
+    const moodName = (typeof mood === 'object' ? (mood.type || mood.name || mood.mood) : String(mood)) || String(mood);
     moodCounts[moodName] = (moodCounts[moodName] || 0) + 1;
   });
 
-  return Object.entries(moodCounts).map(([name, count]) => ({ name, count }));
-}
-
-// Simple color palette generator
-function generateColors(count: number) {
-  const baseColors = [
-    "#0ea5e9", // sky-500
-    "#10b981", // emerald-500
-    "#f59e0b", // amber-500
-    "#ef4444", // red-500
-    "#8b5cf6", // violet-500
-    "#ec4899", // pink-500
-    "#06b6d4", // cyan-500
-    "#84cc16", // lime-500
-  ];
-
-  const repeatedColors = [];
-  for (let i = 0; i < count; i++) {
-    repeatedColors.push(baseColors[i % baseColors.length]);
-  }
-
-  return repeatedColors;
+  return Object.entries(moodCounts)
+    .sort((a, b) => b[1] - a[1]) // Sort by count descending
+    .map(([name, count]) => ({ name, count }));
 }

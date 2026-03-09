@@ -3,6 +3,14 @@
         {
             "path": "/api/cron/reports",
             "schedule": "0 0 * * 0"
+        },
+        {
+            "path": "/api/cron/timely-nudges",
+            "schedule": "0 * * * *"
+        },
+        {
+            "path": "/api/cron/scheduled-queue",
+            "schedule": "* * * * *"
         }
     ]
 }

@@ -3,6 +3,8 @@ import React, { useEffect, useState } from 'react';
 import StatsCard from './component/stats-cards';
 import MoodsChart from './component/moods-chart';
 import UsersTable, { AdminUser } from './component/users-table';
+import NotificationsPanel from './component/notifications-panel';
+import AdminLayout from './component/admin-layout';
 
 interface AdminStats {
     users: AdminUser[];
@@ -82,32 +84,46 @@ export default function Page() {
     }
 
     return (
-        <div className="min-h-screen dark:bg-gray-900 p-6">
-            <div className="max-w-7xl mx-auto space-y-8">
+        <AdminLayout>
+            <div className="space-y-8 max-w-7xl mx-auto">
                 {/* Header */}
-                <div>
-                    <h1 className="text-3xl font-bold text-gray-900 dark:text-white">Admin Dashboard</h1>
-                    <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
-                        Overview of users, moods, and entries
-                    </p>
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-3xl font-bold text-slate-900 dark:text-white tracking-tight">System Overview</h1>
+                        <p className="text-slate-500 dark:text-slate-400 mt-1 font-medium">
+                            Real-time analytics and user management
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <div className="px-4 py-2 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-sm flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
+                            <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+                            Live Status
+                        </div>
+                    </div>
                 </div>
                 {/* <UsersTable users={users} /> */}
                 {/* Stats Cards */}
                 <StatsCard moods={moods} users={users} entries={entries} />
 
                 {/* Moods Chart */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Mood Distribution</h2>
+                <div id="mood-chart" className="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 p-6">
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">Mood Distribution</h2>
                     <MoodsChart moods={moods} />
                 </div>
 
+                {/* Notifications Panel */}
+                <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-4">
+                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">Notification Management</h2>
+                    <NotificationsPanel />
+                </div>
+
                 {/* Users Table */}
-                <div className="bg-white dark:bg-gray-800 rounded-lg shadow p-4">
-                    <h2 className="text-lg font-semibold text-gray-800 dark:text-white mb-4">User List</h2>
+                <div id="users-table" className="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 p-6">
+                    <h2 className="text-xl font-bold text-slate-800 dark:text-white mb-6">User Database</h2>
                     <UsersTable users={users} />
                 </div>
             </div>
-        </div>
+        </AdminLayout>
 
     );
 }
