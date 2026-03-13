@@ -8,12 +8,7 @@ export async function POST(req: NextRequest) {
   try {
     await connect();
 
-    const formData = await req.formData();
-
-    const name = formData.get("name") as string;
-    const rawEmail = formData.get("email") as string;
-    const password = formData.get("password") as string;
-    const imageFile = formData.get("image") as File | null;
+    const { name, email: rawEmail, password } = await req.json();
 
     if (!name || !rawEmail || !password) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
@@ -31,15 +26,7 @@ export async function POST(req: NextRequest) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    let imageUrl = "";
-    if (imageFile && imageFile.size > 0) {
-      const buffer = Buffer.from(await imageFile.arrayBuffer());
-      // console.log("Received image, upload logic goes here...");
-
-
-    } else {
-      imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
-    }
+    const imageUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=random`;
 
     // Create new user
     const newUser = new UserModel({

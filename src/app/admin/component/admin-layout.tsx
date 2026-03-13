@@ -11,7 +11,8 @@ import {
     X,
     ChevronRight,
     FileText,
-    BarChart3
+    BarChart3,
+    ShieldAlert
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -27,6 +28,7 @@ export default function AdminLayout({ children }: AdminLayoutProps) {
     const menuItems = [
         { name: "Dashboard", icon: LayoutDashboard, href: "/admin" },
         { name: "Users", icon: Users, href: "/admin#users-table" },
+        { name: "Wellbeing Alerts", icon: ShieldAlert, href: "/admin#risk-alerts-panel" },
         { name: "Guides", icon: FileText, href: "/admin/guide" },
         { name: "Notifications", icon: Bell, href: "/admin#notifications-panel" },
         { name: "Analytics", icon: BarChart3, href: "/admin#mood-chart" },
