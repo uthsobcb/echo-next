@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
+import { auth } from "@/app/lib/auth";
 import NotificationModel from "@/app/models/Notification";
 
 export async function GET(req: Request) {
     try {
+        const session = await auth(req);
+        if (!session?.user || session.user.subscription !== "admin") {
+            return NextResponse.json({ error: "Unauthorized: Admin access only" }, { status: 403 });
+        }
+
         await connect();
 
         // Fetch last 50 notifications, sorted by creation date
@@ -16,6 +22,6 @@ export async function GET(req: Request) {
 
     } catch (error: any) {
         console.error("Error fetching notification list:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

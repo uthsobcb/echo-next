@@ -58,7 +58,7 @@ export async function GET(req: NextRequest) {
         );
 
     } catch (err) {
-        console.error(err);
-        return NextResponse.json({ error: err }, { status: 500 });
+        console.error("Error fetching admin stats:", err);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

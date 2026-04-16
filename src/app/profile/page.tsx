@@ -58,7 +58,7 @@ export default async function User() {
         }
 
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries`, {
+            const response = await axios.get(`${process.env.BASEURL}/api/entries`, {
                 headers: { Authorization: `Bearer ${session.accessToken}` },
                 withCredentials: true,
             });
@@ -68,7 +68,7 @@ export default async function User() {
             console.log("Error fetching entries:", error.response?.data || error.message);
         }
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/profile`, {
+            const response = await axios.get(`${process.env.BASEURL}/api/profile`, {
                 headers: { Authorization: `Bearer ${session.accessToken}` },
                 withCredentials: true,
             });

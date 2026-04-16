@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
+import { auth } from "@/app/lib/auth";
 import UserModel from "@/app/models/User";
 import NotificationModel, { NotificationType } from "@/app/models/Notification";
 import { sendPushNotification } from "@/lib/expo-notifications";
@@ -7,6 +8,11 @@ import mongoose from "mongoose";
 
 export async function POST(req: Request) {
     try {
+        const session = await auth(req);
+        if (!session?.user || session.user.subscription !== "admin") {
+            return NextResponse.json({ error: "Unauthorized: Admin access only" }, { status: 403 });
+        }
+
         await connect();
         const { userId, title, body, data, scheduledAt, type } = await req.json();
 
@@ -47,6 +53,6 @@ export async function POST(req: Request) {
 
     } catch (error: any) {
         console.error("Error in send-to-user notification:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

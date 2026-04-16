@@ -79,6 +79,7 @@ export default function SpacePage() {
         try {
             const res = await fetch("/api/space/message", {
                 method: "POST",
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ content: currentMsg })
             });
             if (res.ok) {

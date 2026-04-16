@@ -1,10 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb"
-// import jwt from "jsonwebtoken";
+import { auth } from "@/app/lib/auth";
 import UserModel from '@/app/models/User'
 
 export async function PATCH(req: NextRequest) {
     try {
+        const session = await auth(req);
+        if (!session?.user || session.user.subscription !== "admin") {
+            return NextResponse.json({ error: "Unauthorized: Admin access only" }, { status: 403 });
+        }
+
         const { userId, updates } = await req.json();
 
         if (!userId || !updates) {
@@ -21,11 +26,17 @@ export async function PATCH(req: NextRequest) {
 
         return NextResponse.json({ message: "User updated successfully", user: updatedUser });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error", details: (error as Error).message }, { status: 500 });
+        console.error("Error updating user:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
 export async function DELETE(req: NextRequest) {
     try {
+        const session = await auth(req);
+        if (!session?.user || session.user.subscription !== "admin") {
+            return NextResponse.json({ error: "Unauthorized: Admin access only" }, { status: 403 });
+        }
+
         const { userId } = await req.json();
 
         if (!userId) {
@@ -42,6 +53,7 @@ export async function DELETE(req: NextRequest) {
 
         return NextResponse.json({ message: "User deleted successfully", user: deletedUser });
     } catch (error) {
-        return NextResponse.json({ error: "Internal server error", details: (error as Error).message }, { status: 500 });
+        console.error("Error deleting user:", error);
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

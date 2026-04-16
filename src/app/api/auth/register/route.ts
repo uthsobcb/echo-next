@@ -11,13 +11,15 @@ export async function POST(req: NextRequest) {
     const formData = await req.formData();
 
     const name = formData.get("name") as string;
-    const email = formData.get("email") as string;
+    const rawEmail = formData.get("email") as string;
     const password = formData.get("password") as string;
     const imageFile = formData.get("image") as File | null;
 
-    if (!name || !email || !password) {
+    if (!name || !rawEmail || !password) {
       return NextResponse.json({ message: "Missing required fields" }, { status: 400 });
     }
+
+    const email = rawEmail.toLowerCase().trim();
 
     if (password.length < 6) {
       return NextResponse.json({ message: "Password must be at least 6 characters long" }, { status: 400 });

@@ -9,7 +9,7 @@ export default async function page() {
     if (session) {
 
         try {
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BASEURL}/api/entries`, {
+            const response = await axios.get(`${process.env.BASEURL}/api/entries`, {
                 headers: { Authorization: `Bearer ${session.accessToken}` },
                 withCredentials: true,
             });

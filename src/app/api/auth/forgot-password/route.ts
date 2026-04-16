@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import crypto from "crypto";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { sendEmail } from "@/app/lib/email";
@@ -19,8 +20,8 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ message: "User not found" }, { status: 400 });
         }
 
-        // Generate a 6-digit verification code
-        const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+        // Generate a cryptographically secure 6-digit verification code
+        const verificationCode = crypto.randomInt(100000, 999999).toString();
         user.resetPasswordCode = verificationCode;
         user.resetPasswordExpires = new Date(Date.now() + 300000); // Code expires in 5 minutes (300,000ms)
         await user.save();

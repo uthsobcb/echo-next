@@ -1,37 +1,57 @@
 import crypto from 'crypto';
 
-const ALGORITHM = 'aes-256-cbc';  // Algorithm for encryption
-const SECRET_KEY = process.env.ENCRYPTION_SECRET_KEY || "your_secret_key";  // Fetch the secret key from environment variable
-const IV_LENGTH = 16;  // Initialization vector length for AES-256-CBC
+const ALGORITHM = 'aes-256-cbc';
+const IV_LENGTH = 16;
 
-// Ensure the key is exactly 32 bytes using SHA-256 hash
-const key = crypto.createHash('sha256').update(SECRET_KEY).digest();  // 32 bytes
+const SECRET_KEY = process.env.ENCRYPTION_SECRET_KEY;
+if (!SECRET_KEY) {
+    throw new Error("ENCRYPTION_SECRET_KEY environment variable is required. Set it in your .env file.");
+}
 
-// Encrypt function
+// Current key for new encryptions
+const key = crypto.createHash('sha256').update(SECRET_KEY).digest();
+
+// Legacy key used before ENCRYPTION_SECRET_KEY was configured
+const LEGACY_KEY = "your_secret_key";
+const legacyKey = crypto.createHash('sha256').update(LEGACY_KEY).digest();
+
+function decryptWithKey(encryptedText: string, decryptKey: Buffer): string {
+    const [ivHex, encrypted] = encryptedText.split(':');
+    if (!ivHex || !encrypted) throw new Error("Invalid format");
+    const iv = Buffer.from(ivHex, 'hex');
+    const decipher = crypto.createDecipheriv(ALGORITHM, decryptKey, iv);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
+    decrypted += decipher.final('utf-8');
+    return decrypted;
+}
+
+// Encrypt function - always uses the current key
 export const encrypt = (text: string) => {
-    const iv = crypto.randomBytes(IV_LENGTH);  // Generate random IV
-    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);  // Use the 32-byte key
+    const iv = crypto.randomBytes(IV_LENGTH);
+    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
     let encrypted = cipher.update(text, 'utf-8', 'hex');
     encrypted += cipher.final('hex');
-    return iv.toString('hex') + ':' + encrypted;  // Return the IV and encrypted data
+    return iv.toString('hex') + ':' + encrypted;
 };
 
-// Decrypt function with fallback for unencrypted data
+// Decrypt function - tries current key first, then legacy key
 export const decrypt = (encryptedText: string) => {
-    try {
-        if (!encryptedText || !encryptedText.includes(':')) {
-            return encryptedText;
-        }
-        const [ivHex, encrypted] = encryptedText.split(':');  // Split IV and encrypted data
-        if (!ivHex || !encrypted) return encryptedText;
+    if (!encryptedText || !encryptedText.includes(':')) {
+        return encryptedText;
+    }
 
-        const iv = Buffer.from(ivHex, 'hex');  // Convert IV from hex to buffer
-        const decipher = crypto.createDecipheriv(ALGORITHM, key, iv);  // Use the 32-byte key
-        let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
-        decrypted += decipher.final('utf-8');
-        return decrypted;
-    } catch (error) {
-        // console.error("Decryption failed, returning original text:", error);
+    // Try current key first
+    try {
+        return decryptWithKey(encryptedText, key);
+    } catch {
+        // Current key failed, try legacy key
+    }
+
+    // Try legacy key for entries encrypted before ENCRYPTION_SECRET_KEY was set
+    try {
+        return decryptWithKey(encryptedText, legacyKey);
+    } catch {
+        // Both keys failed - return as-is (likely unencrypted text containing a colon)
         return encryptedText;
     }
 };

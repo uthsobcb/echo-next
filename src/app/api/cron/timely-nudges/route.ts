@@ -6,6 +6,11 @@ import { sendPushNotification } from "@/lib/expo-notifications";
 
 export async function GET(req: Request) {
     try {
+        const authHeader = req.headers.get("authorization");
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connect();
 
         // One day ago
@@ -62,6 +67,6 @@ export async function GET(req: Request) {
 
     } catch (error: any) {
         console.error("Error in timely-nudges cron job:", error);
-        return NextResponse.json({ error: error.message || "Internal server error" }, { status: 500 });
+        return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }

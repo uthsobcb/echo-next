@@ -2,7 +2,6 @@ import axios from "axios";
 import { auth } from "@/app/lib/auth";
 import { redirect } from "next/navigation";
 import { format } from "date-fns";
-import { toast } from 'sonner';
 
 export default async function EditEntryPage({ params }: { params: any }) {
     const session = await auth();
@@ -22,7 +21,6 @@ export default async function EditEntryPage({ params }: { params: any }) {
         entry = response.data;
     } catch (error) {
         return <p className="text-red-500">Error fetching entry.</p>;
-        toast.error("Error fetching entry.");
     }
     const formattedDate = entry.createdAt
         ? format(new Date(entry.createdAt), "EEE, MMM d, yyyy")

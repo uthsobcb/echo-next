@@ -24,6 +24,11 @@ export const openApiSpec: any = {
                 scheme: 'bearer',
                 bearerFormat: 'JWT',
             },
+            cronAuth: {
+                type: 'http',
+                scheme: 'bearer',
+                description: 'CRON_SECRET token for scheduled jobs. Send as: Authorization: Bearer <CRON_SECRET>',
+            },
         },
         schemas: {
             User: {
@@ -127,6 +132,20 @@ export const openApiSpec: any = {
                     updatedAt: { type: 'string', format: 'date-time' }
                 }
             },
+            Notification: {
+                type: 'object',
+                properties: {
+                    _id: { type: 'string' },
+                    userId: { type: 'string', nullable: true, description: 'Null for broadcast notifications' },
+                    title: { type: 'string' },
+                    body: { type: 'string' },
+                    type: { type: 'string', enum: ['JOURNAL_REMINDER', 'STREAK_RECOVERY', 'TODO_REMINDER', 'CUSTOM', 'SYSTEM'] },
+                    data: { type: 'object' },
+                    scheduledAt: { type: 'string', format: 'date-time' },
+                    sentAt: { type: 'string', format: 'date-time', nullable: true },
+                    createdAt: { type: 'string', format: 'date-time' },
+                }
+            },
             Error: {
                 type: 'object',
                 properties: {
@@ -140,6 +159,19 @@ export const openApiSpec: any = {
         {
             bearerAuth: [],
         },
+    ],
+    tags: [
+        { name: 'Authentication', description: 'User auth endpoints' },
+        { name: 'User Profile', description: 'User profile management' },
+        { name: 'Mood & Journal', description: 'Journal entry creation and mood analysis' },
+        { name: 'Entry Management', description: 'CRUD operations for journal entries' },
+        { name: 'Todos', description: 'AI-extracted task management' },
+        { name: 'Chat', description: 'AI companion chat threads' },
+        { name: 'Space', description: 'Community kindness exchange' },
+        { name: 'Blog Posts', description: 'Guide/blog post management' },
+        { name: 'Insights', description: 'Journaling analytics and AI insights' },
+        { name: 'Admin', description: 'Admin-only user and notification management' },
+        { name: 'Cron Jobs', description: 'Scheduled background tasks (require CRON_SECRET)' },
     ],
     paths: {
         // ─── AUTHENTICATION ────────────────────────────────────────────────────────
@@ -665,14 +697,26 @@ export const openApiSpec: any = {
                 },
                 responses: {
                     '200': {
-                        description: 'AI Response',
+                        description: 'AI Response with full message history',
                         content: {
                             'application/json': {
                                 schema: {
                                     type: 'object',
                                     properties: {
-                                        message: { type: 'string' },
-                                        chatId: { type: 'string' }
+                                        reply: { type: 'string', description: 'The AI response text' },
+                                        chatId: { type: 'string' },
+                                        messages: {
+                                            type: 'array',
+                                            description: 'Full decrypted message history including the new exchange',
+                                            items: {
+                                                type: 'object',
+                                                properties: {
+                                                    role: { type: 'string', enum: ['user', 'ai'] },
+                                                    text: { type: 'string' },
+                                                    timestamp: { type: 'string', format: 'date-time' }
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
@@ -893,10 +937,11 @@ export const openApiSpec: any = {
             get: {
                 tags: ['Cron Jobs'],
                 summary: 'Send weekly mood reports (Cron)',
-                description: 'Triggered by a weekly scheduler. Sends a mood summary email to all users who have `wantsWeeklyReport: true`.',
-                security: [{ bearerAuth: [] }],
+                description: 'Triggered by a weekly scheduler. Sends a mood summary email to all users who have `wantsWeeklyReport: true`. Requires `Authorization: Bearer <CRON_SECRET>`.',
+                security: [{ cronAuth: [] }],
                 responses: {
                     '200': { description: 'Weekly reports sent successfully' },
+                    '401': { description: 'Unauthorized' },
                     '500': { description: 'Error sending reports' }
                 }
             }
@@ -1069,13 +1114,10 @@ export const openApiSpec: any = {
                 summary: 'Send streak reminders (Cron)',
                 description: `Triggered **hourly** by a scheduler. For each user with a Push Token:
 - Calculates the user's current local hour using their saved \`timezone\`.
-- If it is **8:00 PM (20:00) local time** and they have **not journaled today**, sends an Expo push notification: *"Don't lose your streak! Journal now!"*
+- If it is **8:00 PM (20:00) local time** and they have **not journaled today**, sends an Expo push notification.
 
-**Vercel Cron setup** — add to \`vercel.json\`:
-\`\`\`json
-{ "crons": [{ "path": "/api/cron/reminders", "schedule": "0 * * * *" }] }
-\`\`\``,
-                security: [{ bearerAuth: [] }],
+Requires \`Authorization: Bearer <CRON_SECRET>\` header.`,
+                security: [{ cronAuth: [] }],
                 responses: {
                     '200': {
                         description: 'Cron job completed',
@@ -1090,7 +1132,366 @@ export const openApiSpec: any = {
                             }
                         }
                     },
+                    '401': { description: 'Unauthorized - invalid or missing CRON_SECRET' },
                     '500': { description: 'Internal server error' }
+                }
+            }
+        },
+
+        // ─── GOOGLE OAUTH ──────────────────────────────────────────────────────────
+        '/auth/google': {
+            get: {
+                tags: ['Authentication'],
+                summary: 'Initiate Google OAuth login',
+                description: 'Redirects the user to Google OAuth consent screen. After consent, Google redirects to `/auth/google/callback`.',
+                security: [],
+                responses: {
+                    '302': { description: 'Redirect to Google OAuth consent screen' },
+                    '500': { description: 'Google Client ID not configured' }
+                }
+            }
+        },
+        '/auth/google/callback': {
+            get: {
+                tags: ['Authentication'],
+                summary: 'Google OAuth callback',
+                description: 'Handles the OAuth callback from Google. Creates or finds the user, issues a JWT, sets the auth cookie, and redirects to `/entry`.',
+                security: [],
+                parameters: [
+                    { name: 'code', in: 'query', required: true, schema: { type: 'string' }, description: 'Authorization code from Google' }
+                ],
+                responses: {
+                    '302': { description: 'Redirect to /entry on success, /login on failure' }
+                }
+            }
+        },
+
+        // ─── CHAT DETAIL ───────────────────────────────────────────────────────────
+        '/chat/{id}': {
+            get: {
+                tags: ['Chat'],
+                summary: 'Get a specific chat thread',
+                description: 'Returns a single chat thread with decrypted messages and summary.',
+                security: [{ bearerAuth: [] }],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+                responses: {
+                    '200': {
+                        description: 'Chat thread with decrypted messages',
+                        content: { 'application/json': { schema: { $ref: '#/components/schemas/Chat' } } }
+                    },
+                    '404': { description: 'Chat not found' }
+                }
+            },
+            delete: {
+                tags: ['Chat'],
+                summary: 'Delete a chat thread',
+                security: [{ bearerAuth: [] }],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+                responses: {
+                    '200': { description: 'Chat deleted successfully' },
+                    '404': { description: 'Chat not found' }
+                }
+            },
+            patch: {
+                tags: ['Chat'],
+                summary: 'Update chat thread summary',
+                security: [{ bearerAuth: [] }],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['threadSummary'],
+                                properties: {
+                                    threadSummary: { type: 'string', description: 'New thread summary text' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'Chat updated successfully' },
+                    '400': { description: 'Summary is required' },
+                    '404': { description: 'Chat not found' }
+                }
+            }
+        },
+
+        // ─── POST DETAIL ───────────────────────────────────────────────────────────
+        '/posts/{id}': {
+            get: {
+                tags: ['Blog Posts'],
+                summary: 'Get a single post',
+                description: 'Retrieves a post by ID or slug.',
+                security: [],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' }, description: 'Post ID or slug' }],
+                responses: {
+                    '200': {
+                        description: 'Post data',
+                        content: { 'application/json': { schema: { $ref: '#/components/schemas/Post' } } }
+                    },
+                    '404': { description: 'Post not found' }
+                }
+            },
+            patch: {
+                tags: ['Blog Posts'],
+                summary: 'Update a post (Admin only)',
+                security: [{ bearerAuth: [] }],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+                requestBody: {
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                properties: {
+                                    title: { type: 'string' },
+                                    content: { type: 'string' },
+                                    slug: { type: 'string' },
+                                    published: { type: 'boolean' },
+                                    coverImage: { type: 'string' },
+                                    excerpt: { type: 'string' },
+                                    tags: { type: 'array', items: { type: 'string' } }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'Post updated' },
+                    '401': { description: 'Admin access required' },
+                    '404': { description: 'Post not found' }
+                }
+            },
+            delete: {
+                tags: ['Blog Posts'],
+                summary: 'Delete a post (Admin only)',
+                security: [{ bearerAuth: [] }],
+                parameters: [{ name: 'id', in: 'path', required: true, schema: { type: 'string' } }],
+                responses: {
+                    '200': { description: 'Post deleted' },
+                    '401': { description: 'Admin access required' },
+                    '404': { description: 'Post not found' }
+                }
+            }
+        },
+
+        // ─── ADMIN ─────────────────────────────────────────────────────────────────
+        '/admin/user': {
+            patch: {
+                tags: ['Admin'],
+                summary: 'Update a user (Admin only)',
+                description: 'Allows admin to update any user\'s fields.',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['userId', 'updates'],
+                                properties: {
+                                    userId: { type: 'string' },
+                                    updates: { type: 'object', description: 'Fields to update on the user document' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'User updated successfully' },
+                    '403': { description: 'Unauthorized: Admin access only' },
+                    '404': { description: 'User not found' }
+                }
+            },
+            delete: {
+                tags: ['Admin'],
+                summary: 'Delete a user (Admin only)',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['userId'],
+                                properties: {
+                                    userId: { type: 'string' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'User deleted successfully' },
+                    '403': { description: 'Unauthorized: Admin access only' },
+                    '404': { description: 'User not found' }
+                }
+            }
+        },
+        '/admin/stats': {
+            get: {
+                tags: ['Admin'],
+                summary: 'Get admin dashboard stats',
+                description: 'Returns all users with entry counts, total entries, and mood data. Admin only.',
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'Admin dashboard data',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        users: { type: 'array', items: { $ref: '#/components/schemas/User' } },
+                                        entries: { type: 'integer', description: 'Total entries across all users' },
+                                        mood: { type: 'array', items: { type: 'object' } }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '403': { description: 'Unauthorized: Admin access only' }
+                }
+            }
+        },
+        '/admin/notifications/broadcast': {
+            post: {
+                tags: ['Admin'],
+                summary: 'Broadcast notification to all users (Admin only)',
+                description: 'Sends a push notification to all users with push tokens. Can be scheduled for later.',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['title', 'body'],
+                                properties: {
+                                    title: { type: 'string' },
+                                    body: { type: 'string' },
+                                    data: { type: 'object', description: 'Additional data payload' },
+                                    scheduledAt: { type: 'string', format: 'date-time', description: 'Schedule for later. Omit to send immediately.' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'Broadcast sent immediately' },
+                    '201': { description: 'Broadcast scheduled' },
+                    '403': { description: 'Unauthorized: Admin access only' }
+                }
+            }
+        },
+        '/admin/notifications/send-to-user': {
+            post: {
+                tags: ['Admin'],
+                summary: 'Send notification to a specific user (Admin only)',
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['userId', 'title', 'body'],
+                                properties: {
+                                    userId: { type: 'string' },
+                                    title: { type: 'string' },
+                                    body: { type: 'string' },
+                                    type: { type: 'string', enum: ['JOURNAL_REMINDER', 'STREAK_RECOVERY', 'TODO_REMINDER', 'CUSTOM', 'SYSTEM'] },
+                                    data: { type: 'object' },
+                                    scheduledAt: { type: 'string', format: 'date-time' }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '200': { description: 'Notification sent or saved' },
+                    '201': { description: 'Notification scheduled' },
+                    '403': { description: 'Unauthorized: Admin access only' },
+                    '404': { description: 'User not found' }
+                }
+            }
+        },
+        '/admin/notifications/list': {
+            get: {
+                tags: ['Admin'],
+                summary: 'List recent notifications (Admin only)',
+                description: 'Returns the last 50 notifications, sorted by creation date.',
+                security: [{ bearerAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'List of notifications',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        notifications: {
+                                            type: 'array',
+                                            items: { $ref: '#/components/schemas/Notification' }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '403': { description: 'Unauthorized: Admin access only' }
+                }
+            }
+        },
+
+        // ─── ADDITIONAL CRON JOBS ──────────────────────────────────────────────────
+        '/cron/timely-nudges': {
+            get: {
+                tags: ['Cron Jobs'],
+                summary: 'Send streak recovery nudges (Cron)',
+                description: 'Finds users who haven\'t posted in 24+ hours and sends a STREAK_RECOVERY push notification. Avoids spamming by checking if one was already sent in the last 24h. Requires `Authorization: Bearer <CRON_SECRET>`.',
+                security: [{ cronAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'Nudges processed',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        message: { type: 'string', example: 'Processed 10 potential users, sent 3 STREAK_RECOVERY nudges.' }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '401': { description: 'Unauthorized' }
+                }
+            }
+        },
+        '/cron/scheduled-queue': {
+            get: {
+                tags: ['Cron Jobs'],
+                summary: 'Process scheduled notification queue (Cron)',
+                description: 'Finds all notifications with `scheduledAt <= now` and `sentAt == null`, then sends them via push notification. Requires `Authorization: Bearer <CRON_SECRET>`.',
+                security: [{ cronAuth: [] }],
+                responses: {
+                    '200': {
+                        description: 'Queue processed',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        message: { type: 'string', example: 'Processed 5 notifications, successfully sent 4.' }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '401': { description: 'Unauthorized' }
                 }
             }
         }

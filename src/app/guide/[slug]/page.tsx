@@ -6,6 +6,7 @@ import { notFound } from "next/navigation";
 import { Clock, User, Calendar, ArrowLeft } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
+import DOMPurify from "isomorphic-dompurify";
 
 interface Props {
     params: Promise<{ slug: string }>;
@@ -90,9 +91,8 @@ export default async function BlogPostPage({ params }: Props) {
             {/* Post Content */}
             <div className="container mx-auto px-6 max-w-3xl">
                 <div className="prose prose-lg prose-indigo max-w-none mb-16 blog-content">
-                    {/* Render content as HTML - assuming it's stored safely or using a markdown parser */}
                     <div
-                        dangerouslySetInnerHTML={{ __html: post.content }}
+                        dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(post.content) }}
                     />
                 </div>
 

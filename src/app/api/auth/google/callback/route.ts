@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { createToken, setAuthCookie } from "@/app/lib/auth";
@@ -46,16 +47,17 @@ export async function GET(req: NextRequest) {
         // 3. Find or Create User in MongoDB
         await connect();
 
-        let user = await User.findOne({ email: googleUser.email });
+        const normalizedEmail = googleUser.email.toLowerCase().trim();
+        let user = await User.findOne({ email: normalizedEmail });
 
         if (!user) {
             // Create new user if they don't exist
             user = await User.create({
                 name: googleUser.name,
-                email: googleUser.email,
+                email: normalizedEmail,
                 image: googleUser.picture,
-                // Password is not needed for Google users, but we might need a dummy one if model requires it
-                password: Math.random().toString(36).slice(-16),
+                // Google users get a random hashed password (they authenticate via OAuth, not password)
+                password: await bcrypt.hash(crypto.randomUUID(), 10),
                 subscription: "free",
             });
         } else if (googleUser.picture && (!user.image || user.image === "/assets/logo.png")) {

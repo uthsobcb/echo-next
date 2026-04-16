@@ -4,6 +4,11 @@ import UserModel from "@/app/models/User";
 
 export async function GET(req: Request) {
     try {
+        const authHeader = req.headers.get("authorization");
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connect();
 
         // Find users with a push token

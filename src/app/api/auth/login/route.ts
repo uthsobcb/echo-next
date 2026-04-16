@@ -12,20 +12,28 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: "Email and password are required." }, { status: 400 });
         }
 
+        const normalizedEmail = email.toLowerCase().trim();
+
         // Connect to MongoDB
         await connect();
 
         // Find the user
-        const user = await User.findOne({ email });
+        const user = await User.findOne({ email: normalizedEmail });
         if (!user) {
             console.log(`Login failed: User with email ${email} not found.`);
             return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
         }
 
+        // Check if this is a Google OAuth account (password is not a bcrypt hash)
+        if (!user.password.startsWith("$2")) {
+            console.log(`Login failed: Google OAuth account (stored password is not a bcrypt hash) for ${normalizedEmail}. Hash prefix: "${user.password.substring(0, 4)}"`);
+            return NextResponse.json({ error: "This account uses Google sign-in. Please log in with Google." }, { status: 401 });
+        }
+
         // Verify the password
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid) {
-            console.log(`Login failed: Password mismatch for user ${email}.`);
+            console.log(`Login failed: Password mismatch for user ${normalizedEmail}.`);
             return NextResponse.json({ error: "Invalid email or password." }, { status: 401 });
         }
 

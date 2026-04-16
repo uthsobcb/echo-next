@@ -6,6 +6,11 @@ import { Resend } from "resend";
 
 export async function GET(req: NextRequest) {
     try {
+        const authHeader = req.headers.get("authorization");
+        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connect();
         const resend = new Resend(process.env.RESEND_API_KEY);
 
@@ -128,6 +133,6 @@ export async function GET(req: NextRequest) {
 
     } catch (error) {
         console.error("Error sending weekly reports:", error);
-        return NextResponse.json({ message: "Error sending reports", error: (error as Error).message }, { status: 500 });
+        return NextResponse.json({ message: "Error sending reports" }, { status: 500 });
     }
 }

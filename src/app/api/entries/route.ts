@@ -22,7 +22,8 @@ export async function GET(req: NextRequest) {
         };
 
         if (search) {
-            query["$or"] = [{ content: { $regex: search, $options: "i" } }, { mood: { $regex: search, $options: "i" } }]
+            const escapedSearch = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+            query["$or"] = [{ content: { $regex: escapedSearch, $options: "i" } }, { mood: { $regex: escapedSearch, $options: "i" } }]
         }
 
         const entries = await Entry.find(query).sort({ createdAt: -1 });
