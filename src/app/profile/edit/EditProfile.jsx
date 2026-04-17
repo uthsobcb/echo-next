@@ -12,7 +12,32 @@ export default function EditProfile({ user }) {
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
     const [wantsWeeklyReport, setWantsWeeklyReport] = useState(user.wantsWeeklyReport ?? true);
+    const [deleteRequested, setDeleteRequested] = useState(user.deleteRequested || false);
     const [isUpdating, setIsUpdating] = useState(false);
+
+    const handleDeleteRequestToggle = async () => {
+        const isRequesting = !deleteRequested;
+        if (isRequesting) {
+            const confirmed = window.confirm("Are you sure you want to request account deletion? An administrator will review and permanently delete your account.");
+            if (!confirmed) return;
+        }
+
+        try {
+            const response = await axios.put("/api/profile", {
+                deleteRequested: isRequesting
+            });
+
+            if (response.status === 200) {
+                setDeleteRequested(isRequesting);
+                toast.success(isRequesting ? "Account deletion requested successfully." : "Deletion request cancelled.");
+            } else {
+                toast.error("Failed to update deletion request.");
+            }
+        } catch (error) {
+            console.error("Error updating deletion request:", error);
+            toast.error("Error updating deletion request.");
+        }
+    };
 
     const handleImageUpload = async (event) => {
         const file = event.target.files?.[0];
@@ -201,6 +226,28 @@ export default function EditProfile({ user }) {
                                         />
                                     </div>
                                 </div>
+                            </div>
+
+                            {/* Danger Zone Section */}
+                            <div className="bg-red-50 rounded-xl p-6 border border-red-100 mt-8">
+                                <h2 className="text-xl font-semibold text-red-900 mb-2">Danger Zone</h2>
+                                <p className="text-sm text-red-700 mb-6">
+                                    {deleteRequested 
+                                        ? "You have requested to delete your account. An administrator will review and approve this request shortly."
+                                        : "Once you delete your account, there is no going back. Please be certain."}
+                                </p>
+                                
+                                <button
+                                    type="button"
+                                    onClick={handleDeleteRequestToggle}
+                                    className={`px-4 py-2 font-medium rounded-lg transition-all ${
+                                        deleteRequested 
+                                            ? "bg-red-100 text-red-700 hover:bg-red-200 border border-red-200"
+                                            : "bg-red-600 text-white hover:bg-red-700 shadow-md hover:shadow-lg"
+                                    }`}
+                                >
+                                    {deleteRequested ? "Cancel Deletion Request" : "Request Account Deletion"}
+                                </button>
                             </div>
                         </div>
                     </div>

@@ -16,6 +16,7 @@ interface IUser {
     lastEntryDate?: Date;
     timezone: string;
     pushToken?: string;
+    deleteRequested?: boolean;
 }
 
 const UserSchema = new Schema<IUser>({
@@ -89,6 +90,10 @@ const UserSchema = new Schema<IUser>({
     pushToken: {
         type: String,
         default: null
+    },
+    deleteRequested: {
+        type: Boolean,
+        default: false
     }
 });
 

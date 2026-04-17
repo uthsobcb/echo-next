@@ -37,7 +37,7 @@ export async function PUT(req: NextRequest) {
             return NextResponse.json({ message: "Unauthorized. Please log in." }, { status: 401 });
         }
 
-        const { name, image, currentPassword, newPassword, wantsWeeklyReport } = await req.json();
+        const { name, image, currentPassword, newPassword, wantsWeeklyReport, deleteRequested } = await req.json();
 
         const user = await UserModel.findOne({ email: session.user.email });
         if (!user) {
@@ -47,6 +47,7 @@ export async function PUT(req: NextRequest) {
         if (name) user.name = name;
         if (image) user.image = image;
         if (typeof wantsWeeklyReport !== 'undefined') user.wantsWeeklyReport = wantsWeeklyReport;
+        if (typeof deleteRequested !== 'undefined') user.deleteRequested = deleteRequested;
 
         if (currentPassword && newPassword) {
             if (!user.password) {
