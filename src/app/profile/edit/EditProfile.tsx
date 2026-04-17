@@ -4,9 +4,17 @@ import Image from "next/image";
 import { toast } from "react-toastify";
 import axios from "axios";
 import { useState } from "react";
+interface EditProfileProps {
+    user: {
+        name: string;
+        email: string;
+        image?: string;
+        wantsWeeklyReport?: boolean;
+        deleteRequested?: boolean;
+    };
+}
 
-
-export default function EditProfile({ user }) {
+export default function EditProfile({ user }: EditProfileProps) {
     const [profileImage, setProfileImage] = useState(user.image);
     const [name, setName] = useState(user.name);
     const [currentPassword, setCurrentPassword] = useState("");
@@ -39,7 +47,7 @@ export default function EditProfile({ user }) {
         }
     };
 
-    const handleImageUpload = async (event) => {
+    const handleImageUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
         const file = event.target.files?.[0];
         if (!file) return;
 
@@ -62,7 +70,7 @@ export default function EditProfile({ user }) {
         }
     };
 
-    const handleSubmit = async (event) => {
+    const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         setIsUpdating(true);
 
@@ -107,7 +115,7 @@ export default function EditProfile({ user }) {
                                     <div className="relative group">
                                         <div className="relative w-40 h-40">
                                             <Image
-                                                src={profileImage}
+                                                src={profileImage || `https://ui-avatars.com/api/?name=${name ? encodeURIComponent(name) : 'User'}`}
                                                 alt="Profile Preview"
                                                 fill
                                                 className="rounded-full object-cover border-4 border-white shadow-lg group-hover:opacity-90 transition"
