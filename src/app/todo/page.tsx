@@ -1,62 +1,48 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Edit3, Check } from 'lucide-react';
+import { Edit3, Check, Trash2 } from 'lucide-react';
 
 type Status = 'pending' | 'in-progress' | 'completed';
 
 interface Todo {
     _id: string;
     task: string;
-    todo?: string; // from API
     status: Status;
-    moodId: string;
-}
-
-interface StatusBadgeProps {
-    status: Status;
-}
-
-function StatusBadge({ status }: StatusBadgeProps) {
-    const colors: Record<Status, string> = {
-        'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
-        'in-progress': 'bg-blue-100 text-blue-700 border-blue-300',
-        'completed': 'bg-green-100 text-green-700 border-green-300',
-    };
-
-    return (
-        <span className={`text-xs px-2 py-0.5 border rounded-full ${colors[status] || 'bg-gray-100 text-gray-700 border-gray-300'}`}>
-            {status}
-        </span>
-    );
 }
 
 interface TodoItemProps {
     todo: Todo;
-    onUpdateStatus: (moodId: string, task: string, status: Status) => Promise<boolean>;
-    onUpdateText: (moodId: string, oldTask: string, newTask: string) => Promise<void>;
+    onUpdateStatus: (todoId: string, status: Status) => Promise<boolean>;
+    onUpdateText: (todoId: string, oldTask: string, newTask: string) => Promise<void>;
+    onDelete: (todoId: string) => Promise<void>;
 }
 
-function TodoItem({ todo, onUpdateStatus, onUpdateText }: TodoItemProps) {
+const STATUS_COLORS: Record<Status, string> = {
+    'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
+    'in-progress': 'bg-blue-100 text-blue-700 border-blue-300',
+    'completed': 'bg-green-100 text-green-700 border-green-300',
+};
+
+function TodoItem({ todo, onUpdateStatus, onUpdateText, onDelete }: TodoItemProps) {
     const [editing, setEditing] = useState(false);
     const [value, setValue] = useState(todo.task);
     const [status, setStatus] = useState<Status>(todo.status);
 
-    const handleMarkAsDone = async () => {
-        const updated = await onUpdateStatus(todo.moodId, todo.task, 'completed');
-        if (updated) setStatus('completed');
+    useEffect(() => {
+        setValue(todo.task);
+    }, [todo.task]);
+
+    const handleCheckbox = async () => {
+        const newStatus = status === 'completed' ? 'pending' : 'completed';
+        const updated = await onUpdateStatus(todo._id, newStatus);
+        if (updated) setStatus(newStatus);
     };
 
     const handleStatusChange = async (e: React.ChangeEvent<HTMLSelectElement>) => {
         const newStatus = e.target.value as Status;
-        const updated = await onUpdateStatus(todo.moodId, todo.task, newStatus);
+        const updated = await onUpdateStatus(todo._id, newStatus);
         if (updated) setStatus(newStatus);
-    };
-
-    const colors: Record<Status, string> = {
-        'pending': 'bg-yellow-100 text-yellow-700 border-yellow-300',
-        'in-progress': 'bg-blue-100 text-blue-700 border-blue-300',
-        'completed': 'bg-green-100 text-green-700 border-green-300',
     };
 
     return (
@@ -65,7 +51,7 @@ function TodoItem({ todo, onUpdateStatus, onUpdateText }: TodoItemProps) {
                 <input
                     type="checkbox"
                     checked={status === 'completed'}
-                    onChange={handleMarkAsDone}
+                    onChange={handleCheckbox}
                     className="w-5 h-5 text-blue-600 border-2 border-blue-500 rounded-sm cursor-pointer"
                 />
                 {editing ? (
@@ -86,7 +72,7 @@ function TodoItem({ todo, onUpdateStatus, onUpdateText }: TodoItemProps) {
                 <select
                     value={status}
                     onChange={handleStatusChange}
-                    className={`text-xs border px-2 py-0.5 rounded-full ${colors[status] || ''}`}
+                    className={`text-xs border px-2 py-0.5 rounded-full ${STATUS_COLORS[status] || ''}`}
                 >
                     <option value="pending">Pending</option>
                     <option value="in-progress">In Progress</option>
@@ -96,7 +82,7 @@ function TodoItem({ todo, onUpdateStatus, onUpdateText }: TodoItemProps) {
                 {editing ? (
                     <button
                         onClick={async () => {
-                            await onUpdateText(todo.moodId, todo.task, value);
+                            await onUpdateText(todo._id, todo.task, value);
                             setEditing(false);
                         }}
                     >
@@ -107,6 +93,10 @@ function TodoItem({ todo, onUpdateStatus, onUpdateText }: TodoItemProps) {
                         <Edit3 className="w-4 h-4 text-gray-500 hover:text-gray-700" />
                     </button>
                 )}
+
+                <button onClick={() => onDelete(todo._id)} className="text-red-400 hover:text-red-600">
+                    <Trash2 className="w-4 h-4" />
+                </button>
             </div>
         </li>
     );
@@ -121,12 +111,12 @@ export default function TodoPage() {
             try {
                 const res = await fetch('/api/todo');
                 const data = await res.json();
-                const todosWithState: Todo[] = data.todos.map((t: { _id: string; todo: string; status: Status }) => ({
-                    ...t,
+                const mapped: Todo[] = data.todos.map((t: { _id: string; todo: string; status: Status }) => ({
+                    _id: t._id,
                     task: t.todo,
-                    moodId: t._id,
+                    status: t.status,
                 }));
-                setTodos(todosWithState);
+                setTodos(mapped);
             } catch (error) {
                 console.error("Failed to fetch todos", error);
             } finally {
@@ -136,12 +126,12 @@ export default function TodoPage() {
         fetchTodos();
     }, []);
 
-    async function updateStatus(moodId: string, task: string, status: Status): Promise<boolean> {
+    async function updateStatus(todoId: string, status: Status): Promise<boolean> {
         try {
-            const res = await fetch(`/api/todo/${moodId}`, {
+            const res = await fetch(`/api/todo/${todoId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ oldTask: task, newTask: task, status }),
+                body: JSON.stringify({ status }),
             });
             return res.ok;
         } catch (error) {
@@ -150,24 +140,31 @@ export default function TodoPage() {
         }
     }
 
-    async function updateText(moodId: string, oldTask: string, newTask: string): Promise<void> {
+    async function updateText(todoId: string, oldTask: string, newTask: string): Promise<void> {
         try {
-            const res = await fetch(`/api/todo/${moodId}`, {
+            const res = await fetch(`/api/todo/${todoId}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ oldTask, newTask }),
             });
             if (res.ok) {
                 setTodos(prev =>
-                    prev.map(t =>
-                        t.task === oldTask && t.moodId === moodId
-                            ? { ...t, task: newTask }
-                            : t
-                    )
+                    prev.map(t => t._id === todoId ? { ...t, task: newTask } : t)
                 );
             }
         } catch (error) {
             console.error("Failed to update text", error);
+        }
+    }
+
+    async function deleteTodo(todoId: string): Promise<void> {
+        try {
+            const res = await fetch(`/api/todo/${todoId}`, { method: 'DELETE' });
+            if (res.ok) {
+                setTodos(prev => prev.filter(t => t._id !== todoId));
+            }
+        } catch (error) {
+            console.error("Failed to delete todo", error);
         }
     }
 
@@ -181,14 +178,17 @@ export default function TodoPage() {
                 <div className="flex justify-center items-center h-40">
                     <div className="animate-spin rounded-full h-10 w-10 border-t-4 border-blue-500" />
                 </div>
+            ) : todos.length === 0 ? (
+                <p className="text-gray-400 text-center mt-20">No todos yet. They'll appear here from your journal entries.</p>
             ) : (
                 <ul className="space-y-4">
-                    {todos.map((todo, index) => (
+                    {todos.map(todo => (
                         <TodoItem
-                            key={index}
+                            key={todo._id}
                             todo={todo}
                             onUpdateStatus={updateStatus}
                             onUpdateText={updateText}
+                            onDelete={deleteTodo}
                         />
                     ))}
                 </ul>

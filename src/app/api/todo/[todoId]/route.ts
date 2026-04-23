@@ -3,12 +3,12 @@ import { auth } from "@/app/lib/auth";
 import { connect } from "@/app/lib/mongodb";
 import Todo from "@/app/models/Todo";
 
-export async function PATCH(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
+export async function PATCH(req: Request, { params }: { params: Promise<{ todoId: string }> }) {
     try {
         await connect();
         const session = await auth();
         const user = session?.user;
-        const { moodId } = await params;
+        const { todoId } = await params;
 
         if (!user) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -16,9 +16,8 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ moodId
 
         const { oldTask, newTask, status } = await req.json();
 
-        // Build dynamic update object
         const updateData: { todo?: string; status?: string } = {};
-        if (newTask) updateData.todo = newTask;
+        if (newTask && newTask !== oldTask) updateData.todo = newTask;
         if (status) updateData.status = status;
 
         if (Object.keys(updateData).length === 0) {
@@ -26,11 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ moodId
         }
 
         const updated = await Todo.findOneAndUpdate(
-            {
-                _id: moodId,
-                userId: user.id,
-                ...(oldTask && { todo: oldTask }) // only include if oldTask exists
-            },
+            { _id: todoId, userId: user.id },
             { $set: updateData },
             { new: true }
         );
@@ -46,26 +41,16 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ moodId
     }
 }
 
-
-export async function DELETE(req: Request, { params }: { params: Promise<{ moodId: string }> }) {
+export async function DELETE(req: Request, { params }: { params: Promise<{ todoId: string }> }) {
     try {
         await connect();
         const session = await auth();
         const user = session?.user;
-        const { moodId } = await params;
+        const { todoId } = await params;
 
         if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
 
-        const { task } = await req.json();
-        if (!task) {
-            return NextResponse.json({ error: "Task is required." }, { status: 400 });
-        }
-
-        const deleted = await Todo.findOneAndDelete({
-            _id: moodId,
-            userId: user.id,
-            todo: task
-        });
+        const deleted = await Todo.findOneAndDelete({ _id: todoId, userId: user.id });
 
         if (!deleted) {
             return NextResponse.json({ error: "Todo not found or already deleted." }, { status: 404 });
@@ -77,4 +62,3 @@ export async function DELETE(req: Request, { params }: { params: Promise<{ moodI
         return NextResponse.json({ error: "Internal server error" }, { status: 500 });
     }
 }
-
