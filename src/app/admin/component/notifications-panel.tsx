@@ -20,6 +20,8 @@ interface Notification {
 
 export default function NotificationsPanel() {
     const [activeTab, setActiveTab] = useState<'send' | 'history'>('send');
+    const [broadcastMode, setBroadcastMode] = useState<'all' | 'individual'>('all');
+    const [users, setUsers] = useState<{_id: string; name: string; email: string}[]>([]);
     const [broadcastLoading, setBroadcastLoading] = useState(false);
     const [history, setHistory] = useState<Notification[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
@@ -36,7 +38,20 @@ export default function NotificationsPanel() {
         if (activeTab === 'history') {
             fetchHistory();
         }
+        fetchUsers();
     }, [activeTab]);
+
+    const fetchUsers = async () => {
+        try {
+            const res = await fetch("/api/admin/users/list");
+            const data = await res.json();
+            if (res.ok && data.users) {
+                setUsers(data.users);
+            }
+        } catch (err) {
+            console.error("Failed to fetch users", err);
+        }
+    };
 
     const fetchHistory = async () => {
         setLoadingHistory(true);
@@ -55,6 +70,12 @@ export default function NotificationsPanel() {
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
+        
+        if (broadcastMode === 'individual' && !formData.userId) {
+            toast.error("Please select a recipient");
+            return;
+        }
+        
         setBroadcastLoading(true);
 
         try {
@@ -173,19 +194,53 @@ export default function NotificationsPanel() {
                                     />
                                 </div>
                                 <div className="space-y-2">
-                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Individual Recipient Token</label>
-                                    <div className="relative">
-                                        <input
-                                            type="text"
-                                            value={formData.userId}
-                                            onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                                            placeholder="Broadcast (Empty) or User ID"
-                                            className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none transition-all dark:text-white"
-                                        />
-                                        <Users className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Recipient Mode</label>
+                                    <div className="flex gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => { setBroadcastMode('all'); setFormData({ ...formData, userId: "" }); }}
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${
+                                                broadcastMode === 'all'
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-700"
+                                            }`}
+                                        >
+                                            <Users size={16} />
+                                            All Users
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => setBroadcastMode('individual')}
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${
+                                                broadcastMode === 'individual'
+                                                    ? "bg-blue-600 text-white"
+                                                    : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-700"
+                                            }`}
+                                        >
+                                            <Send size={16} />
+                                            Individual
+                                        </button>
                                     </div>
                                 </div>
                             </div>
+
+                            {broadcastMode === 'individual' && (
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-bold text-slate-400 uppercase tracking-widest px-1">Select Recipient</label>
+                                    <select
+                                        value={formData.userId}
+                                        onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
+                                        className="w-full px-4 py-3 bg-slate-50 dark:bg-slate-900 border border-slate-100 dark:border-slate-700 rounded-2xl focus:ring-2 focus:ring-blue-500 outline-none text-slate-900 dark:text-white appearance-none"
+                                    >
+                                        <option value="">Select a user...</option>
+                                        {users.map(user => (
+                                            <option key={user._id} value={user._id}>
+                                                {user.name} ({user.email})
+                                            </option>
+                                        ))}
+                                    </select>
+                                </div>
+                            )}
 
                             <button
                                 type="submit"
@@ -199,7 +254,7 @@ export default function NotificationsPanel() {
                                     <Send size={20} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
                                 )}
                                 <span className="uppercase tracking-widest text-xs">
-                                    {formData.userId ? "Transmit to User" : "Execute Broadcast"}
+                                    {broadcastMode === 'all' ? "Execute Broadcast" : "Transmit to User"}
                                 </span>
                             </button>
                         </motion.form>

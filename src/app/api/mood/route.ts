@@ -5,8 +5,7 @@ import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
 import UserModel from "@/app/models/User";
-import { decrypt, encrypt } from "@/app/lib/encryption";
-const openai = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+import { encrypt } from "@/app/lib/encryption";
 const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
 
@@ -55,14 +54,21 @@ Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
 
-        let mood, parsedMood, todos = [];
+        interface TodoItem {
+            todo: string;
+            type: string;
+            status: string;
+        }
+
+        let mood: string | undefined, parsedMood: any, todos: TodoItem[] = [];
         try {
             const completion = await openrouter.chat.completions.create({
                 model: "openai/gpt-4o-mini",
+                response_format: { type: "json_object" },
                 messages: [
                     {
                         role: "system",
-                        content: prompt.replace("Analyze the following journal entry and provide the requested JSON response: \"${content}\"", "")
+                        content: prompt.replace(`Analyze the following journal entry and provide the requested JSON response: "${content}"`, "")
                     },
                     {
                         role: "user",
@@ -75,67 +81,43 @@ Analyze the following journal entry and provide the requested JSON response: "${
             console.error("Error with OpenRouter API:", error);
             return NextResponse.json({ error: "Failed to process mood analysis." }, { status: 500 });
         }
-        // const response = result.response;
-        // const mood = response.candidates[0].content.parts[0].text;
 
-        // console.log(mood);
-
-        function cleanResponse(response: string) {
-            // Remove markdown code blocks
-            let cleaned = response.replace(/```json|```/g, '').trim();
-            // Replace control characters (newlines, tabs, etc.) within string values
-            // This regex finds strings and replaces control characters within them
-            cleaned = cleaned.replace(/\\n/g, ' ').replace(/\\r/g, '').replace(/\\t/g, ' ');
-            return cleaned;
+        function extractJson(response: string): string {
+            const start = response.indexOf('{');
+            const end = response.lastIndexOf('}');
+            if (start !== -1 && end !== -1 && end > start) {
+                return response.slice(start, end + 1);
+            }
+            return response.replace(/```json|```/g, '').trim();
         }
 
-        //OAI method
-        // const completion = await openai.chat.completions.create({
-        //     model: "gpt-4",
-        //     messages: [
-        //         {
-        //             role: "system",
-        //             content: "You are an AI assistant specialized in mood analysis. Given a journal entry, you will determine the primary mood of the writer. Your response should be a JSON object with the following structure:\n\n- `mood`: An object containing:\n  - `label`: A single word representing the overall emotional tone.\n  - `score`: A numerical rating out of 20, where higher scores indicate a more positive mood.\n  - `comment`: A supportive message based on the mood, offering encouragement or suggestions for improvement if needed.\n\nEnsure the response is empathetic and concise."
-        //         },
-        //         {
-        //             role: "user",
-        //             content: `Analyze the following journal entry and provide the requested JSON response:\n\n"${content}"`
-        //         },
-        //     ],
-        // });
-
-
-        // const mood = completion.choices[0]?.message?.content?.trim();
-
-        // let parsedMood;
-        // let todos = [];
-
+        function normalizeStatus(status: string): string {
+            const s = status?.toLowerCase().trim();
+            if (s === 'in progress' || s === 'in_progress') return 'in-progress';
+            if (s === 'completed' || s === 'done') return 'completed';
+            return 'pending';
+        }
 
         try {
-            const cleanedResponse = typeof mood === "string" ? cleanResponse(mood) : mood;
+            const jsonStr = typeof mood === "string" ? extractJson(mood) : JSON.stringify(mood);
+            const raw = JSON.parse(jsonStr);
 
-            parsedMood = typeof cleanedResponse === "string" ? JSON.parse(cleanedResponse) : cleanedResponse;
+            const rawTodos = Array.isArray(raw.todo) ? raw.todo
+                : Array.isArray(raw.todos) ? raw.todos
+                : [];
 
-
-            const extractedTodos = Array.isArray(parsedMood.todo) ? parsedMood.todo : [];
-
-            // If `parsedMood` has a nested "mood" key, extract the inner mood object.
-            if (parsedMood.mood) {
-                parsedMood = parsedMood.mood;
+            if (raw.mood) {
+                parsedMood = raw.mood;
+            } else {
+                parsedMood = raw;
             }
 
-            todos = extractedTodos.map((item: any) => ({
-                todo: item.todo,
-                type: item.type,
-                status: item.status,
-            }));
+            todos = rawTodos.map((item: any) => ({
+                todo: item.todo || item.task || '',
+                type: item.type || 'general',
+                status: normalizeStatus(item.status || 'pending'),
+            })).filter((item: TodoItem) => item.todo.trim() !== '');
 
-            // OAI method
-            // parsedMood = typeof mood === "string" ? JSON.parse(mood) : mood;
-            // If `parsedMood` has a nested "mood" key, extract the correct value
-            // if (parsedMood.mood) {
-            //     parsedMood = parsedMood.mood; // This ensures you're only getting the inner mood object
-            // }
         } catch (error) {
             console.error("Error parsing mood:", error);
             parsedMood = { label: "Unknown", score: 0, comment: "No valid response received." };
@@ -212,30 +194,28 @@ Analyze the following journal entry and provide the requested JSON response: "${
         });
         await newMood.save();
 
-        interface TodoItem {
-            todo: string;
-            type: string;
-            status: string;
+        let savedTodos: TodoItem[] = [];
+        if (todos.length > 0) {
+            try {
+                const newTodo = todos.map(item => ({
+                    userId: user?.id,
+                    todo: item.todo,
+                    type: item.type,
+                    status: item.status,
+                }));
+                await Todo.insertMany(newTodo);
+                savedTodos = todos;
+            } catch (todoError) {
+                console.error("Error saving todos:", todoError);
+            }
         }
 
-        const newTodo = todos.map((item: TodoItem | string) => ({
-            userId: user?.id,
-            todo: typeof item === 'string' ? item : item.todo,
-            type: typeof item === 'string' ? 'general' : item.type,
-            status: typeof item === 'string' ? 'pending' : item.status,
-        }));
-        // console.log("Todo payload before insert:", newTodo);
-
-        if (newTodo.length > 0) {
-            await Todo.insertMany(newTodo);
-            // console.log("Saved todos:", newTodo);
-        }
         return NextResponse.json({
             message: "Mood saved successfully.",
             mood: parsedMood.label,
             comment: parsedMood.comment,
             score: parsedMood.score,
-            todo: parsedMood.todo,
+            todo: savedTodos,
             streakData: {
                 currentStreak: newStreak,
                 totalXp: totalXp,

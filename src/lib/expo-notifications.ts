@@ -1,4 +1,4 @@
-import { Expo, ExpoPushMessage, ExpoPushTicket } from 'expo-server-sdk';
+import { Expo, ExpoPushMessage, ExpoPushTicket, ExpoPushReceipt, ExpoPushErrorReceipt } from 'expo-server-sdk';
 import UserModel from '@/app/models/User';
 
 let expo = new Expo();
@@ -33,15 +33,34 @@ export async function sendPushNotification(tokens: string[], message: { title: s
         }
     }
 
-    // Handle receipt errors (especially 'DeviceNotRegistered')
-    let receiptIds = [];
-    for (let i = 0; i < tickets.length; i++) {
-        const ticket = tickets[i];
-        if (ticket.status === 'error') {
-            if (ticket.details && ticket.details.error === 'DeviceNotRegistered') {
-                const deadToken = messages[i].to as string;
+    const receiptIds: string[] = [];
+    const tokenMap: { [id: string]: string } = {};
+    
+    tickets.forEach((ticket, index) => {
+        if ('id' in ticket) {
+            receiptIds.push((ticket as any).id);
+            tokenMap[(ticket as any).id] = messages[index].to as string;
+        }
+    });
+
+    let receipts;
+    try {
+        receipts = await expo.getPushNotificationReceiptsAsync(receiptIds);
+    } catch (error) {
+        console.error("Error fetching receipts:", error);
+        return tickets;
+    }
+
+    for (const receiptId of Object.keys(receipts)) {
+        const receipt = receipts[receiptId] as ExpoPushReceipt | ExpoPushErrorReceipt;
+        if (receipt.status === 'error') {
+            const receiptErr = receipt as ExpoPushErrorReceipt;
+            if (receiptErr.details && receiptErr.details.error === 'DeviceNotRegistered') {
+                const deadToken = tokenMap[receiptId];
                 console.log(`Device not registered for token: ${deadToken}. Removing from database.`);
                 await UserModel.updateOne({ pushToken: deadToken }, { $set: { pushToken: null } });
+            } else if (receiptErr.details && receiptErr.details.error) {
+                console.error(`Push notification error: ${receiptErr.details.error}`);
             }
         }
     }
