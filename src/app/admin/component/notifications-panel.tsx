@@ -165,8 +165,8 @@ export default function NotificationsPanel() {
                                     >
                                         <option value="CUSTOM">General Message</option>
                                         <option value="SYSTEM">Critical System</option>
-                                        <option value="JOURNAL">Journal Nudge</option>
-                                        <option value="STREAK">Streak Recovery</option>
+                                        <option value="JOURNAL_REMINDER">Journal Nudge</option>
+                                        <option value="STREAK_RECOVERY">Streak Recovery</option>
                                     </select>
                                 </div>
                             </div>
