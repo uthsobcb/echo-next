@@ -60,6 +60,7 @@ export async function GET(req: Request) {
                 const hour = parseInt(hourStr || "0", 10);
 
                 if (hour !== REMINDER_HOUR) continue;
+                if (!user.pushToken) continue;
 
                 // Check pending/in-progress todos for this user
                 const pendingCount = await Todo.countDocuments({

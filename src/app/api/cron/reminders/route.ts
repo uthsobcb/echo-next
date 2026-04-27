@@ -63,6 +63,7 @@ export async function GET(req: Request) {
                 const hour = parseInt(hourStr || "0", 10);
 
                 if (hour !== REMINDER_HOUR) continue;
+                if (!user.pushToken) continue;
 
                 // Check if user journaled today (local day)
                 const year = parts.find(p => p.type === "year")?.value;

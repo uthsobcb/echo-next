@@ -53,6 +53,7 @@ export async function GET(req: Request) {
         const sentNotifications = [];
 
         for (const user of users) {
+            if (!user.pushToken) continue;
             // Global cooldown: skip if ANY notification sent in last 4 hours
             const recent = await NotificationModel.findOne({
                 userId: user._id,

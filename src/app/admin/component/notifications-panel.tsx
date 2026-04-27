@@ -21,7 +21,7 @@ interface Notification {
 export default function NotificationsPanel() {
     const [activeTab, setActiveTab] = useState<'send' | 'history'>('send');
     const [broadcastMode, setBroadcastMode] = useState<'all' | 'individual'>('all');
-    const [users, setUsers] = useState<{_id: string; name: string; email: string}[]>([]);
+    const [users, setUsers] = useState<{ _id: string; name: string; email: string }[]>([]);
     const [broadcastLoading, setBroadcastLoading] = useState(false);
     const [history, setHistory] = useState<Notification[]>([]);
     const [loadingHistory, setLoadingHistory] = useState(false);
@@ -70,12 +70,12 @@ export default function NotificationsPanel() {
 
     const handleSend = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (broadcastMode === 'individual' && !formData.userId) {
             toast.error("Please select a recipient");
             return;
         }
-        
+
         setBroadcastLoading(true);
 
         try {
@@ -115,8 +115,8 @@ export default function NotificationsPanel() {
                 <button
                     onClick={() => setActiveTab('send')}
                     className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded-2xl transition-all ${activeTab === 'send'
-                            ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-700"
-                            : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                        ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-700"
+                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                         }`}
                 >
                     <Send size={16} />
@@ -125,8 +125,8 @@ export default function NotificationsPanel() {
                 <button
                     onClick={() => setActiveTab('history')}
                     className={`flex-1 flex items-center justify-center gap-2 px-6 py-2.5 text-sm font-bold rounded-2xl transition-all ${activeTab === 'history'
-                            ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-700"
-                            : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
+                        ? "bg-white dark:bg-slate-800 text-blue-600 dark:text-blue-400 shadow-sm border border-slate-100 dark:border-slate-700"
+                        : "text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200"
                         }`}
                 >
                     <History size={16} />
@@ -199,11 +199,10 @@ export default function NotificationsPanel() {
                                         <button
                                             type="button"
                                             onClick={() => { setBroadcastMode('all'); setFormData({ ...formData, userId: "" }); }}
-                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${
-                                                broadcastMode === 'all'
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${broadcastMode === 'all'
                                                     ? "bg-blue-600 text-white"
                                                     : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-700"
-                                            }`}
+                                                }`}
                                         >
                                             <Users size={16} />
                                             All Users
@@ -211,11 +210,10 @@ export default function NotificationsPanel() {
                                         <button
                                             type="button"
                                             onClick={() => setBroadcastMode('individual')}
-                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${
-                                                broadcastMode === 'individual'
+                                            className={`flex-1 flex items-center justify-center gap-2 px-4 py-3 text-sm font-bold rounded-2xl transition-all ${broadcastMode === 'individual'
                                                     ? "bg-blue-600 text-white"
                                                     : "bg-slate-50 dark:bg-slate-900 text-slate-500 hover:text-slate-700"
-                                            }`}
+                                                }`}
                                         >
                                             <Send size={16} />
                                             Individual

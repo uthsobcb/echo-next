@@ -77,6 +77,7 @@ export async function GET(req: Request) {
                 const hour = parseInt(hourStr || "0", 10);
 
                 if (hour !== MORNING_HOUR) continue;
+                if (!user.pushToken) continue;
 
                 // Global cooldown: skip if any notification sent in last 4 hours
                 const recent = await NotificationModel.findOne({
