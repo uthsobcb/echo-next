@@ -85,7 +85,7 @@ const Entry = () => {
 
                 <div className="flex justify-center gap-6 mb-8">
                     <ScanComponent onScanComplete={handleScannedText} />
-                    <JournalPrompt />
+                    <JournalPrompt onPromptSelect={(text) => setJournalEntry(prev => prev ? `${prev}\n${text}` : text)} />
                     <UploadIcon OnImageUpload={setImageUrl} />
                 </div>
 
@@ -107,7 +107,7 @@ const Entry = () => {
                     )}
 
                     <textarea
-                        className="w-full h-[60vh] bg-transparent border-none focus:ring-0 text-gray-800 placeholder-gray-400 font-handwriting text-3xl md:text-4xl leading-relaxed resize-none p-4"
+                        className="w-full h-[45vh] md:h-[55vh] bg-transparent border-none focus:ring-0 text-gray-800 placeholder-gray-400 font-handwriting text-3xl md:text-4xl leading-relaxed resize-none p-4"
                         placeholder="How was your day? What's on your mind?..."
                         value={journalEntry}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJournalEntry(e.target.value)}
@@ -167,7 +167,7 @@ const Entry = () => {
                                 {streakData && (
                                     <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-2xl p-4 text-white shadow-md">
                                         <p className="text-xs font-black uppercase tracking-widest opacity-80">Current Streak</p>
-                                        <h4 className="text-3xl font-black">{streakData.streak} Days 🔥</h4>
+                                        <h4 className="text-3xl font-black flex items-center gap-2">{streakData.streak} Days <Flame className="w-7 h-7 fill-current" /></h4>
                                         {streakData.milestoneMessage && (
                                             <p className="text-sm font-bold mt-1 bg-white/20 px-2 py-0.5 rounded-lg inline-block italic">
                                                 {streakData.milestoneMessage}

@@ -91,13 +91,11 @@ export default async function User() {
             value: Math.abs(score) || 10
         }))
         : [];
-    // console.log(last7DaysData);
 
     const entryCount = journalEntries.length;
 
     const valuesArray = pieChartData.map(({ value }) => value || 0);
     const totalValue = valuesArray.reduce((sum, value) => sum + value, 0);
-    // console.log(valuesArray, "and", totalValue);
 
 
     const userBadges = badges.filter((badge) => userData?.badge?.includes(badge.name));
@@ -151,25 +149,10 @@ export default async function User() {
                                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
                                         {userBadges.length > 0 ? (
                                             <BadgeModal allBadges={badges} earnedBadges={userBadges} />
-
-                                            /* {userBadges.length > 0 ? (
-                                                userBadges.map((badge) => (
-                                                    <div key={badge.id} className="flex flex-col items-center p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors">
-                                                        <Image
-                                                            src={badge.img}
-                                                            alt={`${badge.name} Badge`}
-                                                            width={60}
-                                                            height={60}
-                                                            className="rounded-full shadow-sm"
-                                                        />
-                                                        <p className="text-sm font-medium text-gray-700 mt-2 text-center">{badge.name}</p>
-                                                    </div>
-    
-                                                )) */
                                         ) : (
-                                            <div className="col-span-full text-center py-8 bg-gray-50 rounded-lg">
-                                                <p className="text-gray-500 text-sm">No badges earned yet.</p>
-                                                <p className="text-gray-400 text-xs mt-1">Keep writing to earn badges!</p>
+                                            <div className="col-span-full text-center py-8 bg-indigo-50 rounded-xl border border-indigo-100">
+                                                <p className="text-indigo-700 text-sm font-semibold">No badges earned yet.</p>
+                                                <p className="text-indigo-500 text-xs mt-1">Keep writing to earn badges!</p>
                                             </div>
                                         )}
                                     </div>

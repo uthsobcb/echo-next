@@ -60,11 +60,6 @@ const chatSchema = new mongoose.Schema({
     timestamps: true
 });
 
-chatSchema.pre('save', function (next) {
-    this.updatedAt = new Date();
-    next();
-});
-
-const Chat: Model<IChat> = mongoose.models.Chat || mongoose.model<IChat>("Chat", chatSchema);
+const Chat: Model<IChat> = (mongoose.models.Chat as Model<IChat>) || mongoose.model<IChat>("Chat", chatSchema);
 
 export default Chat;

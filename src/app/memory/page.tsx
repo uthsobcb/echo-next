@@ -37,7 +37,7 @@ export default async function page() {
                             A quiet space to look back, reflect, and notice how far you've come.
                         </p>
 
-                        <div className="w-16 h-1 bg-yellow-400 rounded-full mt-2" />
+                        <div className="w-16 h-1 bg-indigo-400 rounded-full mt-2" />
                     </div>
 
                     <div className="flex flex-col justify-start gap-6">
@@ -48,7 +48,7 @@ export default async function page() {
                             </span>
                         </div>
 
-                        <div className="flex items-start gap-2 border-l-4 border-yellow-300 pl-4 text-sm text-gray-600 italic">
+                        <div className="flex items-start gap-2 border-l-4 border-indigo-300 pl-4 text-sm text-gray-600 italic">
                             <Quote className="w-4 h-4 text-yellow-500 mt-0.5" />
                             <p>
                                 "Sometimes you will never know the value of a moment until it becomes a memory." <br />

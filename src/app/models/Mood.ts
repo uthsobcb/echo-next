@@ -1,15 +1,14 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 
-interface IMood {
-    userId: mongoose.Schema.Types.ObjectId;
+export interface IMood extends Document {
+    userId: mongoose.Types.ObjectId;
     mood: string;
     score: number;
     comment: string;
     content: string;
     imgUrl: string;
     createdAt: Date;
-    todo?: [String];
-
+    todo?: string[];
 }
 
 const MoodSchema = new mongoose.Schema<IMood>(
@@ -19,21 +18,6 @@ const MoodSchema = new mongoose.Schema<IMood>(
             ref: "User",
             required: true,
         },
-
-        // mood: {
-        //     label: {
-        //         type: String,
-        //         // required: true
-        //     },
-        //     score: {
-        //         type: Number,
-        //         // required: true
-        //     },
-        //     comment: {
-        //         type: String,
-        //         // required: true
-        //     }
-        // },
         mood: {
             type: String,
             required: true,
@@ -65,6 +49,7 @@ const MoodSchema = new mongoose.Schema<IMood>(
     { timestamps: true }
 );
 
-const Mood = mongoose.models.Mood || mongoose.model("Mood", MoodSchema);
+const Mood = (mongoose.models.Mood as mongoose.Model<IMood>) ||
+    mongoose.model<IMood>("Mood", MoodSchema);
 
-export default Mood as mongoose.Model<IMood>;
+export default Mood;

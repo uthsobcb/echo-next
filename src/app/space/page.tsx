@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect, useCallback, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Send, RefreshCcw, Sparkles, Heart, Lock, Trophy, User as UserIcon, PenLine } from "lucide-react";
 import { toast } from "sonner";
@@ -23,6 +23,34 @@ interface LeaderboardEntry {
 
 type Mode = "draw" | "post";
 
+function Countdown({ nextAvailableAt }: { nextAvailableAt: string }) {
+    const [timeLeft, setTimeLeft] = useState("");
+
+    useEffect(() => {
+        const calc = () => {
+            const diff = new Date(nextAvailableAt).getTime() - Date.now();
+            if (diff <= 0) {
+                setTimeLeft("Available now");
+                return;
+            }
+            const h = Math.floor(diff / 3600000);
+            const m = Math.floor((diff % 3600000) / 60000);
+            const s = Math.floor((diff % 60000) / 1000);
+            setTimeLeft(h > 0 ? `${h}h ${m}m` : m > 0 ? `${m}m ${s}s` : `${s}s`);
+        };
+        calc();
+        const id = setInterval(calc, 1000);
+        return () => clearInterval(id);
+    }, [nextAvailableAt]);
+
+    return (
+        <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
+            Next reveal in{" "}
+            <span className="text-indigo-400">{timeLeft}</span>
+        </p>
+    );
+}
+
 export default function SpacePage() {
     const [mode, setMode] = useState<Mode>("draw");
     const [status, setStatus] = useState<Status | null>(null);
@@ -40,14 +68,10 @@ export default function SpacePage() {
             const res = await fetch("/api/space/draw");
             const data = await res.json();
             setStatus(data);
-            if (data.requiresMessage && mode === "draw" && !currentCardContent) {
-                // Auto-switch to post if draw is blocked by contribution
-                // setMode("post"); // Maybe don't auto-switch, let user choose
-            }
         } catch (error) {
             console.error("Failed to fetch status:", error);
         }
-    }, [mode, currentCardContent]);
+    }, []);
 
     const fetchLeaderboard = useCallback(async () => {
         setIsLoadingLeaderboard(true);
@@ -206,14 +230,14 @@ export default function SpacePage() {
                     <div className="flex bg-slate-100 p-1.5 rounded-full mb-8 relative z-20">
                         <button
                             onClick={() => setMode("draw")}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${mode === "draw" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${mode === "draw" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
                         >
                             <Sparkles className="w-3.5 h-3.5" />
                             Reveal
                         </button>
                         <button
                             onClick={() => setMode("post")}
-                            className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all ${mode === "post" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
+                            className={`flex items-center gap-2 px-6 py-2 rounded-full text-xs font-black uppercase tracking-widest transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-2 ${mode === "post" ? "bg-white text-indigo-600 shadow-sm" : "text-slate-400 hover:text-slate-600"}`}
                         >
                             <PenLine className="w-3.5 h-3.5" />
                             Share
@@ -278,9 +302,7 @@ export default function SpacePage() {
                                 )}
 
                                 {status?.nextAvailableAt && !currentCardContent && (
-                                    <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-300">
-                                        Next free energy shortly
-                                    </p>
+                                    <Countdown nextAvailableAt={status.nextAvailableAt} />
                                 )}
                             </motion.div>
                         ) : (

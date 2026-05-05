@@ -266,7 +266,7 @@ const ChatBox = ({ user }: ChatBoxProps) => {
     };
 
     return (
-        <div className="flex h-screen bg-white">
+        <div className="flex h-[calc(100vh-6rem)] bg-white">
             <Sidebar
                 chats={oldChats}
                 currentChatId={currentChatId}

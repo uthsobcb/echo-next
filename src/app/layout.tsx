@@ -67,7 +67,7 @@ export default function RootLayout({
         <meta name="apple-mobile-web-app-title" content="Echo" />
         <meta name="format-detection" content="telephone=no" />
         <meta name="mobile-web-app-capable" content="yes" />
-        <meta name="theme-color" content="#4A90E2" />
+        <meta name="theme-color" content="#4f46e5" />
 
         <link rel="apple-touch-icon" href="/assets/logo.png" />
         <link rel="shortcut icon" href="/favicon.ico" />

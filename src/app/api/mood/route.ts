@@ -217,9 +217,10 @@ Analyze the following journal entry and provide the requested JSON response: "${
             score: parsedMood.score,
             todo: savedTodos,
             streakData: {
-                currentStreak: newStreak,
-                totalXp: totalXp,
-                milestone: milestoneMessage
+                streak: newStreak,
+                totalXp,
+                milestoneReached: !!milestoneMessage,
+                milestoneMessage: milestoneMessage ?? null,
             }
         });
 

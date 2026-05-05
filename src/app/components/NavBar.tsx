@@ -69,15 +69,7 @@ export default async function NavBar() {
 
                 {/* Mobile Menu Trigger */}
                 <div className="lg:hidden">
-                    {/* Note: MobileMenu might need similar optimization if it fetches data, 
-                        but for now we pass session/userData as props or let it handle itself. 
-                        Since we removed fetching from NavBar, we need to decide how to handle MobileMenu data.
-                        Ideally MobileMenu should also be async or fetch its own data.
-                        For this step, passing session is safe, but userData is missing from this scope.
-                        We can let MobileMenu fetch its own data or wrap it similarly. 
-                        For now, let's keep it simple and assume standard session data is enough or it fetches.
-                    */}
-                    <MobileMenu session={session} userData={null} />
+                    <MobileMenu session={session} userData={session?.user ?? null} />
                 </div>
             </nav>
         </header>
