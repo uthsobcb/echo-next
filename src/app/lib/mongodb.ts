@@ -31,7 +31,6 @@ export async function connect() {
     if (!mCached.promise) {
         const opts = {
             bufferCommands: false,
-            strictQuery: false,
         };
 
         mCached.promise = mongoose.connect(MONGODB_URI!, opts).then((mongoose) => {
