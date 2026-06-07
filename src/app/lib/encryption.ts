@@ -1,7 +1,8 @@
 import crypto from 'crypto';
 
-const ALGORITHM = 'aes-256-cbc';
-const IV_LENGTH = 16;
+const LEGACY_ALGORITHM = 'aes-256-cbc';
+const GCM_ALGORITHM = 'aes-256-gcm';
+const GCM_IV_LENGTH = 12;
 
 const SECRET_KEY = process.env.ENCRYPTION_SECRET_KEY;
 if (!SECRET_KEY) {
@@ -16,42 +17,68 @@ const key = crypto.createHash('sha256').update(SECRET_KEY).digest();
 const LEGACY_KEY = process.env.LEGACY_ENCRYPTION_SECRET_KEY;
 const legacyKey = LEGACY_KEY ? crypto.createHash('sha256').update(LEGACY_KEY).digest() : null;
 
-function decryptWithKey(encryptedText: string, decryptKey: Buffer): string {
+function decryptCbc(encryptedText: string, decryptKey: Buffer): string {
     const [ivHex, encrypted] = encryptedText.split(':');
     if (!ivHex || !encrypted) throw new Error("Invalid format");
     const iv = Buffer.from(ivHex, 'hex');
-    const decipher = crypto.createDecipheriv(ALGORITHM, decryptKey, iv);
+    const decipher = crypto.createDecipheriv(LEGACY_ALGORITHM, decryptKey, iv);
     let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
     decrypted += decipher.final('utf-8');
     return decrypted;
 }
 
-// Encrypt function - always uses the current key
+function decryptGcm(encryptedText: string, decryptKey: Buffer): string {
+    const [ivHex, authTagHex, encrypted] = encryptedText.split(':');
+    if (!ivHex || !authTagHex || !encrypted) throw new Error("Invalid format");
+    const iv = Buffer.from(ivHex, 'hex');
+    const authTag = Buffer.from(authTagHex, 'hex');
+    const decipher = crypto.createDecipheriv(GCM_ALGORITHM, decryptKey, iv);
+    decipher.setAuthTag(authTag);
+    let decrypted = decipher.update(encrypted, 'hex', 'utf-8');
+    decrypted += decipher.final('utf-8');
+    return decrypted;
+}
+
+// Encrypt function - always uses the current key, in authenticated GCM mode.
+// Format: iv:authTag:ciphertext (3 hex segments), distinguishing it from the
+// legacy iv:ciphertext (2 segments) CBC format still supported for reads below.
 export const encrypt = (text: string) => {
-    const iv = crypto.randomBytes(IV_LENGTH);
-    const cipher = crypto.createCipheriv(ALGORITHM, key, iv);
+    const iv = crypto.randomBytes(GCM_IV_LENGTH);
+    const cipher = crypto.createCipheriv(GCM_ALGORITHM, key, iv);
     let encrypted = cipher.update(text, 'utf-8', 'hex');
     encrypted += cipher.final('hex');
-    return iv.toString('hex') + ':' + encrypted;
+    const authTag = cipher.getAuthTag().toString('hex');
+    return `${iv.toString('hex')}:${authTag}:${encrypted}`;
 };
 
-// Decrypt function - tries current key first, then legacy key
+// Decrypt function - dispatches on segment count to support both the current
+// GCM format and data written before this migration (CBC, current or legacy key).
 export const decrypt = (encryptedText: string) => {
     if (!encryptedText || !encryptedText.includes(':')) {
         return encryptedText;
     }
 
-    // Try current key first
+    const segments = encryptedText.split(':').length;
+
+    if (segments === 3) {
+        try {
+            return decryptGcm(encryptedText, key);
+        } catch {
+            // Tampered, corrupted, or encrypted under a rotated key - fall through to as-is below.
+        }
+        return encryptedText;
+    }
+
+    // Legacy CBC format: try current key first, then legacy key
     try {
-        return decryptWithKey(encryptedText, key);
+        return decryptCbc(encryptedText, key);
     } catch {
         // Current key failed, try legacy key
     }
 
-    // Try legacy key for entries encrypted before ENCRYPTION_SECRET_KEY was set
     if (legacyKey) {
         try {
-            return decryptWithKey(encryptedText, legacyKey);
+            return decryptCbc(encryptedText, legacyKey);
         } catch {
             // Both keys failed - fall through
         }

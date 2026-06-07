@@ -27,20 +27,11 @@ export async function GET(req: NextRequest) {
         }
 
         const entries = await Entry.find(query).sort({ createdAt: -1 });
-        const decryptedEntries = entries.map(entry => {
-            return {
-                ...entry.toObject(),
-                content: entry.content && entry.content.includes(":") ? (() => {
-                    try {
-                        return decrypt(entry.content);  // Try to decrypt if it's encrypted
-                    } catch (error) {
-                        console.error("Error during decryption:", error);
-                        return "Error decrypting content";
-                    }
-                })() : entry.content  // If not encrypted, return content as is
-            }
-        });
-        // console.log("Decrypted Entries:", decryptedEntries);
+        // decrypt() already returns unencrypted/undecryptable content as-is, so no extra branching needed here.
+        const decryptedEntries = entries.map(entry => ({
+            ...entry.toObject(),
+            content: decrypt(entry.content),
+        }));
         return NextResponse.json(decryptedEntries, { status: 200 });
 
     } catch (error) {

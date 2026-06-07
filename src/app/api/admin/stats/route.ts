@@ -18,8 +18,8 @@ export async function GET(req: NextRequest) {
             );
         }
 
-        // Get all users
-        const allUsers = await UserModel.find();
+        // Get all users (excluding sensitive auth fields)
+        const allUsers = await UserModel.find().select("-password -resetPasswordCode -resetPasswordExpires -pushToken");
 
         // Get total entries count
         const totalEntries = await Entry.countDocuments();

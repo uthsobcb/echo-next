@@ -3,18 +3,9 @@ import Chat from "../../models/Chat";
 import { connect } from "../../lib/mongodb";
 import { auth } from "@/app/lib/auth";
 import { encrypt, decrypt } from "@/app/lib/encryption";
-import OpenAI from "openai";
+import { openrouter as openai } from "@/app/lib/openrouter";
 
 import type { IMessage } from "../../models/Chat";
-
-const openai = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-        "HTTP-Referer": "https://echo-companion.vercel.app", // Change this to your site's URL
-        "X-Title": "Echo Companion",
-    },
-});
 
 const SYSTEM_PROMPT = `You are Echo, an empathetic AI companion designed to support users through journaling and self-reflection.
 

@@ -32,7 +32,7 @@ export async function POST(req: NextRequest) {
 
         // Check if this is a Google OAuth account (password is not a bcrypt hash)
         if (!user.password.startsWith("$2")) {
-            console.log(`Login failed: Google OAuth account (stored password is not a bcrypt hash) for ${normalizedEmail}. Hash prefix: "${user.password.substring(0, 4)}"`);
+            console.log(`Login failed: Google OAuth account for ${normalizedEmail}.`);
             return NextResponse.json({ error: "This account uses Google sign-in. Please log in with Google." }, { status: 401 });
         }
 

@@ -7,7 +7,7 @@ import { sendPushNotification } from "@/lib/expo-notifications";
 export async function GET(req: Request) {
     try {
         const authHeader = req.headers.get("authorization");
-        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 

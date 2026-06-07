@@ -17,7 +17,8 @@ const SpaceMessageSchema = new Schema<ISpaceMessage>({
     author: {
         type: Schema.Types.ObjectId,
         ref: "User",
-        required: true
+        required: true,
+        index: true
     }
 }, {
     timestamps: true

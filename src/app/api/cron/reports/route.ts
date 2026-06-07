@@ -7,7 +7,7 @@ import { Resend } from "resend";
 export async function GET(req: NextRequest) {
     try {
         const authHeader = req.headers.get("authorization");
-        if (authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
+        if (!process.env.CRON_SECRET || authHeader !== `Bearer ${process.env.CRON_SECRET}`) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
 
@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
                         `;
 
                         await resend.emails.send({
-                            from: "Echo☁️ <echo@uthsob.ninja>",
+                            from: "Echo☁️ <system@echojournal.life>",
                             to: user.email,
                             subject: `📊 Echo Weekly Mood Report for ${user.name}`,
                             html: emailHtml,

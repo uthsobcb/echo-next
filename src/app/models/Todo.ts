@@ -15,6 +15,7 @@ const TodoSchema = new mongoose.Schema<ITodo>(
             type: mongoose.Schema.Types.ObjectId,
             ref: "User",
             required: true,
+            index: true,
         },
         todo: {
             type: String,

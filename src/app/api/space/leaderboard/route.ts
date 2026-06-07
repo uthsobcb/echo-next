@@ -1,10 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connect } from "@/app/lib/mongodb";
+import { auth } from "@/app/lib/auth";
 import SpaceMessage from "@/app/models/SpaceMessage";
 import User from "@/app/models/User";
 
 export async function GET(req: NextRequest) {
     try {
+        const session = await auth(req);
+        if (!session?.user) {
+            return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+        }
+
         await connect();
 
         // Aggregate SpaceMessage to count contributions per user

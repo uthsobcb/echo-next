@@ -17,20 +17,11 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
         if (!entry) {
             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
         }
-        // console.log("Entry found:", entry);
         const decryptedEntry = {
             ...entry.toObject(),
-            content: entry.content && entry.content.includes(":") ? (() => {
-                try {
-                    return decrypt(entry.content);  // Try to decrypt if it's encrypted
-                } catch (error) {
-                    console.error("Error during decryption:", error);
-                    return "Error decrypting content";
-                }
-            })() : entry.content  // If not encrypted, return content as is
+            content: decrypt(entry.content),
         };
 
-        // console.log("Decrypted Entry:", decryptedEntry);
         return NextResponse.json(decryptedEntry, { status: 200 });
     } catch (error) {
         console.error("Error fetching entry:", error);

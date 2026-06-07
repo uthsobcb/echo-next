@@ -4,18 +4,9 @@ import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
 import UserModel from "@/app/models/User";
 import { decrypt } from "@/app/lib/encryption";
-import OpenAI from "openai";
+import { openrouter } from "@/app/lib/openrouter";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
-
-const openrouter = new OpenAI({
-    apiKey: process.env.OPENROUTER_API_KEY,
-    baseURL: "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-        "HTTP-Referer": "https://echojournal.life",
-        "X-Title": "Echo Space",
-    },
-});
 
 type Range = "week" | "month" | "year";
 const RANGE_DAYS: Record<Range, number> = { week: 7, month: 30, year: 365 };
@@ -170,13 +161,11 @@ export async function GET(req: NextRequest) {
             Mood.find({ userId, createdAt: { $gte: prevRangeStart, $lt: rangeStart } }),
         ]);
 
-        // Decrypt content for text analysis
+        // Decrypt content for text analysis. decrypt() already returns unencrypted/
+        // undecryptable content as-is, so no extra branching needed here.
         const decryptedEntries = currentEntries.map(e => ({
             ...e.toObject(),
-            content: (() => {
-                try { return e.content?.includes(":") ? decrypt(e.content) : e.content; }
-                catch { return ""; }
-            })()
+            content: decrypt(e.content),
         }));
 
         // ── Stats ──────────────────────────────────────────────────────────────

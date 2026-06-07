@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
+import { cookies } from "next/headers";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { createToken, setAuthCookie } from "@/app/lib/auth";
@@ -7,9 +8,23 @@ import { createToken, setAuthCookie } from "@/app/lib/auth";
 export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const code = searchParams.get("code");
+    const state = searchParams.get("state");
+
+    const cookieStore = await cookies();
+    const expectedState = cookieStore.get("google_oauth_state")?.value;
+    cookieStore.delete("google_oauth_state");
+
+    if (!state || !expectedState || state !== expectedState) {
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASEURL}/login?error=invalid_state`);
+    }
 
     if (!code) {
         return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASEURL}/login?error=no_code`);
+    }
+
+    if (!process.env.GOOGLE_CLIENT_ID || !process.env.GOOGLE_CLIENT_SECRET) {
+        console.error("Google OAuth callback hit but GOOGLE_CLIENT_ID/GOOGLE_CLIENT_SECRET is not configured.");
+        return NextResponse.redirect(`${process.env.NEXT_PUBLIC_BASEURL}/login?error=google_oauth_not_configured`);
     }
 
     try {
@@ -19,8 +34,8 @@ export async function GET(req: NextRequest) {
             headers: { "Content-Type": "application/x-www-form-urlencoded" },
             body: new URLSearchParams({
                 code,
-                client_id: process.env.GOOGLE_CLIENT_ID!,
-                client_secret: process.env.GOOGLE_CLIENT_SECRET!,
+                client_id: process.env.GOOGLE_CLIENT_ID,
+                client_secret: process.env.GOOGLE_CLIENT_SECRET,
                 redirect_uri: `${process.env.NEXT_PUBLIC_BASEURL}/api/auth/google/callback`,
                 grant_type: "authorization_code",
             }),

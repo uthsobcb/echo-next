@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import OpenAI from "openai";
 import { connect } from "@/app/lib/mongodb";
 import { auth } from "@/app/lib/auth";
 import Mood from "@/app/models/Mood";
@@ -7,6 +6,7 @@ import Todo from "@/app/models/Todo";
 import UserModel from "@/app/models/User";
 import { encrypt } from "@/app/lib/encryption";
 import { recordRiskFlagAndMaybeNotify } from "@/app/lib/safety";
+import { openrouter } from "@/app/lib/openrouter";
 
 const RISK_INDICATOR_TAGS = [
     "hopelessness",
@@ -18,18 +18,6 @@ const RISK_INDICATOR_TAGS = [
     "previous-attempt-mentioned",
     "substance-use-crisis",
 ] as const;
-const openRouterApiKey = process.env.OPENROUTER_API_KEY;
-
-
-
-const openrouter = new OpenAI({
-    apiKey: openRouterApiKey,
-    baseURL: "https://openrouter.ai/api/v1",
-    defaultHeaders: {
-        'HTTP-Referer': 'https://echojournal.life',
-        'X-Title': 'Echo Space',
-    },
-});
 
 export async function POST(req: Request) {
     try {

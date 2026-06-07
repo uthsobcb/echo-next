@@ -48,7 +48,7 @@ export async function GET(req: NextRequest) {
                 { $addToSet: { badge: newBadge } }
             );
             await sendEmail({
-                from: "Echo☁️ Badge System <echo@uthsob.ninja>",
+                from: "Echo☁️ Badge System <system@echojournal.life>",
                 to: email,
                 subject: `🎖️ Congratulations, ${userName}! You've Earned a New Badge!`,
                 html: `
