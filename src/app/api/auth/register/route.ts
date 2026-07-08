@@ -3,10 +3,16 @@ import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import UserModel from "@/app/models/User";
 import { sendEmail } from "@/app/lib/email";
+import { checkRateLimit, getClientIp } from "@/app/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
   try {
     await connect();
+
+    const allowed = await checkRateLimit(`register:${getClientIp(req)}`, 5, 15 * 60);
+    if (!allowed) {
+      return NextResponse.json({ message: "Too many registration attempts. Please try again in a few minutes." }, { status: 429 });
+    }
 
     const { name, email: rawEmail, password } = await req.json();
 

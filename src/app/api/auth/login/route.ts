@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { createToken, setAuthCookie } from "@/app/lib/auth";
+import { checkRateLimit, getClientIp } from "@/app/lib/rateLimit";
 
 export async function POST(req: NextRequest) {
     try {
@@ -16,6 +17,11 @@ export async function POST(req: NextRequest) {
 
         // Connect to MongoDB
         await connect();
+
+        const allowed = await checkRateLimit(`login:${getClientIp(req)}`, 10, 15 * 60);
+        if (!allowed) {
+            return NextResponse.json({ error: "Too many login attempts. Please try again in a few minutes." }, { status: 429 });
+        }
 
         // Find the user
         const user = await User.findOne({ email: normalizedEmail });

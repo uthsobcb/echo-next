@@ -3,6 +3,10 @@ import crypto from "crypto";
 import { connect } from "@/app/lib/mongodb";
 import User from "@/app/models/User";
 import { sendEmail } from "@/app/lib/email";
+import { checkRateLimit, getClientIp } from "@/app/lib/rateLimit";
+
+const genericResponse = () =>
+    NextResponse.json({ message: "If an account exists for that email, a verification code has been sent." });
 
 export async function POST(req: NextRequest) {
     try {
@@ -14,10 +18,19 @@ export async function POST(req: NextRequest) {
         }
 
         const normalizedEmail = email.toLowerCase().trim();
+
+        const allowedByIp = await checkRateLimit(`forgot-password:ip:${getClientIp(req)}`, 5, 15 * 60);
+        const allowedByEmail = await checkRateLimit(`forgot-password:email:${normalizedEmail}`, 3, 15 * 60);
+        if (!allowedByIp || !allowedByEmail) {
+            return NextResponse.json({ message: "Too many requests. Please try again in a few minutes." }, { status: 429 });
+        }
+
         const user = await User.findOne({ email: normalizedEmail });
 
+        // Always respond the same way whether or not the account exists, so this
+        // endpoint can't be used to enumerate registered emails.
         if (!user) {
-            return NextResponse.json({ message: "User not found" }, { status: 400 });
+            return genericResponse();
         }
 
         // Generate a cryptographically secure 6-digit verification code
@@ -58,10 +71,12 @@ export async function POST(req: NextRequest) {
 
         if (error) {
             console.error("Failed to send reset email:", error);
-            return NextResponse.json({ message: "Failed to send verification code. Please try again later." }, { status: 500 });
+            // Still generic: a distinct message here would let an attacker infer the
+            // email exists purely from send failures (e.g. while transactional email is down).
+            return genericResponse();
         }
 
-        return NextResponse.json({ message: "Verification code sent to email." });
+        return genericResponse();
     } catch (error) {
         console.error("Forgot password error:", error);
         return NextResponse.json({ message: "Error processing request." }, { status: 500 });

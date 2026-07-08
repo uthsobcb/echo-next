@@ -11,9 +11,10 @@ if (!SECRET_KEY) {
 // Current key for new encryptions
 const key = crypto.createHash('sha256').update(SECRET_KEY).digest();
 
-// Legacy key used before ENCRYPTION_SECRET_KEY was configured
-const LEGACY_KEY = "your_secret_key";
-const legacyKey = crypto.createHash('sha256').update(LEGACY_KEY).digest();
+// Legacy key used before ENCRYPTION_SECRET_KEY was configured. Optional: only set this
+// in environments that still hold data encrypted under the old default key.
+const LEGACY_KEY = process.env.LEGACY_ENCRYPTION_SECRET_KEY;
+const legacyKey = LEGACY_KEY ? crypto.createHash('sha256').update(LEGACY_KEY).digest() : null;
 
 function decryptWithKey(encryptedText: string, decryptKey: Buffer): string {
     const [ivHex, encrypted] = encryptedText.split(':');
@@ -48,10 +49,14 @@ export const decrypt = (encryptedText: string) => {
     }
 
     // Try legacy key for entries encrypted before ENCRYPTION_SECRET_KEY was set
-    try {
-        return decryptWithKey(encryptedText, legacyKey);
-    } catch {
-        // Both keys failed - return as-is (likely unencrypted text containing a colon)
-        return encryptedText;
+    if (legacyKey) {
+        try {
+            return decryptWithKey(encryptedText, legacyKey);
+        } catch {
+            // Both keys failed - fall through
+        }
     }
+
+    // Both keys failed (or no legacy key configured) - return as-is (likely unencrypted text containing a colon)
+    return encryptedText;
 };
