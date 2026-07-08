@@ -33,6 +33,20 @@ export default async function Image() {
         <div style={{ display: "flex", fontSize: 34, opacity: 0.85, marginTop: 12 }}>
           Journal Effortlessly. Reflect. Grow.
         </div>
+        <div
+          style={{
+            display: "flex",
+            fontSize: 26,
+            fontWeight: 600,
+            marginTop: 40,
+            padding: "14px 36px",
+            borderRadius: 999,
+            background: "white",
+            color: "#4f46e5",
+          }}
+        >
+          Start journaling free →
+        </div>
       </div>
     ),
     { ...size }
