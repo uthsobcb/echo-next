@@ -6,6 +6,18 @@ import Mood from "@/app/models/Mood";
 import Todo from "@/app/models/Todo";
 import UserModel from "@/app/models/User";
 import { encrypt } from "@/app/lib/encryption";
+import { recordRiskFlagAndMaybeNotify } from "@/app/lib/safety";
+
+const RISK_INDICATOR_TAGS = [
+    "hopelessness",
+    "worthlessness",
+    "passive-ideation",
+    "active-ideation",
+    "self-harm-urge",
+    "plan-or-method",
+    "previous-attempt-mentioned",
+    "substance-use-crisis",
+] as const;
 const openRouterApiKey = process.env.OPENROUTER_API_KEY;
 
 
@@ -49,6 +61,14 @@ export async function POST(req: Request) {
             - \`todo\`: A clear, concise description of the task or goal.
             - \`type\`: The category of the task (e.g., "mental health", "general", "work", "personal").
             - \`status\`: The current status of the task, such as "pending", "completed", or "in progress".
+  - \`risk\`: A safety assessment for self-harm or suicidal thoughts. An object containing:
+    - \`severity\`: One of "none", "low", "moderate", "high", using this rubric:
+      - "none": No indication of self-harm or suicidal thoughts.
+      - "low": Passive hopelessness, worthlessness, or exhaustion with life (e.g. "I feel like giving up"), but no wish to die or self-harm.
+      - "moderate": Explicit suicidal ideation or self-harm urges without a specific plan, method, or timeline (e.g. "I think about not being here anymore", "I want to hurt myself").
+      - "high": Explicit intent, a plan, a method, a timeline, access to means, or a direct statement of wanting to end their life or harm themselves imminently.
+    - \`indicators\`: An array of zero or more tags chosen ONLY from this fixed list, whichever apply: ${JSON.stringify(RISK_INDICATOR_TAGS)}. Do not invent new tags and do not quote the journal text.
+    Be conservative: only assess above "none" when the text actually supports it, not for ordinary sadness or stress.
 
 Ensure the response is empathetic and concise.
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
@@ -60,7 +80,16 @@ Analyze the following journal entry and provide the requested JSON response: "${
             status: string;
         }
 
+        function normalizeRisk(raw: any): { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } {
+            const severity = ["none", "low", "moderate", "high"].includes(raw?.severity) ? raw.severity : "none";
+            const indicators = Array.isArray(raw?.indicators)
+                ? raw.indicators.filter((tag: unknown) => (RISK_INDICATOR_TAGS as readonly string[]).includes(tag as string))
+                : [];
+            return { severity, indicators };
+        }
+
         let mood: string | undefined, parsedMood: any, todos: TodoItem[] = [];
+        let risk: { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } = { severity: "none", indicators: [] };
         try {
             const completion = await openrouter.chat.completions.create({
                 model: "openai/gpt-4o-mini",
@@ -111,6 +140,8 @@ Analyze the following journal entry and provide the requested JSON response: "${
             } else {
                 parsedMood = raw;
             }
+
+            risk = normalizeRisk(raw.risk);
 
             todos = rawTodos.map((item: any) => ({
                 todo: item.todo || item.task || '',
@@ -190,9 +221,17 @@ Analyze the following journal entry and provide the requested JSON response: "${
             content: encryptedContent,
             imgUrl: imgUrl || "",
             // todo: parsedMood?.todo,
+            riskSeverity: risk.severity,
             createdAt: new Date(),
         });
         await newMood.save();
+
+        await recordRiskFlagAndMaybeNotify({
+            userId: user.id,
+            moodEntryId: newMood._id,
+            severity: risk.severity,
+            indicators: risk.indicators,
+        });
 
         let savedTodos: TodoItem[] = [];
         if (todos.length > 0) {
@@ -216,6 +255,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
             comment: parsedMood.comment,
             score: parsedMood.score,
             todo: savedTodos,
+            risk: { severity: risk.severity },
             streakData: {
                 streak: newStreak,
                 totalXp,

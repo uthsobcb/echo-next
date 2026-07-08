@@ -7,7 +7,8 @@ export enum NotificationType {
     MOTIVATION = "MOTIVATION",
     MOOD_CHECKIN = "MOOD_CHECKIN",
     CUSTOM = "CUSTOM",
-    SYSTEM = "SYSTEM"
+    SYSTEM = "SYSTEM",
+    WELLBEING_CHECKIN = "WELLBEING_CHECKIN"
 }
 
 export interface INotification extends Document {

@@ -9,6 +9,7 @@ export interface IMood extends Document {
     imgUrl: string;
     createdAt: Date;
     todo?: string[];
+    riskSeverity: "none" | "low" | "moderate" | "high";
 }
 
 const MoodSchema = new mongoose.Schema<IMood>(
@@ -40,6 +41,12 @@ const MoodSchema = new mongoose.Schema<IMood>(
         },
         todo: {
             type: [String],
+        },
+        riskSeverity: {
+            type: String,
+            enum: ["none", "low", "moderate", "high"],
+            default: "none",
+            index: true,
         },
         createdAt: {
             type: Date,

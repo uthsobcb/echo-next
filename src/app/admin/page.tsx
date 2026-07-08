@@ -4,6 +4,7 @@ import StatsCard from './component/stats-cards';
 import MoodsChart from './component/moods-chart';
 import UsersTable, { AdminUser } from './component/users-table';
 import NotificationsPanel from './component/notifications-panel';
+import RiskAlertsPanel from './component/risk-alerts-panel';
 import AdminLayout from './component/admin-layout';
 
 interface AdminStats {
@@ -104,6 +105,9 @@ export default function Page() {
                 {/* <UsersTable users={users} /> */}
                 {/* Stats Cards */}
                 <StatsCard moods={moods} users={users} entries={entries} />
+
+                {/* Wellbeing / Risk Alerts */}
+                <RiskAlertsPanel />
 
                 {/* Moods Chart */}
                 <div id="mood-chart" className="bg-white dark:bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700/50 p-6">
