@@ -51,7 +51,7 @@ export async function POST(req: NextRequest) {
 
         // Fetch or create the current chat
         let chat = chatId
-            ? await Chat.findById(chatId).exec()
+            ? await Chat.findOne({ _id: chatId, userId: user.id }).exec()
             : await Chat.create({
                 userId: user.id,
                 messages: [],

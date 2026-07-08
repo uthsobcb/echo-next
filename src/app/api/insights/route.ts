@@ -204,10 +204,21 @@ export async function GET(req: NextRequest) {
             score: e.score ?? 0,
         }));
 
-        // ── Activity Calendar ──────────────────────────────────────────────────
-        const entryDatesSet = new Set(currentEntries.map(e => getLocalDateStr(e.createdAt, tz)));
         const allDates = buildDateRange(days, tz);
-        const activityCalendar = allDates.map(date => ({ date, hasEntry: entryDatesSet.has(date) }));
+
+        // ── Activity Calendar ─────────────────────────────────────────────────
+        // Always spans a full year, independent of the selected stats `range` —
+        // a consistency calendar stretched across a short window (e.g. 7-30 days)
+        // renders as a handful of oversized cells instead of a normal GitHub-style grid.
+        const yearAgo = new Date(now);
+        yearAgo.setDate(yearAgo.getDate() - 365);
+        const yearEntries = await Mood.find(
+            { userId, createdAt: { $gte: yearAgo, $lte: now } },
+            { createdAt: 1 }
+        );
+        const entryDatesSetYear = new Set(yearEntries.map(e => getLocalDateStr(e.createdAt, tz)));
+        const allDatesYear = buildDateRange(365, tz);
+        const activityCalendar = allDatesYear.map(date => ({ date, hasEntry: entryDatesSetYear.has(date) }));
 
         // ── Writing Trend (daily entry count) ─────────────────────────────────
         const writingTrendMap: Record<string, number> = {};

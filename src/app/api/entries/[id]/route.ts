@@ -47,7 +47,7 @@ export async function DELETE(req: NextRequest, { params }: { params: Promise<{ i
             return NextResponse.json({ message: "Unauthorized - Invalid or missing token" }, { status: 401 });
         }
 
-        const deletedEntry = await Entry.findByIdAndDelete({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
+        const deletedEntry = await Entry.findOneAndDelete({ _id: new mongoose.Types.ObjectId((await params)?.id), userId });
         if (!deletedEntry) {
             return NextResponse.json({ message: "Entry not found" }, { status: 404 });
         }

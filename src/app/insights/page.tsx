@@ -254,7 +254,7 @@ export default function InsightsPage() {
                     <div className="heatmap-container -mx-4 overflow-x-auto px-4 pb-4">
                         <div className="min-w-[800px]">
                             <CalendarHeatmap
-                                startDate={new Date(Date.now() - (range === 'year' ? 365 : 30) * 86400000)}
+                                startDate={new Date(Date.now() - 365 * 86400000)}
                                 endDate={new Date()}
                                 values={activityCalendar.map((d: any) => ({
                                     date: d.date,
