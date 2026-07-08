@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://my-echo.space
+Host: https://echojournal.life
 
 # Sitemaps
-Sitemap: https://my-echo.space/sitemap.xml
+Sitemap: https://echojournal.life/sitemap.xml

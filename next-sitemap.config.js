@@ -1,4 +1,4 @@
 module.exports = {
-    siteUrl: "https://my-echo.space",
+    siteUrl: "https://echojournal.life",
     generateRobotsTxt: true,
 };

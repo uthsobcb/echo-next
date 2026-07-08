@@ -81,7 +81,7 @@ export async function POST(req: NextRequest) {
         </p>
 
         <div style="text-align: center; margin-top: 30px;">
-          <a href="https://my-echo.space/login"
+          <a href="https://echojournal.life/login"
              class="button"
              style="display: inline-block; background-color: #4A90E2; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 5px; font-size: 16px;">
             Start Journaling 🚀

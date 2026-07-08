@@ -21,7 +21,7 @@ export async function sendEmail({ to, subject, html, from }: SendEmailOptions) {
 
     try {
         const { data, error } = await resend.emails.send({
-            from: from || "Echo <system@my-echo.space>",
+            from: from || "Echo <system@echojournal.life>",
             to,
             subject,
             html,

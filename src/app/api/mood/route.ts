@@ -14,7 +14,7 @@ const openrouter = new OpenAI({
     apiKey: openRouterApiKey,
     baseURL: "https://openrouter.ai/api/v1",
     defaultHeaders: {
-        'HTTP-Referer': 'https://my-echo.space',
+        'HTTP-Referer': 'https://echojournal.life',
         'X-Title': 'Echo Space',
     },
 });

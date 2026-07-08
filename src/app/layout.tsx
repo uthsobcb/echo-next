@@ -79,7 +79,7 @@ export default function RootLayout({
         <meta property="og:title" content={metadata.title} />
         <meta property="og:description" content={metadata.description} />
         <meta property="og:image" content="/assets/logo.png" />
-        <meta property="og:url" content="https://www.my-echo.space/" />
+        <meta property="og:url" content="https://www.echojournal.life/" />
 
         {/* Twitter Card */}
         <meta name="twitter:card" content="summary_large_image" />
@@ -101,10 +101,10 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "Echo",
-              url: "https://www.my-echo.space/",
+              url: "https://www.echojournal.life/",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://www.my-echo.space/search?q={search_term_string}",
+                target: "https://www.echojournal.life/search?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),

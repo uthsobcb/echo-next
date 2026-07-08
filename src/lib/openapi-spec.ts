@@ -9,7 +9,7 @@ export const openApiSpec: any = {
     },
     servers: [
         {
-            url: 'https://my-echo.space/api',
+            url: 'https://echojournal.life/api',
             description: 'Production Server',
         },
         {

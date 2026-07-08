@@ -4,7 +4,7 @@
 
 Echo is an AI-powered journaling companion that helps users track their mood, create journal entries, and receive personalized insights. This document provides comprehensive API documentation for the Echo platform.
 
-**Base URL:** `https://my-echo.space/api`
+**Base URL:** `https://echojournal.life/api`
 
 ## Authentication
 

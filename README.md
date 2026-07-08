@@ -1,6 +1,6 @@
 # Echo - Your AI-Powered Journaling Companion
 
-[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://my-echo.space)
+[![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://echojournal.life)
 [![Next.js](https://img.shields.io/badge/Built%20with-Next.js%2015-blue)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)](https://www.mongodb.com/)
 [![AI Powered](https://img.shields.io/badge/AI-Google%20Gemini-orange)](https://ai.google.dev/)
@@ -11,7 +11,7 @@
 
 Echo is an empathetic AI companion that transforms journaling into an intelligent, supportive experience. With advanced mood analysis, personalized insights, and end-to-end encryption, Echo helps users develop consistent self-reflection habits while maintaining complete privacy.
 
-**Live Demo:** [https://my-echo.space](https://my-echo.space)
+**Live Demo:** [https://echojournal.life](https://echojournal.life)
 
 ## ✨ Key Features
 
@@ -330,8 +330,8 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 - **Documentation**: [API Docs](./docs/API_DOCUMENTATION.md) | [Design Guide](./docs/DESIGN_GUIDE.md) | [Quick Reference](./docs/QUICK_REFERENCE.md)
 - **Issues**: [GitHub Issues](https://github.com/your-username/echo-next/issues)
-- **Email**: support@my-echo.space
-- **Website**: [https://my-echo.space](https://my-echo.space)
+- **Email**: support@echojournal.life
+- **Website**: [https://echojournal.life](https://echojournal.life)
 
 ---
 

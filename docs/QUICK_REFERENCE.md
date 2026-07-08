@@ -23,7 +23,7 @@ git commit -m "feat: description"  # Conventional commit
 
 ## 🔗 Quick Links
 
-- **Live App:** https://my-echo.space
+- **Live App:** https://echojournal.life
 - **API Docs:** [API_DOCUMENTATION.md](./API_DOCUMENTATION.md)
 - **Design Guide:** [DESIGN_GUIDE.md](./DESIGN_GUIDE.md)
 - **Contributing:** [CONTRIBUTING.md](./CONTRIBUTING.md)
