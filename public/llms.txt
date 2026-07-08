@@ -1,0 +1,16 @@
+# Echo
+
+> Echo is an AI-powered journaling companion. It combines mood tracking, reflective prompts, and emotional insights to help people build a consistent journaling habit and improve their mental well-being.
+
+## Docs
+
+- [Guide & Insights](https://echojournal.life/guide): Articles on mindfulness, mental well-being, and getting the most out of Echo.
+
+## Legal
+
+- [Privacy Policy](https://echojournal.life/legal/privacy-policy)
+- [Terms & Conditions](https://echojournal.life/legal/tnc)
+
+## Notes
+
+- Journaling entries, chat, mood data, and other in-app pages are private to signed-in users and are not indexed.

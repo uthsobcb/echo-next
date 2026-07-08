@@ -1,6 +1,16 @@
 # *
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /admin
+Disallow: /chat
+Disallow: /entry
+Disallow: /todo
+Disallow: /space
+Disallow: /insights
+Disallow: /memory
+Disallow: /profile
+Disallow: /docs
 
 # Host
 Host: https://echojournal.life
