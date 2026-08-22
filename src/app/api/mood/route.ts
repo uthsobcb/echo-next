@@ -19,13 +19,27 @@ const RISK_INDICATOR_TAGS = [
     "substance-use-crisis",
 ] as const;
 
+const SUPPORT_MODES = ["listen", "reflect", "reframe", "act", "patterns", "support"] as const;
+type SupportMode = typeof SUPPORT_MODES[number];
+
+const SUPPORT_MODE_INSTRUCTIONS: Record<Exclude<SupportMode, "listen">, string> = {
+    reflect: "The comment should ask one warm, open reflective question. Do not give advice unless necessary for immediate safety.",
+    reframe: "The comment should offer one gentle alternative perspective without dismissing the writer's feelings.",
+    act: "The comment should suggest one very small, optional next step that can be done today.",
+    patterns: "The comment may name one tentative pattern visible in this entry, clearly framed as a possibility rather than a fact.",
+    support: "The comment should validate the feeling, offer one simple grounding step, and gently encourage reaching out to a trusted person or qualified professional when appropriate. Never imply that you replace human support.",
+};
+
 export async function POST(req: Request) {
     try {
 
-        const { content, imgUrl } = await req.json();
+        const { content, imgUrl, supportMode: rawSupportMode, allowGrowthAnalysis: rawAllowGrowthAnalysis } = await req.json();
         if (!content) {
             return NextResponse.json({ error: "Journal entry is required." }, { status: 400 });
         }
+
+        const supportMode: SupportMode = SUPPORT_MODES.includes(rawSupportMode) ? rawSupportMode : "reflect";
+        const allowGrowthAnalysis = supportMode !== "listen" && rawAllowGrowthAnalysis !== false;
 
 
         await connect();
@@ -59,6 +73,7 @@ export async function POST(req: Request) {
     Be conservative: only assess above "none" when the text actually supports it, not for ordinary sadness or stress.
 
 Ensure the response is empathetic and concise.
+Support mode for this entry: ${supportMode}. ${supportMode === "listen" ? "Do not analyze this entry." : SUPPORT_MODE_INSTRUCTIONS[supportMode]}
 Analyze the following journal entry and provide the requested JSON response: "${content}"`;
 
 
@@ -78,7 +93,10 @@ Analyze the following journal entry and provide the requested JSON response: "${
 
         let mood: string | undefined, parsedMood: any, todos: TodoItem[] = [];
         let risk: { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } = { severity: "none", indicators: [] };
-        try {
+        if (supportMode === "listen") {
+            mood = JSON.stringify({ mood: { label: "Private", score: 0, comment: "Saved privately. Echo is listening without analyzing this entry." }, todo: [], risk: { severity: "none", indicators: [] } });
+            parsedMood = { label: "Private", score: 0, comment: "Saved privately. Echo is listening without analyzing this entry." };
+        } else try {
             const completion = await openrouter.chat.completions.create({
                 model: process.env.AI_MODEL || "openai/gpt-4o-mini",
                 response_format: { type: "json_object" },
@@ -210,6 +228,9 @@ Analyze the following journal entry and provide the requested JSON response: "${
             imgUrl: imgUrl || "",
             // todo: parsedMood?.todo,
             riskSeverity: risk.severity,
+            supportMode,
+            aiAnalyzed: supportMode !== "listen",
+            allowGrowthAnalysis,
             createdAt: new Date(),
         });
         await newMood.save();

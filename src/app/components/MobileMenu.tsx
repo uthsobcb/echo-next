@@ -4,7 +4,7 @@ import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import SignOut from "./SignOut";
-import { Brain, PenTool, Menu, LogIn, UserPlus } from "lucide-react";
+import { Brain, Compass, PenTool, Menu, LogIn, UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import {
     Sheet,
@@ -73,6 +73,17 @@ export default function MobileMenu({ session, userData }: MobileMenuProps) {
                                                 <Brain className="w-5 h-5" />
                                             </div>
                                             Memories
+                                        </Button>
+                                    </Link>
+                                </SheetClose>
+
+                                <SheetClose asChild>
+                                    <Link href="/growth">
+                                        <Button variant="ghost" className="w-full justify-start text-lg h-12 gap-3 font-normal">
+                                            <div className="p-2 bg-indigo-100 text-indigo-600 rounded-lg">
+                                                <Compass className="w-5 h-5" />
+                                            </div>
+                                            Growth
                                         </Button>
                                     </Link>
                                 </SheetClose>

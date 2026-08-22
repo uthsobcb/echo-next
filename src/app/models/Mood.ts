@@ -10,6 +10,9 @@ export interface IMood extends Document {
     createdAt: Date;
     todo?: string[];
     riskSeverity: "none" | "low" | "moderate" | "high";
+    supportMode: "listen" | "reflect" | "reframe" | "act" | "patterns" | "support";
+    aiAnalyzed: boolean;
+    allowGrowthAnalysis: boolean;
 }
 
 const MoodSchema = new mongoose.Schema<IMood>(
@@ -47,6 +50,19 @@ const MoodSchema = new mongoose.Schema<IMood>(
             enum: ["none", "low", "moderate", "high"],
             default: "none",
             index: true,
+        },
+        supportMode: {
+            type: String,
+            enum: ["listen", "reflect", "reframe", "act", "patterns", "support"],
+            default: "reflect",
+        },
+        aiAnalyzed: {
+            type: Boolean,
+            default: true,
+        },
+        allowGrowthAnalysis: {
+            type: Boolean,
+            default: true,
         },
         createdAt: {
             type: Date,

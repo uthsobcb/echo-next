@@ -15,6 +15,7 @@ const protectedRoutes = [
     "/todo",
     "/meditate",
     "/memory",
+    "/growth",
     "/space",
 ];
 

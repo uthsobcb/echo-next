@@ -22,6 +22,8 @@ const Entry = () => {
     const [loading, setLoading] = useState(false);
     const [comment, setComment] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
+    const [supportMode, setSupportMode] = useState('reflect');
+    const [allowGrowthAnalysis, setAllowGrowthAnalysis] = useState(true);
 
     const [streakData, setStreakData] = useState<any>(null);
     const [todoSuggestions, setTodoSuggestions] = useState<any[]>([]);
@@ -45,6 +47,8 @@ const Entry = () => {
             const response = await axios.post('/api/mood', {
                 content: journalEntry,
                 imgUrl: imageUrl,
+                supportMode,
+                allowGrowthAnalysis: supportMode === 'listen' ? false : allowGrowthAnalysis,
             });
 
             const { mood, comment, score, streakData, todo } = response.data;
@@ -89,6 +93,44 @@ const Entry = () => {
                     <UploadIcon OnImageUpload={setImageUrl} />
                 </div>
 
+                <fieldset className="mb-6 rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm">
+                    <legend className="px-2 text-sm font-semibold text-gray-900">How should Echo respond?</legend>
+                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
+                        {[
+                            { value: 'listen', label: 'Just listen' },
+                            { value: 'reflect', label: 'Reflect' },
+                            { value: 'reframe', label: 'Reframe' },
+                            { value: 'act', label: 'Small step' },
+                            { value: 'patterns', label: 'Find pattern' },
+                            { value: 'support', label: 'Need support' },
+                        ].map((mode) => (
+                            <label key={mode.value} className="cursor-pointer">
+                                <input
+                                    type="radio"
+                                    name="support-mode"
+                                    value={mode.value}
+                                    checked={supportMode === mode.value}
+                                    onChange={() => setSupportMode(mode.value)}
+                                    className="peer sr-only"
+                                />
+                                <span className="flex min-h-10 items-center justify-center rounded-lg border border-gray-200 px-3 text-center text-sm font-medium text-gray-600 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2">
+                                    {mode.label}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
+                    <label className="mt-4 flex items-start gap-3 text-sm text-gray-600">
+                        <input
+                            type="checkbox"
+                            checked={supportMode !== 'listen' && allowGrowthAnalysis}
+                            disabled={supportMode === 'listen'}
+                            onChange={(event) => setAllowGrowthAnalysis(event.target.checked)}
+                            className="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
+                        />
+                        <span className="text-pretty">Allow this entry to inform my future profile, constellation, and reports. “Just listen” entries always stay out.</span>
+                    </label>
+                </fieldset>
+
                 <div className="relative bg-white/60 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-10">
                     {imageUrl && (
                         <div className="absolute -top-12 -right-4 md:-right-12 z-20">
@@ -122,7 +164,7 @@ const Entry = () => {
                         disabled={loading}
                         className="px-12 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
                     >
-                        {loading ? 'Analyzing...' : 'Save Entry'}
+                        {loading ? (supportMode === 'listen' ? 'Saving...' : 'Reflecting...') : 'Save Entry'}
                     </Button>
                 </div>
             </div>
@@ -131,7 +173,7 @@ const Entry = () => {
                 <DialogContent className="sm:max-w-md text-center">
                     <DialogHeader>
                         <DialogTitle className="text-2xl font-bold text-center mb-4">
-                            {loading ? 'Analyzing Mood...' : 'Mood Analysis'}
+                            {loading ? (supportMode === 'listen' ? 'Saving privately...' : 'Reflecting...') : (supportMode === 'listen' ? 'Entry saved' : 'Your reflection')}
                         </DialogTitle>
                     </DialogHeader>
 
@@ -145,7 +187,7 @@ const Entry = () => {
                                     height={120}
                                     className="animate-bounce object-contain"
                                 />
-                                <p className="text-gray-500 animate-pulse">Reading your thoughts...</p>
+                                <p className="text-gray-500 animate-pulse">{supportMode === 'listen' ? 'Keeping this one private...' : 'Considering your chosen support mode...'}</p>
                             </div>
                         ) : (
                             <div className="space-y-6 w-full">
