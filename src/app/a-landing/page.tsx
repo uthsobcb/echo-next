@@ -58,11 +58,11 @@ const privacyPoints = [
 
 const productFeatures = [
     {
-        image: "/assets/ui-entry.png",
+        image: "/assets/ui-entry-v2.png",
         icon: PencilLine,
         title: "Know exactly when AI is involved",
         description: "Choose a private no-AI save or request an AI reflection, then decide separately whether the entry may inform future insights.",
-        imageAlt: "Current Echo journal interface showing response modes and entry-level consent",
+        imageAlt: "Current Echo journal with a compact no-AI status and Journal options button",
         mobileMockup: true,
     },
     {

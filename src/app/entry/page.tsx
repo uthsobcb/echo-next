@@ -6,13 +6,14 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'motion/react';
 import { toast } from 'sonner';
-import { ArrowRight, Check, Flame, HeartHandshake, LockKeyhole, Sparkles } from 'lucide-react';
+import { ArrowRight, Check, Flame, HeartHandshake, LockKeyhole, Settings2, Sparkles } from 'lucide-react';
 
 import JournalPrompt from '@/app/components/JournalPrompt';
 import ScanComponent from '@/app/components/ScanComponent';
 import UploadIcon from '@/app/components/UploadIcon';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Sheet, SheetClose, SheetContent, SheetDescription, SheetFooter, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { cn } from '@/lib/utils';
 
 const responseModes = [
@@ -92,6 +93,7 @@ const Entry = () => {
     };
 
     const numericScore = !isNaN(score) && typeof score === 'number' ? score : 0;
+    const selectedResponse = responseModes.find(mode => mode.value === supportMode);
 
     return (
         <div className="min-h-dvh bg-indigo-50 px-3 pb-12 pt-36 sm:px-4 sm:pt-28">
@@ -105,91 +107,90 @@ const Entry = () => {
                     Dear Diary...
                 </h1>
 
-                <div className="mb-8 grid grid-cols-3 items-start gap-2 sm:mx-auto sm:max-w-2xl sm:gap-6">
-                    <ScanComponent onScanComplete={handleScannedText} />
-                    <JournalPrompt onPromptSelect={(text) => setJournalEntry(prev => prev ? `${prev}\n${text}` : text)} />
-                    <UploadIcon OnImageUpload={setImageUrl} />
-                </div>
-
-                <section className="mb-6 rounded-3xl border border-indigo-100 bg-white p-4 shadow-sm sm:p-6" aria-labelledby="privacy-choice-heading">
-                    <div>
-                        <h2 id="privacy-choice-heading" className="text-balance text-lg font-semibold text-gray-950">First, choose what happens to this entry</h2>
-                        <p className="mt-1 text-pretty text-sm text-gray-600">You can save privately with no AI, or ask Echo for a response.</p>
+                <Sheet>
+                    <div className="mb-4 flex items-center justify-between gap-3 rounded-2xl border border-indigo-100 bg-white p-3 shadow-sm sm:p-4">
+                        <div className="flex min-w-0 items-center gap-3">
+                            <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-xl', supportMode === 'listen' ? 'bg-emerald-100 text-emerald-700' : 'bg-indigo-100 text-indigo-700')}>
+                                {supportMode === 'listen' ? <LockKeyhole className="size-5" aria-hidden="true" /> : <Sparkles className="size-5" aria-hidden="true" />}
+                            </span>
+                            <div className="min-w-0">
+                                <p className="truncate text-sm font-semibold text-gray-950">{supportMode === 'listen' ? 'Private save' : selectedResponse?.label}</p>
+                                <p className={cn('truncate text-xs font-medium', supportMode === 'listen' ? 'text-emerald-700' : 'text-indigo-700')}>
+                                    {supportMode === 'listen' ? 'No AI' : `Uses AI${allowGrowthAnalysis ? ' · Future insights on' : ''}`}
+                                </p>
+                            </div>
+                        </div>
+                        <SheetTrigger asChild>
+                            <Button variant="outline" className="shrink-0 rounded-xl"><Settings2 className="mr-2 size-4" aria-hidden="true" /> Journal options</Button>
+                        </SheetTrigger>
                     </div>
 
-                    <fieldset className="mt-4 grid gap-3 sm:grid-cols-2">
-                        <legend className="sr-only">Entry processing</legend>
-                        <label className="cursor-pointer">
-                            <input
-                                type="radio"
-                                name="entry-processing"
-                                value="private"
-                                checked={supportMode === 'listen'}
-                                onChange={() => setSupportMode('listen')}
-                                className="peer sr-only"
-                            />
-                            <span className="flex min-h-24 items-start gap-3 rounded-2xl border-2 border-gray-200 p-4 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-600 peer-focus-visible:ring-offset-2">
-                                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><LockKeyhole className="size-5" aria-hidden="true" /></span>
-                                <span><span className="block font-semibold text-gray-950">Private save</span><span className="mt-1 block text-sm font-medium text-emerald-700">No AI</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Stored in your journal without analysis.</span></span>
-                            </span>
-                        </label>
-                        <label className="cursor-pointer">
-                            <input
-                                type="radio"
-                                name="entry-processing"
-                                value="ai"
-                                checked={supportMode !== 'listen'}
-                                onChange={() => setSupportMode(current => current === 'listen' ? 'reflect' : current)}
-                                className="peer sr-only"
-                            />
-                            <span className="flex min-h-24 items-start gap-3 rounded-2xl border-2 border-gray-200 p-4 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
-                                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><Sparkles className="size-5" aria-hidden="true" /></span>
-                                <span><span className="block font-semibold text-gray-950">Reflect with Echo</span><span className="mt-1 block text-sm font-medium text-indigo-700">Uses AI</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Sent to your configured AI provider for a response.</span></span>
-                            </span>
-                        </label>
-                    </fieldset>
+                    <SheetContent side="right" className="w-full overflow-y-auto bg-white p-0 shadow-xl backdrop-blur-none data-[state=closed]:duration-200 data-[state=open]:duration-200 sm:max-w-md">
+                        <SheetHeader className="border-b border-gray-200 px-6 py-5 text-left">
+                            <SheetTitle className="text-balance text-xl">Journal options</SheetTitle>
+                            <SheetDescription className="text-pretty">Add something to your entry or choose how Echo should respond when you save.</SheetDescription>
+                        </SheetHeader>
 
-                    {supportMode !== 'listen' && (
-                        <motion.div
-                            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: reduceMotion ? 0 : 0.18, ease: 'easeOut' }}
-                            className="mt-6 border-t border-gray-200 pt-5"
-                        >
-                            <fieldset>
-                                <legend className="text-sm font-semibold text-gray-900">How should Echo help?</legend>
-                                <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-5">
-                                    {responseModes.map((mode) => (
-                                        <label key={mode.value} className="cursor-pointer">
-                                            <input
-                                                type="radio"
-                                                name="support-mode"
-                                                value={mode.value}
-                                                checked={supportMode === mode.value}
-                                                onChange={() => setSupportMode(mode.value)}
-                                                className="peer sr-only"
-                                            />
-                                            <span className="flex min-h-16 flex-col justify-center rounded-xl border border-gray-200 px-3 py-2 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
-                                                <span className="text-sm font-semibold text-gray-800 peer-checked:text-indigo-800">{mode.label}</span>
-                                                <span className="mt-0.5 text-xs text-gray-500">{mode.description}</span>
-                                            </span>
-                                        </label>
-                                    ))}
+                        <div className="space-y-8 px-6 py-6">
+                            <section aria-labelledby="entry-tools-heading">
+                                <h2 id="entry-tools-heading" className="text-sm font-semibold text-gray-950">Add to this entry</h2>
+                                <p className="mt-1 text-pretty text-xs leading-5 text-gray-500">These tools stay out of the writing view until you need them.</p>
+                                <div className="mt-4 grid grid-cols-3 gap-3 rounded-2xl bg-indigo-50 p-4">
+                                    <ScanComponent onScanComplete={handleScannedText} />
+                                    <JournalPrompt onPromptSelect={(text) => setJournalEntry(prev => prev ? `${prev}\n${text}` : text)} />
+                                    <UploadIcon OnImageUpload={setImageUrl} />
                                 </div>
-                            </fieldset>
+                            </section>
 
-                            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
-                                <input
-                                    type="checkbox"
-                                    checked={allowGrowthAnalysis}
-                                    onChange={(event) => setAllowGrowthAnalysis(event.target.checked)}
-                                    className="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
-                                />
-                                <span><span className="block font-semibold text-gray-900">Also use this entry for future insights</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Optional. Helps build your profile, Memory Constellation, and reports. Turn it off to receive only this response.</span></span>
-                            </label>
-                        </motion.div>
-                    )}
-                </section>
+                            <section aria-labelledby="response-settings-heading">
+                                <h2 id="response-settings-heading" className="text-sm font-semibold text-gray-950">When I save</h2>
+                                <fieldset className="mt-3 space-y-2">
+                                    <legend className="sr-only">Entry processing</legend>
+                                    <label className="block cursor-pointer">
+                                        <input type="radio" name="entry-processing" value="private" checked={supportMode === 'listen'} onChange={() => setSupportMode('listen')} className="peer sr-only" />
+                                        <span className="flex items-center gap-3 rounded-xl border-2 border-gray-200 p-3 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-600 peer-focus-visible:ring-offset-2">
+                                            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-emerald-100 text-emerald-700"><LockKeyhole className="size-4" aria-hidden="true" /></span>
+                                            <span><span className="block text-sm font-semibold text-gray-950">Private save <span className="text-emerald-700">· No AI</span></span><span className="mt-0.5 block text-xs text-gray-600">Store this entry without analysis.</span></span>
+                                        </span>
+                                    </label>
+                                    <label className="block cursor-pointer">
+                                        <input type="radio" name="entry-processing" value="ai" checked={supportMode !== 'listen'} onChange={() => setSupportMode(current => current === 'listen' ? 'reflect' : current)} className="peer sr-only" />
+                                        <span className="flex items-center gap-3 rounded-xl border-2 border-gray-200 p-3 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
+                                            <span className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700"><Sparkles className="size-4" aria-hidden="true" /></span>
+                                            <span><span className="block text-sm font-semibold text-gray-950">Reflect with Echo <span className="text-indigo-700">· Uses AI</span></span><span className="mt-0.5 block text-xs text-gray-600">Ask for a response in the style you choose.</span></span>
+                                        </span>
+                                    </label>
+                                </fieldset>
+
+                                {supportMode !== 'listen' && (
+                                    <motion.div initial={reduceMotion ? false : { opacity: 0, y: 6 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: reduceMotion ? 0 : 0.18, ease: 'easeOut' }} className="mt-5 border-t border-gray-200 pt-5">
+                                        <fieldset>
+                                            <legend className="text-sm font-semibold text-gray-900">How should Echo help?</legend>
+                                            <div className="mt-3 grid grid-cols-2 gap-2">
+                                                {responseModes.map((mode) => (
+                                                    <label key={mode.value} className="cursor-pointer">
+                                                        <input type="radio" name="support-mode" value={mode.value} checked={supportMode === mode.value} onChange={() => setSupportMode(mode.value)} className="peer sr-only" />
+                                                        <span className="flex min-h-16 flex-col justify-center rounded-xl border border-gray-200 px-3 py-2 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
+                                                            <span className="text-sm font-semibold text-gray-800">{mode.label}</span><span className="mt-0.5 text-xs text-gray-500">{mode.description}</span>
+                                                        </span>
+                                                    </label>
+                                                ))}
+                                            </div>
+                                        </fieldset>
+                                        <label className="mt-4 flex cursor-pointer items-start gap-3 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+                                            <input type="checkbox" checked={allowGrowthAnalysis} onChange={(event) => setAllowGrowthAnalysis(event.target.checked)} className="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600" />
+                                            <span><span className="block font-semibold text-gray-900">Use for future insights</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Optional. Adds this entry to your profile, constellation, and reports.</span></span>
+                                        </label>
+                                    </motion.div>
+                                )}
+                            </section>
+                        </div>
+
+                        <SheetFooter className="sticky bottom-0 border-t border-gray-200 bg-white px-6 py-4">
+                            <SheetClose asChild><Button className="w-full bg-indigo-600 hover:bg-indigo-700">Done</Button></SheetClose>
+                        </SheetFooter>
+                    </SheetContent>
+                </Sheet>
 
                 <div className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-[#fffdf8] p-4 shadow-lg sm:p-8 md:p-10">
                     {imageUrl && (
