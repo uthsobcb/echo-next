@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { motion, useReducedMotion } from 'motion/react';
 import { toast } from 'sonner';
 import { ArrowRight, Check, Flame, HeartHandshake, LockKeyhole, Sparkles } from 'lucide-react';
 
@@ -13,25 +13,32 @@ import ScanComponent from '@/app/components/ScanComponent';
 import UploadIcon from '@/app/components/UploadIcon';
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { cn } from '@/lib/utils';
+
+const responseModes = [
+    { value: 'reflect', label: 'Reflect it back', description: 'A gentle observation' },
+    { value: 'reframe', label: 'Help me reframe', description: 'Another perspective' },
+    { value: 'act', label: 'Suggest a step', description: 'One realistic action' },
+    { value: 'patterns', label: 'Find a pattern', description: 'Connect recurring themes' },
+    { value: 'support', label: 'I need support', description: 'Respond with extra care' },
+];
 
 const Entry = () => {
-    const pathname = usePathname();
-    const isCapture = pathname.startsWith('/ui-capture/');
-    const isReflectionCapture = pathname === '/ui-capture/reflection';
-    const [open, setOpen] = useState(isReflectionCapture);
-    const [journalEntry, setJournalEntry] = useState(isCapture ? 'Today felt heavy, but writing this down helped me slow the moment down.' : '');
-    const [mood, setMood] = useState<string | null>(isReflectionCapture ? 'overwhelmed' : null);
+    const reduceMotion = useReducedMotion();
+    const [open, setOpen] = useState(false);
+    const [journalEntry, setJournalEntry] = useState('');
+    const [mood, setMood] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
-    const [score, setScore] = useState(isReflectionCapture ? -2 : 0);
+    const [score, setScore] = useState(0);
     const [loading, setLoading] = useState(false);
-    const [comment, setComment] = useState<string | null>(isReflectionCapture ? 'It sounds like today asked a lot from you. What would feel like a kind, realistic way to give yourself a little space tonight?' : null);
+    const [comment, setComment] = useState<string | null>(null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
-    const [supportMode, setSupportMode] = useState('reflect');
+    const [supportMode, setSupportMode] = useState('listen');
     const [allowGrowthAnalysis, setAllowGrowthAnalysis] = useState(true);
     const [riskSeverity, setRiskSeverity] = useState<'none' | 'low' | 'moderate' | 'high'>('none');
 
-    const [streakData, setStreakData] = useState<any>(isReflectionCapture ? { streak: 4, totalXp: 120, milestoneReached: false, milestoneMessage: null } : null);
-    const [todoSuggestions, setTodoSuggestions] = useState<any[]>(isReflectionCapture ? [{ todo: 'Give yourself ten quiet minutes before the next task.' }] : []);
+    const [streakData, setStreakData] = useState<any>(null);
+    const [todoSuggestions, setTodoSuggestions] = useState<any[]>([]);
 
     const handleScannedText = (text: string) => {
         setJournalEntry((prev) => prev + "\n" + text);
@@ -87,60 +94,107 @@ const Entry = () => {
     const numericScore = !isNaN(score) && typeof score === 'number' ? score : 0;
 
     return (
-        <div className="min-h-screen pt-24 pb-12 px-4 bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50">
-            <div className="max-w-4xl mx-auto relative z-10">
-                <h1 className="text-4xl md:text-6xl font-handwriting text-center bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent mb-12">
+        <div className="min-h-dvh bg-indigo-50 px-3 pb-12 pt-36 sm:px-4 sm:pt-28">
+            <motion.main
+                initial={reduceMotion ? false : { opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: reduceMotion ? 0 : 0.2, ease: 'easeOut' }}
+                className="relative z-10 mx-auto max-w-4xl"
+            >
+                <h1 className="mb-8 text-center font-handwriting text-4xl text-indigo-600 sm:mb-10 md:text-6xl">
                     Dear Diary...
                 </h1>
 
-                <div className="flex justify-center gap-6 mb-8">
+                <div className="mb-8 grid grid-cols-3 items-start gap-2 sm:mx-auto sm:max-w-2xl sm:gap-6">
                     <ScanComponent onScanComplete={handleScannedText} />
                     <JournalPrompt onPromptSelect={(text) => setJournalEntry(prev => prev ? `${prev}\n${text}` : text)} />
                     <UploadIcon OnImageUpload={setImageUrl} />
                 </div>
 
-                <fieldset className="mb-6 rounded-2xl border border-indigo-100 bg-white p-4 shadow-sm">
-                    <legend className="px-2 text-sm font-semibold text-gray-900">How should Echo respond?</legend>
-                    <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-6">
-                        {[
-                            { value: 'listen', label: 'Just listen' },
-                            { value: 'reflect', label: 'Reflect' },
-                            { value: 'reframe', label: 'Reframe' },
-                            { value: 'act', label: 'Small step' },
-                            { value: 'patterns', label: 'Find pattern' },
-                            { value: 'support', label: 'Need support' },
-                        ].map((mode) => (
-                            <label key={mode.value} className="cursor-pointer">
-                                <input
-                                    type="radio"
-                                    name="support-mode"
-                                    value={mode.value}
-                                    checked={supportMode === mode.value}
-                                    onChange={() => setSupportMode(mode.value)}
-                                    className="peer sr-only"
-                                />
-                                <span className="flex min-h-10 items-center justify-center rounded-lg border border-gray-200 px-3 text-center text-sm font-medium text-gray-600 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-checked:text-indigo-700 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-500 peer-focus-visible:ring-offset-2">
-                                    {mode.label}
-                                </span>
-                            </label>
-                        ))}
+                <section className="mb-6 rounded-3xl border border-indigo-100 bg-white p-4 shadow-sm sm:p-6" aria-labelledby="privacy-choice-heading">
+                    <div>
+                        <h2 id="privacy-choice-heading" className="text-balance text-lg font-semibold text-gray-950">First, choose what happens to this entry</h2>
+                        <p className="mt-1 text-pretty text-sm text-gray-600">You can save privately with no AI, or ask Echo for a response.</p>
                     </div>
-                    <label className="mt-4 flex items-start gap-3 text-sm text-gray-600">
-                        <input
-                            type="checkbox"
-                            checked={supportMode !== 'listen' && allowGrowthAnalysis}
-                            disabled={supportMode === 'listen'}
-                            onChange={(event) => setAllowGrowthAnalysis(event.target.checked)}
-                            className="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500"
-                        />
-                        <span className="text-pretty">Allow this entry to inform my future profile, constellation, and reports. “Just listen” entries always stay out.</span>
-                    </label>
-                </fieldset>
 
-                <div className="relative bg-white/60 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-10">
+                    <fieldset className="mt-4 grid gap-3 sm:grid-cols-2">
+                        <legend className="sr-only">Entry processing</legend>
+                        <label className="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="entry-processing"
+                                value="private"
+                                checked={supportMode === 'listen'}
+                                onChange={() => setSupportMode('listen')}
+                                className="peer sr-only"
+                            />
+                            <span className="flex min-h-24 items-start gap-3 rounded-2xl border-2 border-gray-200 p-4 peer-checked:border-emerald-600 peer-checked:bg-emerald-50 peer-focus-visible:ring-2 peer-focus-visible:ring-emerald-600 peer-focus-visible:ring-offset-2">
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-emerald-100 text-emerald-700"><LockKeyhole className="size-5" aria-hidden="true" /></span>
+                                <span><span className="block font-semibold text-gray-950">Private save</span><span className="mt-1 block text-sm font-medium text-emerald-700">No AI</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Stored in your journal without analysis.</span></span>
+                            </span>
+                        </label>
+                        <label className="cursor-pointer">
+                            <input
+                                type="radio"
+                                name="entry-processing"
+                                value="ai"
+                                checked={supportMode !== 'listen'}
+                                onChange={() => setSupportMode(current => current === 'listen' ? 'reflect' : current)}
+                                className="peer sr-only"
+                            />
+                            <span className="flex min-h-24 items-start gap-3 rounded-2xl border-2 border-gray-200 p-4 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
+                                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-indigo-100 text-indigo-700"><Sparkles className="size-5" aria-hidden="true" /></span>
+                                <span><span className="block font-semibold text-gray-950">Reflect with Echo</span><span className="mt-1 block text-sm font-medium text-indigo-700">Uses AI</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Sent to your configured AI provider for a response.</span></span>
+                            </span>
+                        </label>
+                    </fieldset>
+
+                    {supportMode !== 'listen' && (
+                        <motion.div
+                            initial={reduceMotion ? false : { opacity: 0, y: 6 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: reduceMotion ? 0 : 0.18, ease: 'easeOut' }}
+                            className="mt-6 border-t border-gray-200 pt-5"
+                        >
+                            <fieldset>
+                                <legend className="text-sm font-semibold text-gray-900">How should Echo help?</legend>
+                                <div className="mt-3 grid grid-cols-2 gap-2 lg:grid-cols-5">
+                                    {responseModes.map((mode) => (
+                                        <label key={mode.value} className="cursor-pointer">
+                                            <input
+                                                type="radio"
+                                                name="support-mode"
+                                                value={mode.value}
+                                                checked={supportMode === mode.value}
+                                                onChange={() => setSupportMode(mode.value)}
+                                                className="peer sr-only"
+                                            />
+                                            <span className="flex min-h-16 flex-col justify-center rounded-xl border border-gray-200 px-3 py-2 peer-checked:border-indigo-600 peer-checked:bg-indigo-50 peer-focus-visible:ring-2 peer-focus-visible:ring-indigo-600 peer-focus-visible:ring-offset-2">
+                                                <span className="text-sm font-semibold text-gray-800 peer-checked:text-indigo-800">{mode.label}</span>
+                                                <span className="mt-0.5 text-xs text-gray-500">{mode.description}</span>
+                                            </span>
+                                        </label>
+                                    ))}
+                                </div>
+                            </fieldset>
+
+                            <label className="mt-5 flex cursor-pointer items-start gap-3 rounded-xl bg-gray-50 p-3 text-sm text-gray-700">
+                                <input
+                                    type="checkbox"
+                                    checked={allowGrowthAnalysis}
+                                    onChange={(event) => setAllowGrowthAnalysis(event.target.checked)}
+                                    className="mt-0.5 size-4 rounded border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                                />
+                                <span><span className="block font-semibold text-gray-900">Also use this entry for future insights</span><span className="mt-1 block text-pretty text-xs leading-5 text-gray-600">Optional. Helps build your profile, Memory Constellation, and reports. Turn it off to receive only this response.</span></span>
+                            </label>
+                        </motion.div>
+                    )}
+                </section>
+
+                <div className="relative overflow-hidden rounded-[2rem] border border-indigo-100 bg-[#fffdf8] p-4 shadow-lg sm:p-8 md:p-10">
                     {imageUrl && (
                         <div className="absolute -top-12 -right-4 md:-right-12 z-20">
-                            <div className="bg-white p-2 rounded-xl shadow-lg transform rotate-6 hover:rotate-0 transition-transform duration-300">
+                            <div className="rotate-3 rounded-xl bg-white p-2 shadow-lg transition-transform duration-200 hover:rotate-0">
                                 <Image
                                     src={imageUrl}
                                     width={120}
@@ -155,25 +209,29 @@ const Entry = () => {
                     )}
 
                     <textarea
-                        className="w-full h-[45vh] md:h-[55vh] bg-transparent border-none focus:ring-0 text-gray-800 placeholder-gray-400 font-handwriting text-3xl md:text-4xl leading-relaxed resize-none p-4"
+                        id="journal-entry"
+                        aria-label="Journal entry"
+                        aria-describedby={error ? 'journal-entry-error' : undefined}
+                        aria-invalid={Boolean(error)}
+                        className="min-h-[55dvh] w-full resize-none border-none bg-transparent p-3 font-handwriting text-2xl leading-relaxed text-gray-800 placeholder:text-gray-400 focus:ring-0 sm:min-h-[50dvh] sm:p-4 sm:text-3xl md:text-4xl"
                         placeholder="How was your day? What's on your mind?..."
                         value={journalEntry}
                         onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setJournalEntry(e.target.value)}
                     />
 
-                    {error && <p className="text-red-500 text-sm mt-2 text-center">{error}</p>}
+                    {error && <p id="journal-entry-error" role="alert" className="mt-2 text-center text-sm text-red-600">{error}</p>}
                 </div>
 
                 <div className="mt-8 flex justify-center">
                     <Button
                         onClick={handleOpen}
                         disabled={loading}
-                        className="px-12 py-6 text-lg rounded-full shadow-xl hover:shadow-2xl hover:scale-105 transition-all duration-300"
+                        className={cn("min-h-12 rounded-full px-10 text-base shadow-md transition-transform duration-200 active:scale-95 sm:px-12 sm:text-lg", supportMode === 'listen' ? "bg-emerald-700 hover:bg-emerald-800" : "bg-indigo-600 hover:bg-indigo-700")}
                     >
-                        {loading ? (supportMode === 'listen' ? 'Saving...' : 'Reflecting...') : 'Save Entry'}
+                        {loading ? (supportMode === 'listen' ? 'Saving privately…' : 'Reflecting…') : (supportMode === 'listen' ? 'Save privately — No AI' : 'Save & reflect with AI')}
                     </Button>
                 </div>
-            </div>
+            </motion.main>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-h-[90dvh] overflow-y-auto p-0 sm:max-w-lg">

@@ -63,29 +63,31 @@ export default function JournalPrompt({ onPromptSelect }: JournalPromptProps) {
     };
 
     return (
-        <div className="relative flex flex-col items-center justify-center mt-5">
+        <div className="relative flex min-w-0 flex-col items-center text-center">
             <button
+                type="button"
                 onClick={handleClick}
-                className="p-2 bg-white/80 rounded-full shadow hover:bg-white transition focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+                className="flex size-12 items-center justify-center rounded-2xl border border-indigo-100 bg-white shadow-sm transition-transform duration-200 active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-600 sm:size-14"
                 aria-label="Get a journal prompt"
             >
-                <Bot className="w-6 h-6 text-gray-700" />
+                <Bot className="size-5 text-gray-700 sm:size-6" aria-hidden="true" />
             </button>
-            <p className="mt-2 text-sm text-gray-500">Don't Know What to Write?</p>
+            <p className="mt-2 text-pretty text-xs font-medium leading-4 text-gray-700 sm:text-sm">Need a prompt?</p>
 
             {isOpen && randomPrompt && (
-                <div className="absolute top-16 left-1/2 -translate-x-1/2 w-80 bg-white rounded-2xl shadow-2xl border border-indigo-100 z-50 overflow-hidden">
+                <div className="fixed inset-x-4 top-1/2 z-50 -translate-y-1/2 overflow-hidden rounded-2xl border border-indigo-100 bg-white text-left shadow-xl sm:absolute sm:inset-x-auto sm:left-1/2 sm:top-16 sm:w-80 sm:-translate-x-1/2 sm:translate-y-0" role="dialog" aria-modal="true" aria-label="Journal prompt">
                     <div className="flex items-center justify-between px-4 pt-4 pb-2">
                         <div className="flex items-center gap-1.5 text-indigo-600 font-bold text-xs uppercase tracking-wider">
                             <Sparkles className="w-3.5 h-3.5" />
                             Prompt idea
                         </div>
                         <button
+                            type="button"
                             onClick={handleClose}
                             className="text-gray-400 hover:text-gray-600 transition"
                             aria-label="Close prompt"
                         >
-                            <X className="w-4 h-4" />
+                            <X className="size-4" aria-hidden="true" />
                         </button>
                     </div>
                     <p className="px-4 pb-4 text-gray-700 text-sm leading-relaxed">
@@ -93,6 +95,7 @@ export default function JournalPrompt({ onPromptSelect }: JournalPromptProps) {
                     </p>
                     <div className="border-t border-gray-100 flex">
                         <button
+                            type="button"
                             onClick={handleClick}
                             className="flex-1 py-2.5 text-xs text-gray-500 hover:bg-gray-50 transition font-medium"
                         >
@@ -100,10 +103,11 @@ export default function JournalPrompt({ onPromptSelect }: JournalPromptProps) {
                         </button>
                         {onPromptSelect && (
                             <button
+                                type="button"
                                 onClick={handleUsePrompt}
                                 className="flex-1 py-2.5 text-xs text-indigo-600 hover:bg-indigo-50 transition font-bold flex items-center justify-center gap-1 border-l border-gray-100"
                             >
-                                Use this <ArrowRight className="w-3 h-3" />
+                                Use this <ArrowRight className="size-3" aria-hidden="true" />
                             </button>
                         )}
                     </div>

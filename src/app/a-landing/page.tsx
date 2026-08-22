@@ -20,7 +20,6 @@ import {
     Star,
     Users,
     ListTodo,
-    MessageCircleHeart,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
@@ -58,25 +57,28 @@ const privacyPoints = [
 
 const productFeatures = [
     {
-        image: "/assets/entry.png",
-        icon: Camera,
-        title: "A journal that meets you where you are",
-        description: "Write freely, scan handwritten pages, use a prompt when you feel stuck, or attach a meaningful image.",
-        imageAlt: "Echo journal entry interface with scanning, prompts, and image attachment tools",
+        image: "/assets/ui-entry.png",
+        icon: PencilLine,
+        title: "Know exactly when AI is involved",
+        description: "Choose a private no-AI save or request an AI reflection, then decide separately whether the entry may inform future insights.",
+        imageAlt: "Current Echo journal interface showing response modes and entry-level consent",
+        mobileMockup: true,
     },
     {
-        image: "/assets/Analytics.png",
-        icon: Brain,
-        title: "Mood history you can actually revisit",
-        description: "See mood distribution and movement over time, then connect those changes with the memories behind them.",
-        imageAlt: "Echo mood tracker showing mood distribution and a seven-day trend",
+        image: "/assets/ui-reflection.png",
+        icon: HeartHandshake,
+        title: "A calmer reflection after saving",
+        description: "Get tentative, supportive language, one realistic next step, and a gentle path into your wider growth workspace.",
+        imageAlt: "Current Echo reflection dialog with supportive guidance and a small next step",
+        mobileMockup: false,
     },
     {
-        image: "/assets/chat.png",
-        icon: MessageCircleHeart,
-        title: "Reflection when writing alone is not enough",
-        description: "Continue a thought in Echo Chat while keeping clear boundaries around what AI can and cannot replace.",
-        imageAlt: "Echo chat interface showing a reflective conversation",
+        image: "/assets/ui-growth.png",
+        icon: Compass,
+        title: "See patterns become useful",
+        description: "Review an editable profile, explore your Memory Constellation, and turn evidence-linked insights into gentle experiments.",
+        imageAlt: "Current Echo growth workspace with an editable profile and Memory Constellation",
+        mobileMockup: false,
     },
 ];
 
@@ -118,19 +120,26 @@ const faqs = [
 
 function ProductPreview() {
     return (
-        <div className="lg:-translate-y-8" aria-label="Echo application on mobile screens">
+        <div className="lg:-translate-y-8" aria-label="Echo growth workspace preview">
             <div className="mb-2 ml-auto w-fit max-w-sm rounded-xl border border-indigo-100 bg-white px-4 py-3 text-center shadow-sm">
                 <p className="text-xs font-semibold text-indigo-700 sm:text-sm">Now connected to support modes, Memory Constellation, and growth reports</p>
             </div>
-            <Image
-                src="/assets/image.png"
-                alt="Echo mobile journal, mood tracker, and personal dashboard"
-                width={1440}
-                height={736}
-                sizes="(min-width: 1024px) 55vw, 100vw"
-                className="h-auto w-full object-contain"
-                priority
-            />
+            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-indigo-950/10">
+                <div className="flex h-8 items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-3" aria-hidden="true">
+                    <span className="size-2 rounded-full bg-rose-400" />
+                    <span className="size-2 rounded-full bg-amber-400" />
+                    <span className="size-2 rounded-full bg-emerald-400" />
+                </div>
+                <Image
+                    src="/assets/ui-growth.png"
+                    alt="Current Echo growth workspace with a reflection profile and Memory Constellation"
+                    width={1325}
+                    height={1000}
+                    sizes="(min-width: 1024px) 55vw, 100vw"
+                    className="h-auto w-full object-contain"
+                    priority
+                />
+            </div>
         </div>
     );
 }
@@ -192,14 +201,20 @@ export default function LandingPage() {
                 <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
                     <div className="mx-auto max-w-3xl text-center">
                         <p className="text-sm font-semibold text-indigo-700">The real Echo experience</p>
-                        <h2 id="product-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">The journal, mood history, and conversation tools are still here.</h2>
-                        <p className="mt-4 text-pretty text-slate-600">The new growth system connects the product people already use instead of replacing it with another abstract AI dashboard.</p>
+                        <h2 id="product-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Real screens from the journal—not concept art.</h2>
+                        <p className="mt-4 text-pretty text-slate-600">See how writing, reflection, and long-term pattern discovery connect inside the product people actually use.</p>
                     </div>
                     <div className="mt-12 grid gap-6 lg:grid-cols-3">
                         {productFeatures.map(feature => (
                             <article key={feature.title} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
                                 <div className="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
-                                    <Image src={feature.image} alt={feature.imageAlt} width={900} height={675} sizes="(min-width: 1024px) 33vw, 100vw" className="size-full object-cover object-top" />
+                                    {feature.mobileMockup ? (
+                                        <div className="flex size-full items-center justify-center bg-indigo-50 p-3">
+                                            <Image src={feature.image} alt={feature.imageAlt} width={390} height={780} sizes="180px" className="h-full w-auto rounded-3xl border-4 border-slate-900 object-cover object-top shadow-md transition-transform duration-200 hover:-translate-y-1 motion-reduce:transform-none" />
+                                        </div>
+                                    ) : (
+                                        <Image src={feature.image} alt={feature.imageAlt} width={900} height={675} sizes="(min-width: 1024px) 33vw, 100vw" className="size-full object-cover object-top" />
+                                    )}
                                 </div>
                                 <div className="p-6">
                                     <feature.icon className="size-6 text-indigo-600" />

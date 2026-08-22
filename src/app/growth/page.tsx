@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Brain, Check, CircleDot, Compass, FileText, Leaf, Pencil, RefreshCw, Sparkles, X } from "lucide-react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -30,44 +29,6 @@ const NODE_POSITIONS = [
     { x: 50, y: 16 }, { x: 24, y: 27 }, { x: 76, y: 28 }, { x: 13, y: 52 }, { x: 48, y: 48 },
     { x: 88, y: 54 }, { x: 27, y: 76 }, { x: 67, y: 74 }, { x: 48, y: 87 }, { x: 82, y: 88 },
 ];
-
-const CAPTURE_OVERVIEW: GrowthOverview = {
-    profile: {
-        summary: "You are balancing meaningful work with a growing need for quieter, more restorative routines. Creative progress matters to you, but so does protecting enough energy to enjoy it.",
-        generatedAt: new Date().toISOString(),
-        observations: [
-            { id: "o1", category: "restorative", text: "Quiet mornings and walking appear alongside calmer entries.", confidence: "recurring", evidenceEntryIds: [], status: "confirmed" },
-            { id: "o2", category: "goal", text: "Creative confidence is becoming more important than perfect output.", confidence: "emerging", evidenceEntryIds: [], status: "proposed" },
-        ],
-        constellation: {
-            nodes: [
-                { id: "calm", label: "Calm", type: "emotion", weight: 4 },
-                { id: "morning", label: "Morning", type: "habit", weight: 3 },
-                { id: "work", label: "Work", type: "theme", weight: 4 },
-                { id: "walking", label: "Walking", type: "habit", weight: 2 },
-                { id: "creative", label: "Creating", type: "goal", weight: 3 },
-            ],
-            links: [
-                { source: "calm", target: "morning", reason: "Quieter mornings often appeared with calmer reflections." },
-                { source: "calm", target: "walking", reason: "Walking was mentioned on several steadier days." },
-                { source: "work", target: "creative", reason: "Creative goals often surface beside work pressure." },
-                { source: "morning", target: "creative", reason: "Morning time seems to protect creative focus." },
-            ],
-        },
-    },
-    reports: [{
-        id: "report-1", period: "weekly", createdAt: new Date().toISOString(), generatedAt: new Date().toISOString(),
-        title: "A week of protecting your energy",
-        summary: "You kept moving important work forward while becoming more aware of the routines that help you feel steady.",
-        changed: "Your entries moved from urgency toward clearer boundaries by the end of the week.",
-        noticed: [{ text: "Work pressure appeared most often in evening entries.", evidenceEntryIds: [] }],
-        helped: [{ text: "Walking and quieter mornings appeared beside calmer moods.", evidenceEntryIds: [] }],
-        needsAttention: [{ text: "Rest was often postponed until everything else was finished.", evidenceEntryIds: [] }],
-        preserve: [{ text: "You continued making time for creative work.", evidenceEntryIds: [] }],
-        suggestions: [{ title: "Protect ten quiet minutes", rationale: "Quieter mornings appeared on steadier days.", tinyAction: "Keep the first ten minutes after waking free from work messages on three days.", durationDays: 7, evidenceEntryIds: [] }],
-    }],
-    activeExperiment: null,
-};
 
 function MemoryConstellation({ nodes, links }: { nodes: ConstellationNode[]; links: ConstellationLink[] }) {
     const [selectedId, setSelectedId] = useState(nodes[0]?.id || "");
@@ -139,10 +100,8 @@ function EvidenceLinks({ ids }: { ids: string[] }) {
 }
 
 export default function GrowthPage() {
-    const pathname = usePathname();
-    const isCapture = pathname === '/ui-capture/growth';
-    const [overview, setOverview] = useState<GrowthOverview | null>(isCapture ? CAPTURE_OVERVIEW : null);
-    const [loading, setLoading] = useState(!isCapture);
+    const [overview, setOverview] = useState<GrowthOverview | null>(null);
+    const [loading, setLoading] = useState(true);
     const [working, setWorking] = useState<string | null>(null);
     const [error, setError] = useState("");
     const [rating, setRating] = useState(3);
@@ -163,8 +122,8 @@ export default function GrowthPage() {
     };
 
     useEffect(() => {
-        if (!isCapture) void loadOverview();
-    }, [isCapture]);
+        void loadOverview();
+    }, []);
 
     const runAction = async (key: string, action: () => Promise<void>) => {
         setWorking(key);

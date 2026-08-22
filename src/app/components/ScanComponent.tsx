@@ -99,21 +99,24 @@ const ScanComponent = ({ onScanComplete }: { onScanComplete: (text: string) => v
     };
 
     return (
-        <div className="flex flex-col items-center justify-center relative mt-5">
+        <div className="relative flex min-w-0 flex-col items-center text-center">
             <button
+                type="button"
                 onClick={() => startCamera(currentDeviceIndex)}
-                className="p-3 bg-white/80 rounded-full shadow hover:bg-white transition"
+                aria-label="Scan a handwritten journal page"
+                className="flex size-12 items-center justify-center rounded-2xl border border-indigo-100 bg-white shadow-sm transition-transform duration-200 active:scale-95 sm:size-14"
             >
-                <ScanText className="w-6 h-6 text-gray-700" />
+                <ScanText className="size-5 text-gray-700 sm:size-6" aria-hidden="true" />
             </button>
-            <p>Scan Handwritten Journal!</p>
+            <p className="mt-2 text-pretty text-xs font-medium leading-4 text-gray-700 sm:text-sm">Scan a page</p>
 
             {isCameraOpen && (
-                <div className="fixed inset-0 bg-black/90 flex flex-col items-center justify-center z-50">
-                    <video ref={videoRef} className="w-full h-full object-cover"></video>
+                <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/90" role="dialog" aria-modal="true" aria-label="Scan a handwritten page">
+                    <video ref={videoRef} className="h-dvh w-full object-cover"></video>
 
                     <div className="absolute bottom-10 flex gap-4">
                         <button
+                            type="button"
                             onClick={captureImage}
                             className="px-6 py-3 bg-white text-black font-bold rounded-full shadow-lg"
                         >
@@ -122,15 +125,18 @@ const ScanComponent = ({ onScanComplete }: { onScanComplete: (text: string) => v
 
                         {videoDevices.length > 1 && (
                             <button
+                                type="button"
                                 onClick={switchCamera}
+                                aria-label="Switch camera"
                                 className="p-3 bg-gray-700 text-white rounded-full"
                             >
-                                <Repeat className="w-6 h-6" />
+                                <Repeat className="size-6" aria-hidden="true" />
                             </button>
                         )}
                     </div>
 
                     <button
+                        type="button"
                         onClick={() => {
                             setIsCameraOpen(false);
                             if (videoRef.current?.srcObject) {
@@ -139,8 +145,9 @@ const ScanComponent = ({ onScanComplete }: { onScanComplete: (text: string) => v
                             }
                         }}
                         className="absolute top-4 right-4 bg-red-500 text-white p-3 rounded-full"
+                        aria-label="Close camera"
                     >
-                        <X className="w-6 h-6" />
+                        <X className="size-6" aria-hidden="true" />
                     </button>
                 </div>
             )}
@@ -156,6 +163,7 @@ const ScanComponent = ({ onScanComplete }: { onScanComplete: (text: string) => v
 
             {capturedImage && (
                 <button
+                    type="button"
                     onClick={processImage}
                     className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition mt-3"
                     disabled={loading}

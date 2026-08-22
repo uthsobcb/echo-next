@@ -79,7 +79,7 @@ export default function Footer() {
                     </span>
                     <div className="flex mt-4 sm:justify-center sm:mt-0 items-center space-x-1 text-sm text-gray-500">
                         <span>Built with ❤️ by</span>
-                        <Link href="https://uthsob.me" target="_blank" className="font-medium text-indigo-600 hover:underline">
+                        <Link href="https://uthsob.dev" target="_blank" className="font-medium text-indigo-600 hover:underline">
                             Uthsob
                         </Link>
                         <span>🇧🇩</span>

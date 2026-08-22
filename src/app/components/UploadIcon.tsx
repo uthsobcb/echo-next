@@ -45,14 +45,16 @@ export default function UploadIcon({ OnImageUpload }: { OnImageUpload: (url: str
     };
 
     return (
-        <div className="flex flex-col items-center justify-center relative mt-5">
+        <div className="relative flex min-w-0 flex-col items-center text-center">
             <button
+                type="button"
                 onClick={uploadImageAction}
-                className="p-3 bg-white/80 rounded-full shadow hover:bg-white transition"
+                aria-label="Attach an image"
+                className="flex size-12 items-center justify-center rounded-2xl border border-indigo-100 bg-white shadow-sm transition-transform duration-200 active:scale-95 sm:size-14"
             >
-                <Upload className="w-6 h-6 text-gray-700" />
+                <Upload className="size-5 text-gray-700 sm:size-6" aria-hidden="true" />
             </button>
-            <p>Attach an image...</p>
+            <p className="mt-2 text-pretty text-xs font-medium leading-4 text-gray-700 sm:text-sm">Add a photo</p>
         </div>
     );
 }
