@@ -1,0 +1,11 @@
+# Queued notifications need minute-level resolution.
+* * * * * curl --fail --silent --show-error --max-time 50 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/scheduled-queue
+
+# These routes calculate each user's local hour, so one invocation per hour is sufficient.
+3 * * * * curl --fail --silent --show-error --max-time 600 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/morning-motivation
+13 * * * * curl --fail --silent --show-error --max-time 600 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/reminders
+23 * * * * curl --fail --silent --show-error --max-time 600 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/todo-reminders
+33 * * * * curl --fail --silent --show-error --max-time 600 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/timely-nudges
+
+# Weekly report, Sunday at 07:43 UTC.
+43 7 * * 0 curl --fail --silent --show-error --max-time 1800 -H "Authorization: Bearer $CRON_SECRET" http://app:3000/api/cron/reports

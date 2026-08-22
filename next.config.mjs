@@ -2,6 +2,8 @@ import withPWA from 'next-pwa';
 
 /** @type {import('next').NextConfig} */
 const config = {
+    // Produces the minimal server bundle used by the self-hosted container.
+    output: 'standalone',
     images: {
         remotePatterns: [
             {

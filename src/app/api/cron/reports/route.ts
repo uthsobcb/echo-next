@@ -95,7 +95,7 @@ export async function GET(req: NextRequest) {
                         Keep shining and tracking your emotions. Remember, every mood is a step in your journey! 💫
                         </p>
 
-                        <a href="https://echojournal.life/profile"
+                        <a href="${process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000"}/profile"
                         class="cta-button"
                         style="display: inline-block; background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
                                 color: white; text-decoration: none; padding: 15px 30px; border-radius: 8px;
@@ -113,7 +113,7 @@ export async function GET(req: NextRequest) {
                         `;
 
                         await resend.emails.send({
-                            from: "Echo☁️ <system@echojournal.life>",
+                            from: process.env.MAIL_FROM || "Echo <system@echojournal.life>",
                             to: user.email,
                             subject: `📊 Echo Weekly Mood Report for ${user.name}`,
                             html: emailHtml,

@@ -98,6 +98,7 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
 - **[API Documentation](./docs/API_DOCUMENTATION.md)** - Complete API reference with all endpoints
 - **[Design Guide](./docs/DESIGN_GUIDE.md)** - UI/UX design system and guidelines
 - **[Deployment Guide](./docs/DEPLOYMENT.md)** - Production deployment instructions
+- **[Self-hosting Architecture](./docs/SELF_HOSTING_ARCHITECTURE.md)** - Docker Compose architecture, operations, and dependency boundaries
 
 ## 🏗️ Tech Stack
 

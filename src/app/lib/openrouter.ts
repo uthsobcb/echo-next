@@ -1,15 +1,13 @@
 import OpenAI from "openai";
 
-const apiKey = process.env.OPENROUTER_API_KEY;
-if (!apiKey) {
-    throw new Error("OPENROUTER_API_KEY environment variable is required. Set it in your .env file.");
-}
-
 export const openrouter = new OpenAI({
-    apiKey,
-    baseURL: "https://openrouter.ai/api/v1",
+    // A placeholder keeps builds secret-free. Requests still fail clearly when a
+    // hosted provider needs a key and none was supplied. Local providers often
+    // accept any non-empty value.
+    apiKey: process.env.AI_API_KEY || process.env.OPENROUTER_API_KEY || "local-no-key",
+    baseURL: process.env.AI_BASE_URL || "https://openrouter.ai/api/v1",
     defaultHeaders: {
-        "HTTP-Referer": "https://echojournal.life",
-        "X-Title": "Echo Space",
+        "HTTP-Referer": process.env.NEXT_PUBLIC_BASEURL || "http://localhost:3000",
+        "X-Title": "Echo",
     },
 });

@@ -104,7 +104,7 @@ ${decryptedThreadSummary || "No summary yet."}`;
         ];
 
         const response = await openai.chat.completions.create({
-            model: "z-ai/glm-4.5-air:free", // Updated to the user's preferred free model
+            model: process.env.AI_MODEL || "z-ai/glm-4.5-air:free",
             messages: chatHistory,
         });
 
@@ -123,7 +123,7 @@ ${decryptedThreadSummary || "No summary yet."}`;
             allDecryptedMessages.map(m => `${m.role === 'user' ? "User" : "Echo"}: ${m.text}`).join("\n");
 
         const summaryRes = await openai.chat.completions.create({
-            model: "z-ai/glm-4.5-air:free",
+            model: process.env.AI_MODEL || "z-ai/glm-4.5-air:free",
             messages: [{ role: "user", content: summaryPrompt }],
             max_tokens: 150
         });

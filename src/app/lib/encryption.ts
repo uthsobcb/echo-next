@@ -4,18 +4,16 @@ const LEGACY_ALGORITHM = 'aes-256-cbc';
 const GCM_ALGORITHM = 'aes-256-gcm';
 const GCM_IV_LENGTH = 12;
 
-const SECRET_KEY = process.env.ENCRYPTION_SECRET_KEY;
-if (!SECRET_KEY) {
-    throw new Error("ENCRYPTION_SECRET_KEY environment variable is required. Set it in your .env file.");
+function getCurrentKey(): Buffer {
+    const secret = process.env.ENCRYPTION_SECRET_KEY;
+    if (!secret) throw new Error("ENCRYPTION_SECRET_KEY environment variable is required");
+    return crypto.createHash('sha256').update(secret).digest();
 }
 
-// Current key for new encryptions
-const key = crypto.createHash('sha256').update(SECRET_KEY).digest();
-
-// Legacy key used before ENCRYPTION_SECRET_KEY was configured. Optional: only set this
-// in environments that still hold data encrypted under the old default key.
-const LEGACY_KEY = process.env.LEGACY_ENCRYPTION_SECRET_KEY;
-const legacyKey = LEGACY_KEY ? crypto.createHash('sha256').update(LEGACY_KEY).digest() : null;
+function getLegacyKey(): Buffer | null {
+    const secret = process.env.LEGACY_ENCRYPTION_SECRET_KEY;
+    return secret ? crypto.createHash('sha256').update(secret).digest() : null;
+}
 
 function decryptCbc(encryptedText: string, decryptKey: Buffer): string {
     const [ivHex, encrypted] = encryptedText.split(':');
@@ -43,6 +41,7 @@ function decryptGcm(encryptedText: string, decryptKey: Buffer): string {
 // Format: iv:authTag:ciphertext (3 hex segments), distinguishing it from the
 // legacy iv:ciphertext (2 segments) CBC format still supported for reads below.
 export const encrypt = (text: string) => {
+    const key = getCurrentKey();
     const iv = crypto.randomBytes(GCM_IV_LENGTH);
     const cipher = crypto.createCipheriv(GCM_ALGORITHM, key, iv);
     let encrypted = cipher.update(text, 'utf-8', 'hex');
@@ -59,6 +58,7 @@ export const decrypt = (encryptedText: string) => {
     }
 
     const segments = encryptedText.split(':').length;
+    const key = getCurrentKey();
 
     if (segments === 3) {
         try {
@@ -76,6 +76,7 @@ export const decrypt = (encryptedText: string) => {
         // Current key failed, try legacy key
     }
 
+    const legacyKey = getLegacyKey();
     if (legacyKey) {
         try {
             return decryptCbc(encryptedText, legacyKey);

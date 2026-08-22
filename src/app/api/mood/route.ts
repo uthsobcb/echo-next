@@ -80,7 +80,7 @@ Analyze the following journal entry and provide the requested JSON response: "${
         let risk: { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } = { severity: "none", indicators: [] };
         try {
             const completion = await openrouter.chat.completions.create({
-                model: "openai/gpt-4o-mini",
+                model: process.env.AI_MODEL || "openai/gpt-4o-mini",
                 response_format: { type: "json_object" },
                 messages: [
                     {

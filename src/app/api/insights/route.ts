@@ -98,7 +98,7 @@ async function getAiInsights(
 
     try {
         const completion = await openrouter.chat.completions.create({
-            model: "openai/gpt-4o-mini",
+            model: process.env.AI_MODEL || "openai/gpt-4o-mini",
             messages: [
                 {
                     role: "system",
