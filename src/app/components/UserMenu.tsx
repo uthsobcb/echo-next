@@ -52,6 +52,7 @@ export default async function UserMenu({ session }: { session: Session }) {
                             src={image || "/assets/logo.png"}
                             alt={name || "User"}
                             fill
+                            sizes="24px"
                             className="object-cover"
                             unoptimized
                         />

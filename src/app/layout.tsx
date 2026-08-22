@@ -10,9 +10,9 @@ import type { Metadata } from "next";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 const SITE_URL = "https://echojournal.life";
-const TITLE = "Echo — Journal Effortlessly, Reflect & Grow";
+const TITLE = "Echo — Understand Your Patterns, Gently";
 const DESCRIPTION =
-  "Echo is your AI journaling companion: mood tracking, reflective prompts, and insights to build a lasting journaling habit.";
+  "A private AI-assisted journal with support modes, Memory Constellation, evidence-linked reports, and gentle personal experiments.";
 
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),

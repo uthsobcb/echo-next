@@ -33,6 +33,7 @@ export default async function NavBar() {
                                 src="/assets/logo.png"
                                 alt="Echo Logo"
                                 fill
+                                sizes="32px"
                                 className="object-contain"
                             />
                         </div>

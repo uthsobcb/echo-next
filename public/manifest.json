@@ -1,7 +1,7 @@
 {
     "name": "Echo - AI Journal",
     "short_name": "Echo",
-    "description": "AI-powered journaling companion",
+    "description": "A private journal for reflection, connected memories, and gentle personal growth",
     "start_url": "/",
     "display": "standalone",
     "background_color": "#ffffff",

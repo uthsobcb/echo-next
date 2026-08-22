@@ -1,788 +1,363 @@
-"use client";
-
-import { motion, useScroll, useTransform, AnimatePresence } from "framer-motion";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import {
-    Sparkles, Brain, Lock, TrendingUp, Heart, Camera, MessageCircleHeart,
-    ListTodo, LucideFlower, CalendarDays, PencilLine, ChevronDown,
-    Check, X, Play, Users,
-    ArrowRight, Star
+    ArrowRight,
+    Brain,
+    BriefcaseBusiness,
+    Camera,
+    Check,
+    Compass,
+    FileText,
+    HeartHandshake,
+    Heart,
+    KeyRound,
+    Leaf,
+    LockKeyhole,
+    PencilLine,
+    Server,
+    ShieldCheck,
+    Sparkles,
+    Star,
+    Users,
+    ListTodo,
+    MessageCircleHeart,
 } from "lucide-react";
-import { useState, useEffect, FormEvent } from "react";
+import { Button } from "@/components/ui/button";
+
+const supportModes = ["Just listen", "Help me reflect", "Help me reframe", "Find a pattern", "Give me a small step", "I need support"];
+
+const growthSteps = [
+    {
+        icon: PencilLine,
+        title: "Write on your terms",
+        description: "Choose how Echo responds and whether an entry may inform future patterns. “Just listen” bypasses AI analysis.",
+    },
+    {
+        icon: Brain,
+        title: "Review tentative patterns",
+        description: "Build an evolving reflection profile that you can confirm, correct, or dismiss at any time.",
+    },
+    {
+        icon: FileText,
+        title: "Understand your season",
+        description: "Generate weekly or monthly reports with links back to the entries behind each important conclusion.",
+    },
+    {
+        icon: Leaf,
+        title: "Try one gentle change",
+        description: "Turn a suggestion into a small experiment, check in without pressure, and learn what actually helped.",
+    },
+];
+
+const privacyPoints = [
+    { icon: LockKeyhole, title: "Encrypted at rest", text: "Journal content and generated growth artifacts are encrypted before being stored in the database." },
+    { icon: KeyRound, title: "Entry-level consent", text: "You choose which entries may contribute to your profile, constellation, and reports." },
+    { icon: Server, title: "Self-hostable", text: "Run Echo, MongoDB, scheduled jobs, and the HTTPS edge on infrastructure you control." },
+    { icon: ShieldCheck, title: "Reflection, not diagnosis", text: "Echo frames patterns as hypotheses, avoids clinical claims, and keeps human support in the picture." },
+];
+
+const productFeatures = [
+    {
+        image: "/assets/entry.png",
+        icon: Camera,
+        title: "A journal that meets you where you are",
+        description: "Write freely, scan handwritten pages, use a prompt when you feel stuck, or attach a meaningful image.",
+        imageAlt: "Echo journal entry interface with scanning, prompts, and image attachment tools",
+    },
+    {
+        image: "/assets/Analytics.png",
+        icon: Brain,
+        title: "Mood history you can actually revisit",
+        description: "See mood distribution and movement over time, then connect those changes with the memories behind them.",
+        imageAlt: "Echo mood tracker showing mood distribution and a seven-day trend",
+    },
+    {
+        image: "/assets/chat.png",
+        icon: MessageCircleHeart,
+        title: "Reflection when writing alone is not enough",
+        description: "Continue a thought in Echo Chat while keeping clear boundaries around what AI can and cannot replace.",
+        imageAlt: "Echo chat interface showing a reflective conversation",
+    },
+];
+
+const useCases = [
+    { icon: Users, title: "For students", text: "Untangle academic pressure, capture study commitments, and understand what helps during demanding weeks." },
+    { icon: BriefcaseBusiness, title: "For professionals", text: "Reflect on work patterns, protect energy, and keep sight of goals beyond the next deadline." },
+    { icon: Heart, title: "For everyday wellbeing", text: "Make space for emotions, notice what restores you, and preserve moments you do not want to lose." },
+];
+
+const testimonials = [
+    { name: "Shihab", role: "Daily user", quote: "It's fun journaling and chatting with Echo. Very well done!", avatar: "/assets/shihab.png" },
+    { name: "Arafath", role: "Student", quote: "The AI insights are so helpful and spot on.", avatar: "/assets/arafath.png" },
+    { name: "Evak Chan", role: "Product Hunt feedback", quote: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development.", avatar: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1" },
+    { name: "Md Mobashir Hasan", role: "Product Hunt feedback", quote: "Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing.", avatar: "https://ph-avatars.imgix.net/5085015/cfa4d47f-0001-4181-a126-440f48e1368c.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1" },
+];
+
+const faqs = [
+    {
+        question: "Does Echo analyze every journal entry?",
+        answer: "No. You choose a response mode for each entry. Selecting “Just listen” saves it without sending it to the configured AI provider and excludes it from future profile and report generation.",
+    },
+    {
+        question: "Can I correct what Echo thinks about me?",
+        answer: "Yes. Profile observations are proposals, not permanent labels. You can confirm, rewrite, or dismiss every observation, and refreshed profiles preserve those decisions when the same observation returns.",
+    },
+    {
+        question: "What is the Memory Constellation?",
+        answer: "It is a visual map of recurring themes—such as goals, habits, emotions, people, and places—and the tentative relationships between them. It is built only from entries you permit Echo to use.",
+    },
+    {
+        question: "Are the reports medical advice?",
+        answer: "No. Reports are personal reflection tools, not diagnosis or treatment. They summarize changes, possible patterns, helpful factors, areas to watch, and optional small experiments.",
+    },
+    {
+        question: "Can I run Echo myself?",
+        answer: "Yes. The repository includes a Docker Compose deployment with Caddy, the Next.js application, an authenticated scheduler, and a private MongoDB instance. AI, email, and push providers can be configured separately.",
+    },
+];
+
+function ProductPreview() {
+    return (
+        <div className="lg:-translate-y-8" aria-label="Echo application on mobile screens">
+            <div className="mb-2 ml-auto w-fit max-w-sm rounded-xl border border-indigo-100 bg-white px-4 py-3 text-center shadow-sm">
+                <p className="text-xs font-semibold text-indigo-700 sm:text-sm">Now connected to support modes, Memory Constellation, and growth reports</p>
+            </div>
+            <Image
+                src="/assets/image.png"
+                alt="Echo mobile journal, mood tracker, and personal dashboard"
+                width={1440}
+                height={736}
+                sizes="(min-width: 1024px) 55vw, 100vw"
+                className="h-auto w-full object-contain"
+                priority
+            />
+        </div>
+    );
+}
 
 export default function LandingPage() {
-    const [showStickyCTA, setShowStickyCTA] = useState(false);
-    const [email, setEmail] = useState("");
-    const [newsletterStatus, setNewsletterStatus] = useState<string | null>(null);
-    const [openFAQ, setOpenFAQ] = useState<number | null>(null);
-    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-    const { scrollYProgress } = useScroll();
-    const opacity = useTransform(scrollYProgress, [0, 0.2], [1, 0]);
-    const scale = useTransform(scrollYProgress, [0, 0.2], [1, 0.8]);
-
-    // Sticky CTA on scroll
-    useEffect(() => {
-        const handleScroll = () => {
-            setShowStickyCTA(window.scrollY > 800);
-        };
-        window.addEventListener("scroll", handleScroll);
-        return () => window.removeEventListener("scroll", handleScroll);
-    }, []);
-
-    // Newsletter submission
-    const handleNewsletterSubmit = (e: FormEvent) => {
-        e.preventDefault();
-        if (email && email.includes("@")) {
-            setNewsletterStatus("success");
-            setEmail("");
-            setTimeout(() => setNewsletterStatus(null), 3000);
-        } else {
-            setNewsletterStatus("error");
-            setTimeout(() => setNewsletterStatus(null), 3000);
-        }
-    };
-
-    const features = [
-        {
-            icon: PencilLine,
-            title: "Write & Reflect",
-            description: "Capture your thoughts, feelings, and experiences with our intuitive journaling interface.",
-            gradient: "from-blue-500 to-indigo-500",
-            demo: "Real-time auto-save"
-        },
-        {
-            icon: Brain,
-            title: "AI Mood Analysis",
-            description: "Advanced AI analyzes your entries to detect mood patterns and provide personalized insights.",
-            gradient: "from-indigo-500 to-purple-500",
-            demo: "98% accuracy"
-        },
-        {
-            icon: Camera,
-            title: "OCR Text Scanning",
-            description: "Scan handwritten notes with your camera and convert them to digital text instantly.",
-            gradient: "from-purple-500 to-pink-500",
-            demo: "Multi-language support"
-        },
-        {
-            icon: ListTodo,
-            title: "Smart Todo Extraction",
-            description: "AI automatically identifies and organizes tasks from your journal entries.",
-            gradient: "from-green-500 to-emerald-500",
-            demo: "Auto-categorization"
-        },
-        {
-            icon: MessageCircleHeart,
-            title: "Chat with Echo",
-            description: "24/7 AI companion that remembers your conversations and provides emotional support.",
-            gradient: "from-pink-500 to-rose-500",
-            demo: "Context-aware responses"
-        },
-        {
-            icon: TrendingUp,
-            title: "Mood Analytics",
-            description: "Visualize your emotional journey with interactive charts and mood heatmaps.",
-            gradient: "from-blue-500 to-cyan-500",
-            demo: "Weekly insights"
-        },
-        {
-            icon: CalendarDays,
-            title: "Memory Timeline",
-            description: "Revisit and reflect on your past entries with intelligent search and calendar view.",
-            gradient: "from-orange-500 to-amber-500",
-            demo: "Smart search"
-        },
-        {
-            icon: LucideFlower,
-            title: "Guided Meditation",
-            description: "Built-in breathing exercises with ambient sounds to help you find calm and clarity.",
-            gradient: "from-teal-500 to-green-500",
-            demo: "5-min sessions"
-        },
-        {
-            icon: Lock,
-            title: "End-to-End Encryption",
-            description: "Your thoughts are private. Military-grade encryption ensures complete security.",
-            gradient: "from-gray-600 to-slate-600",
-            demo: "AES-256 encryption"
-        }
-    ];
-
-    const testimonials = [
-        {
-            name: "Shihab",
-            role: "Daily User",
-            content: "It's fun journaling & chatting with Echo. Very well done!",
-            avatar: "/assets/shihab.png",
-            rating: 5
-        },
-        {
-            name: "Arafath",
-            role: "Student",
-            content: "The AI insights are so helpful and spot on.",
-            avatar: "/assets/arafath.png",
-            rating: 5
-        },
-        {
-            name: "Evak Chan",
-            role: "from ProductHunt",
-            content: "The feature of tracking mood is fantastic. Through long-term use, users can clearly see the trajectory of their emotional development and make adjustments or improvements based on the data. Congrats on the launch!",
-            avatar: "https://ph-avatars.imgix.net/7875988/8f14992b-b3b1-4b30-83ca-f683b37d0e8d.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
-            rating: 5
-        },
-        {
-            name: "Md Mobashir Hasan",
-            role: "from ProductHunt",
-            content: "Love what you have built, Uthsob! Echo feels warm, thoughtful, and real. The mood-based journaling and focus on privacy are amazing. Maybe voice notes could be a cool add-on for days when typing feels hard. Keep going — Echo is something special! ☁️✨",
-            avatar: "https://ph-avatars.imgix.net/5085015/cfa4d47f-0001-4181-a126-440f48e1368c.jpeg?auto=compress&codec=mozjpeg&cs=strip&auto=format&w=120&h=120&fit=crop&frame=1&dpr=1",
-            rating: 5
-        },
-    ];
-
-    const faqs = [
-        {
-            question: "How does Echo's AI mood analysis work?",
-            answer: "Echo uses advanced natural language processing to analyze the emotional tone, sentiment, and psychological patterns in your writing. It provides real-time insights while maintaining complete privacy through end-to-end encryption."
-        },
-        {
-            question: "Can I scan handwritten journal pages?",
-            answer: "Yes! Echo includes advanced OCR (Optical Character Recognition) technology. Simply use your device's camera to scan handwritten notes, and they'll be converted to searchable digital text automatically."
-        },
-        {
-            question: "How does the smart todo extraction work?",
-            answer: "Echo's AI reads your journal entries and automatically identifies actionable tasks, goals, and commitments. These are organized into categories like 'personal', 'work', or 'mental health' and tracked separately from your journal."
-        },
-        {
-            question: "Is my data really private and secure?",
-            answer: "Absolutely. Echo uses military-grade end-to-end encryption. Your journal content is encrypted before it leaves your device, and even we can't read it. You have full control over your data with export capabilities."
-        },
-        {
-            question: "What makes Echo's AI chat different from other chatbots?",
-            answer: "Echo remembers your conversation history and learns from your journaling patterns to provide personalized, contextual support. It's designed specifically for emotional wellness and mental health conversations."
-        },
-        {
-            question: "Can I use Echo offline?",
-            answer: "Yes! Echo is a Progressive Web App (PWA) that works offline. You can write entries without an internet connection, and they'll sync when you're back online."
-        },
-        {
-            question: "How do the guided meditations work?",
-            answer: "Echo includes built-in breathing exercises with visual guides, ambient sounds, and customizable durations. It's designed to help you center yourself before journaling or whenever you need a moment of calm."
-        },
-        {
-            question: "Can I export my data?",
-            answer: "Yes! You own your data completely. You can export all your entries, mood data, and insights in standard formats anytime. No vendor lock-in, ever."
-        }
-    ];
-
-
-
-    const useCases = [
-        {
-            icon: Users,
-            title: "Students",
-            description: "Track academic progress, manage stress, and extract study tasks automatically from your notes.",
-            benefits: ["Stress management", "Task tracking", "Study insights"]
-        },
-        {
-            icon: Brain,
-            title: "Professionals",
-            description: "Reflect on work challenges, track career growth, and maintain work-life balance.",
-            benefits: ["Career reflection", "Goal tracking", "Productivity boost"]
-        },
-        {
-            icon: Heart,
-            title: "Mental Wellness",
-            description: "Monitor emotional health, identify triggers, and build healthier thought patterns.",
-            benefits: ["Mood tracking", "Pattern recognition", "Emotional growth"]
-        }
-    ];
-
     return (
-        <div className="min-h-screen bg-gradient-to-br from-blue-50 via-indigo-50 to-purple-50 text-gray-900 overflow-hidden">
-
-            {/* Scroll Progress Bar */}
-            <motion.div
-                className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 origin-left z-50"
-                style={{ scaleX: scrollYProgress }}
-            />
-
-            {/* Animated Background */}
-            <div className="fixed inset-0 overflow-hidden pointer-events-none">
-                <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl animate-pulse" />
-                <div className="absolute bottom-0 left-0 w-96 h-96 bg-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
-                <div className="absolute top-1/2 left-1/2 w-96 h-96 bg-purple-400/20 rounded-full blur-3xl animate-pulse delay-500" />
-            </div>
-
-            {/* Sticky CTA */}
-            <AnimatePresence>
-                {showStickyCTA && (
-                    <motion.div
-                        initial={{ y: 100, opacity: 0 }}
-                        animate={{ y: 0, opacity: 1 }}
-                        exit={{ y: 100, opacity: 0 }}
-                        className="fixed bottom-8 right-8 z-40"
-                    >
-                        <Link
-                            href="/register"
-                            className="flex items-center gap-2 px-6 py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white shadow-2xl hover:shadow-indigo-500/50 transition-all duration-300 hover:scale-105 font-semibold"
-                        >
-                            Get Started Free
-                            <ArrowRight className="w-5 h-5" />
-                        </Link>
-                    </motion.div>
-                )}
-            </AnimatePresence>
-
-            {/* Hero Section */}
-            <section className="relative z-10 container mx-auto px-6 py-20 md:py-32">
-                <div className="max-w-6xl mx-auto">
-                    <div className="grid md:grid-cols-2 gap-12 items-center">
-                        {/* Left: Text Content */}
-                        <div>
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.2 }}
-                            >
-                                <span className="inline-block px-4 py-2 rounded-full bg-indigo-100 border-indigo-200 text-indigo-700 border text-sm mb-6">
-                                    ✨ AI-Powered Journaling Platform
-                                </span>
-                            </motion.div>
-
-                            <motion.h1
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.3 }}
-                                className="text-5xl md:text-6xl font-bold mb-6 leading-tight"
-                            >
-                                Write, Reflect, and
-                                <span className="block bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                                    Grow with Echo
-                                </span>
-                            </motion.h1>
-
-                            <motion.p
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.4 }}
-                                className="text-xl text-gray-700 mb-10"
-                            >
-                                Your personal AI companion for journaling. Track your mood, extract tasks automatically, chat with Echo, and discover insights about your emotional journey.
-                            </motion.p>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.5 }}
-                                className="flex flex-col sm:flex-row gap-4"
-                            >
-                                <Link
-                                    href="/register"
-                                    className="px-8 py-4 rounded-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white transition-all duration-300 shadow-xl shadow-indigo-300 hover:shadow-indigo-400 text-lg font-semibold hover:scale-105 transform text-center"
-                                >
-                                    Start Journaling Free
-                                </Link>
-                                <Link
-                                    href="#demo"
-                                    className="px-8 py-4 rounded-full border-2 border-indigo-600 text-indigo-600 hover:bg-indigo-50 transition-all duration-300 text-lg font-semibold hover:scale-105 transform text-center"
-                                >
-                                    Watch Demo
-                                </Link>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0 }}
-                                animate={{ opacity: 1 }}
-                                transition={{ delay: 0.6 }}
-                                className="mt-8 text-sm text-gray-600"
-                            >
-                                <p>✓ No credit card required  ✓ Free forever  ✓ End-to-end encrypted</p>
-                            </motion.div>
-
-                            <motion.div
-                                initial={{ opacity: 0, y: 10 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                transition={{ delay: 0.7 }}
-                                className="mt-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-green-100 to-emerald-100 border border-green-200"
-                            >
-                                <span className="flex h-2 w-2">
-                                    <span className="animate-pulse relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
-                                </span>
-                                <span className="text-sm font-medium text-green-700">
-                                    Android App Coming Soon!
-                                </span>
-                            </motion.div>
+        <div className="overflow-hidden bg-white text-slate-950">
+            <section className="border-b border-slate-200 bg-slate-50">
+                <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
+                    <div>
+                        <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-indigo-200 bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700">
+                            <Sparkles className="size-4" /> A journal that remembers with you
                         </div>
-
-                        {/* Right: Animated Mockup */}
-                        <motion.div
-                            initial={{ opacity: 0, scale: 0.8, x: 20 }}
-                            animate={{ opacity: 1, scale: 1, x: 0 }}
-                            transition={{ delay: 0.4, duration: 0.8 }}
-                            className="relative z-10"
-                        >
-
-
-                            <motion.div
-                                animate={{ y: [0, -15, 0] }}
-                                transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-                                className="relative rounded-3xl overflow-hidden backdrop-blur-sm"
-                            >
-                                <Image
-                                    src="/assets/image.png"
-                                    alt="Echo App Interface"
-                                    width={800}
-                                    height={800}
-                                    className="w-full h-auto object-cover rounded-2xl"
-                                    priority
-                                />
-
-                                {/* Glass Reflection Effect */}
-                                <div className="absolute inset-0 bg-gradient-to-tr from-white/20 to-transparent pointer-events-none rounded-2xl" />
-                            </motion.div>
-
-                            {/* Floating Element: Mood Analysis */}
-                            <motion.div
-                                initial={{ opacity: 0, x: 20 }}
-                                animate={{ opacity: 1, x: 0, y: [0, -10, 0] }}
-                                transition={{ delay: 0.8, duration: 4, repeat: Infinity, repeatDelay: 1 }}
-                                className="absolute -right-8 top-12 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-green-100 rounded-full">
-                                        <Sparkles className="w-5 h-5 text-green-600" />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs text-gray-500 font-medium">Current Mood</div>
-                                        <div className="text-sm font-bold text-gray-800">Productive & Calm</div>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* Floating Element: Heart/Likes */}
-                            <motion.div
-                                animate={{ y: [0, -10, 0] }}
-                                transition={{ duration: 3, repeat: Infinity, delay: 1 }}
-                                className="absolute -right-4 bottom-40 bg-gradient-to-br from-pink-500 to-rose-500 rounded-2xl p-3 shadow-xl"
-                            >
-                                <Heart className="w-6 h-6 text-white" />
-                            </motion.div>
-
-                            {/* Floating Element: Task Completion */}
-                            <motion.div
-                                animate={{ y: [0, 10, 0] }}
-                                transition={{ duration: 4, repeat: Infinity, delay: 0.5 }}
-                                className="absolute -left-8 bottom-20 bg-white/90 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-white/50"
-                            >
-                                <div className="flex items-center gap-3">
-                                    <div className="p-2 bg-blue-100 rounded-full">
-                                        <ListTodo className="w-5 h-5 text-blue-600" />
-                                    </div>
-                                    <div>
-                                        <div className="text-xs text-gray-500 font-medium">Daily Tasks</div>
-                                        <div className="text-sm font-bold text-gray-800">4/5 Completed</div>
-                                    </div>
-                                </div>
-                            </motion.div>
-
-                            {/* Floating Element: Streak */}
-                            <motion.div
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1, rotate: [0, 5, 0] }}
-                                transition={{ delay: 1, duration: 5, repeat: Infinity }}
-                                className="absolute -left-4 top-24 bg-gradient-to-br from-orange-400 to-amber-500 text-white p-3 rounded-2xl shadow-lg"
-                            ></motion.div>
-
-                        </motion.div>
+                        <h1 className="max-w-3xl text-balance text-4xl font-bold leading-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                            Understand your patterns without being defined by them.
+                        </h1>
+                        <p className="mt-6 max-w-2xl text-pretty text-lg leading-8 text-slate-600">
+                            Echo is a private AI-assisted journal that helps you reflect in the way you need, connect memories over time, and discover small changes that genuinely work for you.
+                        </p>
+                        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+                            <Button asChild size="lg" className="bg-none bg-indigo-600 shadow-sm hover:bg-indigo-700 hover:shadow-sm">
+                                <Link href="/register">Start your private journal <ArrowRight className="ml-2 size-4" /></Link>
+                            </Button>
+                            <Button asChild size="lg" variant="outline">
+                                <Link href="/login">I already have an account</Link>
+                            </Button>
+                        </div>
+                        <ul className="mt-8 hidden gap-3 text-sm text-slate-600 sm:grid sm:grid-cols-2">
+                            <li className="flex items-center gap-2"><Check className="size-4 text-indigo-600" /> No permanent personality labels</li>
+                            <li className="flex items-center gap-2"><Check className="size-4 text-indigo-600" /> Entry-level AI permission</li>
+                            <li className="flex items-center gap-2"><Check className="size-4 text-indigo-600" /> Evidence-linked reports</li>
+                            <li className="flex items-center gap-2"><Check className="size-4 text-indigo-600" /> Self-hosting available</li>
+                        </ul>
                     </div>
-
-                    {/* Scroll Indicator */}
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1 }}
-                        className="flex justify-center mt-16"
-                    >
-                        <motion.div
-                            animate={{ y: [0, 10, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity }}
-                            className="text-gray-600"
-                        >
-                            <ChevronDown className="w-8 h-8" />
-                        </motion.div>
-                    </motion.div>
+                    <ProductPreview />
                 </div>
-            </section >
+            </section>
 
-            {/* Features Section */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                        Everything You Need for
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Mindful Journaling
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-                        Powerful AI features to enhance your self-reflection journey
-                    </p>
-                </motion.div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {features.map((feature, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="group relative p-8 rounded-2xl bg-white/80 border-gray-200 hover:border-indigo-300 backdrop-blur-sm border transition-all duration-300 hover:shadow-xl hover:shadow-indigo-100 hover:-translate-y-1"
-                        >
-                            <div className={`w-14 h-14 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                                <feature.icon className="w-7 h-7 text-white" />
-                            </div>
-                            <h3 className="text-xl font-bold mb-3">{feature.title}</h3>
-                            <p className="text-gray-600 leading-relaxed mb-4">{feature.description}</p>
-                            <div className="text-sm font-semibold text-indigo-600">
-                                {feature.demo}
-                            </div>
-                        </motion.div>
+            <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8" aria-labelledby="support-heading">
+                <div className="mx-auto grid max-w-4xl items-center gap-6 sm:grid-cols-[auto_1fr]">
+                    <Image src="/assets/loved-echo.png" alt="Echo smiling" width={112} height={112} className="mx-auto size-24 object-contain sm:size-28" />
+                    <div className="text-center sm:text-left">
+                        <p className="text-sm font-semibold text-indigo-700">You choose the relationship</p>
+                        <h2 id="support-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Sometimes you want perspective. Sometimes you only want to be heard.</h2>
+                        <p className="mt-4 text-pretty text-slate-600">Every entry begins with a clear support mode, so Echo does not assume that advice is always welcome.</p>
+                    </div>
+                </div>
+                <div className="mx-auto mt-10 flex max-w-4xl flex-wrap justify-center gap-3">
+                    {supportModes.map((mode, index) => (
+                        <span key={mode} className={index === 0 ? "rounded-lg border border-indigo-600 bg-indigo-50 px-4 py-3 text-sm font-semibold text-indigo-800" : "rounded-lg border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700"}>{mode}</span>
                     ))}
                 </div>
-            </section >
-
-            {/* Comparison Table */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center">
-                        Why Choose
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Echo?
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg text-center mb-12">
-                        See how Echo compares to traditional journaling
-                    </p>
-
-                    <div className="bg-white/80 backdrop-blur-sm rounded-3xl overflow-hidden border border-gray-200">
-                        <table className="w-full">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="p-6 text-left">Feature</th>
-                                    <th className="p-6 text-center">Traditional Journaling</th>
-                                    <th className="p-6 text-center bg-gradient-to-r from-blue-600 to-indigo-600 text-white">Echo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {[
-                                    { feature: "Mood Tracking", traditional: false, echo: true },
-                                    { feature: "AI Insights", traditional: false, echo: true },
-                                    { feature: "Task Extraction", traditional: false, echo: true },
-                                    { feature: "OCR Scanning", traditional: false, echo: true },
-                                    { feature: "Search & Filter", traditional: false, echo: true },
-                                    { feature: "Cloud Sync", traditional: false, echo: true },
-                                    { feature: "Privacy & Encryption", traditional: true, echo: true },
-                                    { feature: "AI Companion Chat", traditional: false, echo: true },
-                                ].map((row, index) => (
-                                    <motion.tr
-                                        key={index}
-                                        initial={{ opacity: 0, x: -20 }}
-                                        whileInView={{ opacity: 1, x: 0 }}
-                                        viewport={{ once: true }}
-                                        transition={{ delay: index * 0.1 }}
-                                        className="border-t border-gray-200"
-                                    >
-                                        <td className="p-6 font-medium">{row.feature}</td>
-                                        <td className="p-6 text-center">
-                                            {row.traditional ? (
-                                                <Check className="w-6 h-6 text-green-500 mx-auto" />
-                                            ) : (
-                                                <X className="w-6 h-6 text-gray-400 mx-auto" />
-                                            )}
-                                        </td>
-                                        <td className="p-6 text-center bg-gradient-to-r from-blue-50 to-indigo-50">
-                                            {row.echo ? (
-                                                <Check className="w-6 h-6 text-green-500 mx-auto" />
-                                            ) : (
-                                                <X className="w-6 h-6 text-gray-400 mx-auto" />
-                                            )}
-                                        </td>
-                                    </motion.tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
-                </motion.div>
-            </section >
-
-            {/* Use Cases */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                        Perfect For
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Everyone
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-                        Whether you're a student, professional, or focused on mental wellness
-                    </p>
-                </motion.div>
-
-                <div className="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto">
-                    {useCases.map((useCase, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.2 }}
-                            className="p-8 rounded-2xl bg-white/80 border-gray-200 border backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                        >
-                            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center mb-6">
-                                <useCase.icon className="w-8 h-8 text-white" />
-                            </div>
-                            <h3 className="text-2xl font-bold mb-4">{useCase.title}</h3>
-                            <p className="text-gray-600 mb-6">{useCase.description}</p>
-                            <ul className="space-y-2">
-                                {useCase.benefits.map((benefit, i) => (
-                                    <li key={i} className="flex items-center gap-2">
-                                        <Check className="w-5 h-5 text-green-500" />
-                                        <span className="text-gray-700">{benefit}</span>
-                                    </li>
-                                ))}
-                            </ul>
-                        </motion.div>
-                    ))}
+                <div className="mx-auto mt-8 max-w-3xl rounded-xl border border-indigo-100 bg-indigo-50 p-5">
+                    <div className="flex gap-3"><HeartHandshake className="mt-0.5 size-5 shrink-0 text-indigo-700" /><p className="text-pretty text-sm text-indigo-950"><strong>Just listen means just listen.</strong> The entry is saved without AI analysis and cannot be used in your reflection profile, constellation, or reports.</p></div>
                 </div>
-            </section >
+            </section>
 
-            {/* Stats Section with Animated Counters */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-5xl mx-auto"
-                >
-                    <div className="grid md:grid-cols-3 gap-8 text-center">
-                        {[
-                            { number: "10K+", label: "Active Users" },
-                            { number: "500K+", label: "Journal Entries" },
-                            { number: "95%", label: "User Satisfaction" }
-                        ].map((stat, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                whileInView={{ opacity: 1, scale: 1 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="p-8 rounded-2xl bg-gradient-to-br from-blue-50 to-indigo-50 border-indigo-200 border"
-                            >
-                                <motion.div
-                                    initial={{ scale: 0 }}
-                                    whileInView={{ scale: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ delay: index * 0.1 + 0.3, type: "spring" }}
-                                    className="text-5xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent mb-2"
-                                >
-                                    {stat.number}
-                                </motion.div>
-                                <div className="text-gray-700 text-lg">{stat.label}</div>
-                            </motion.div>
+            <section className="border-y border-slate-200 bg-slate-50" aria-labelledby="product-heading">
+                <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+                    <div className="mx-auto max-w-3xl text-center">
+                        <p className="text-sm font-semibold text-indigo-700">The real Echo experience</p>
+                        <h2 id="product-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">The journal, mood history, and conversation tools are still here.</h2>
+                        <p className="mt-4 text-pretty text-slate-600">The new growth system connects the product people already use instead of replacing it with another abstract AI dashboard.</p>
+                    </div>
+                    <div className="mt-12 grid gap-6 lg:grid-cols-3">
+                        {productFeatures.map(feature => (
+                            <article key={feature.title} className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
+                                <div className="aspect-[4/3] overflow-hidden border-b border-slate-200 bg-slate-100">
+                                    <Image src={feature.image} alt={feature.imageAlt} width={900} height={675} sizes="(min-width: 1024px) 33vw, 100vw" className="size-full object-cover object-top" />
+                                </div>
+                                <div className="p-6">
+                                    <feature.icon className="size-6 text-indigo-600" />
+                                    <h3 className="mt-4 text-balance text-lg font-semibold text-slate-950">{feature.title}</h3>
+                                    <p className="mt-2 text-pretty text-sm leading-6 text-slate-600">{feature.description}</p>
+                                </div>
+                            </article>
                         ))}
                     </div>
-                </motion.div>
-            </section >
-
-            {/* Testimonials */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="text-center mb-16"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                        Loved by
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Thousands
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg max-w-2xl mx-auto">
-                        See what our users have to say about their Echo experience
-                    </p>
-                </motion.div>
-
-                <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-                    {testimonials.map((testimonial, index) => (
-                        <motion.div
-                            key={index}
-                            initial={{ opacity: 0, y: 20 }}
-                            whileInView={{ opacity: 1, y: 0 }}
-                            viewport={{ once: true }}
-                            transition={{ delay: index * 0.1 }}
-                            className="p-6 rounded-2xl bg-white/80 border-gray-200 border backdrop-blur-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1"
-                        >
-                            <div className="flex items-center gap-3 mb-4">
-                                <Image src={testimonial.avatar} alt={testimonial.name} width={40} height={40} className="rounded-full" />
-                                <div>
-                                    <div className="font-semibold">{testimonial.name}</div>
-                                    <div className="text-sm text-gray-600">{testimonial.role}</div>
-                                </div>
-                            </div>
-                            <div className="flex gap-1 mb-3">
-                                {[...Array(testimonial.rating)].map((_, i) => (
-                                    <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
-                                ))}
-                            </div>
-                            <p className="text-gray-700 text-sm leading-relaxed">
-                                "{testimonial.content}"
-                            </p>
-                        </motion.div>
-                    ))}
-                </div>
-            </section >
-
-            {/* Video Demo */}
-            < section id="demo" className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto text-center"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4">
-                        See Echo in
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Action
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg mb-12">
-                        Watch a quick walkthrough of Echo's powerful features
-                    </p>
-
-                    <div className="relative aspect-video rounded-3xl overflow-hidden bg-gray-200 border border-gray-300 flex items-center justify-center group cursor-pointer hover:shadow-2xl transition-all duration-300">
-                        <div className="absolute inset-0 bg-gradient-to-br from-blue-600/20 to-indigo-600/20" />
-                        <motion.div
-                            whileHover={{ scale: 1.1 }}
-                            className="relative z-10 w-20 h-20 rounded-full bg-white flex items-center justify-center shadow-xl group-hover:shadow-2xl transition-all duration-300"
-                        >
-                            <Play className="w-8 h-8 text-indigo-600 ml-1" />
-                        </motion.div>
-                        <Link href="https://app.supademo.com/demo/cm81zjbhu0hsbicgem08esrl5?utm_source=link" className="absolute inset-0" >
-                            <div className="absolute bottom-8 left-8 right-8 text-left">
-                                <div className="text-white text-2xl font-bold mb-2">Echo Product Demo</div>
-                                <div className="text-white/80">3 minutes • Full feature walkthrough</div>
-                            </div>
-                        </Link>
+                    <div className="mt-8 flex flex-wrap justify-center gap-3 text-sm text-slate-700">
+                        <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2"><ListTodo className="size-4 text-indigo-600" /> Todo extraction</span>
+                        <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2"><Camera className="size-4 text-indigo-600" /> Handwriting scan</span>
+                        <span className="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2"><HeartHandshake className="size-4 text-indigo-600" /> Guided reflection</span>
                     </div>
-                </motion.div>
-            </section >
+                </div>
+            </section>
 
-            {/* FAQ Section */}
-            < section className="relative z-10 container mx-auto px-6 py-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-3xl mx-auto"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-4 text-center">
-                        Frequently Asked
-                        <span className="block bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
-                            Questions
-                        </span>
-                    </h2>
-                    <p className="text-gray-700 text-lg text-center mb-12">
-                        Everything you need to know about Echo
-                    </p>
+            <section aria-labelledby="loop-heading">
+                <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+                    <div className="max-w-3xl">
+                        <p className="text-sm font-semibold text-indigo-700">The Echo growth loop</p>
+                        <h2 id="loop-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Reflection that leads somewhere useful.</h2>
+                        <p className="mt-4 text-pretty text-slate-600">No feed to maintain and no shame when you miss a day—just a gradual cycle of writing, understanding, trying, and learning.</p>
+                    </div>
+                    <ol className="mt-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+                        {growthSteps.map((step, index) => (
+                            <li key={step.title} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                                <div className="flex items-center justify-between"><step.icon className="size-6 text-indigo-600" /><span className="text-sm font-semibold tabular-nums text-slate-400">0{index + 1}</span></div>
+                                <h3 className="mt-6 text-lg font-semibold text-slate-950">{step.title}</h3>
+                                <p className="mt-2 text-pretty text-sm leading-6 text-slate-600">{step.description}</p>
+                            </li>
+                        ))}
+                    </ol>
 
-                    <div className="space-y-4">
-                        {faqs.map((faq, index) => (
-                            <motion.div
-                                key={index}
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                transition={{ delay: index * 0.1 }}
-                                className="bg-white/80 border-gray-200 border backdrop-blur-sm rounded-2xl overflow-hidden"
-                            >
-                                <button
-                                    onClick={() => setOpenFAQ(openFAQ === index ? null : index)}
-                                    className="w-full p-6 text-left flex items-center justify-between hover:bg-indigo-50 transition-colors"
-                                >
-                                    <span className="font-semibold text-lg pr-4">{faq.question}</span>
-                                    <motion.div
-                                        animate={{ rotate: openFAQ === index ? 180 : 0 }}
-                                        transition={{ duration: 0.3 }}
-                                    >
-                                        <ChevronDown className="w-6 h-6 flex-shrink-0" />
-                                    </motion.div>
-                                </button>
-                                <AnimatePresence>
-                                    {openFAQ === index && (
-                                        <motion.div
-                                            initial={{ height: 0, opacity: 0 }}
-                                            animate={{ height: "auto", opacity: 1 }}
-                                            exit={{ height: 0, opacity: 0 }}
-                                            transition={{ duration: 0.3 }}
-                                            className="overflow-hidden"
-                                        >
-                                            <div className="p-6 pt-0 text-gray-700 leading-relaxed">
-                                                {faq.answer}
-                                            </div>
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-                            </motion.div>
+                    <div className="mt-16 grid gap-4 md:grid-cols-3">
+                        {useCases.map(useCase => (
+                            <div key={useCase.title} className="rounded-xl border border-slate-200 bg-slate-50 p-6">
+                                <useCase.icon className="size-6 text-indigo-600" />
+                                <h3 className="mt-4 font-semibold text-slate-950">{useCase.title}</h3>
+                                <p className="mt-2 text-pretty text-sm leading-6 text-slate-600">{useCase.text}</p>
+                            </div>
                         ))}
                     </div>
-                </motion.div>
-            </section >
+                </div>
+            </section>
 
+            <section className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-2 lg:px-8" aria-labelledby="constellation-heading">
+                <div className="order-2 lg:order-1">
+                    <div className="relative aspect-[4/3] overflow-hidden rounded-2xl border border-slate-700 bg-slate-950 shadow-lg" aria-label="Illustration of connected memory themes">
+                        <svg className="absolute inset-0 size-full" viewBox="0 0 100 75" preserveAspectRatio="none" aria-hidden="true">
+                            <line x1="50" y1="14" x2="20" y2="33" stroke="#818cf8" strokeWidth="0.55" />
+                            <line x1="50" y1="14" x2="79" y2="30" stroke="#475569" strokeWidth="0.45" />
+                            <line x1="20" y1="33" x2="39" y2="60" stroke="#818cf8" strokeWidth="0.65" />
+                            <line x1="79" y1="30" x2="65" y2="59" stroke="#475569" strokeWidth="0.45" />
+                            <line x1="39" y1="60" x2="65" y2="59" stroke="#818cf8" strokeWidth="0.55" />
+                        </svg>
+                        <span className="absolute left-1/2 top-[12%] -translate-x-1/2 rounded-full border border-indigo-300 bg-indigo-600 px-4 py-3 text-sm font-semibold text-white">Creative confidence</span>
+                        <span className="absolute left-[9%] top-[40%] rounded-full border border-slate-500 bg-slate-800 px-4 py-3 text-sm font-semibold text-white">Morning ritual</span>
+                        <span className="absolute right-[8%] top-[36%] rounded-full border border-slate-500 bg-slate-800 px-4 py-3 text-sm font-semibold text-white">Work pressure</span>
+                        <span className="absolute bottom-[12%] left-[25%] rounded-full border border-slate-500 bg-slate-800 px-4 py-3 text-sm font-semibold text-white">Walking</span>
+                        <span className="absolute bottom-[13%] right-[20%] rounded-full border border-slate-500 bg-slate-800 px-4 py-3 text-sm font-semibold text-white">Calm</span>
+                    </div>
+                </div>
+                <div className="order-1 lg:order-2">
+                    <p className="flex items-center gap-2 text-sm font-semibold text-indigo-700"><Compass className="size-4" /> Memory Constellation</p>
+                    <h2 id="constellation-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">See the themes shaping this chapter of your life.</h2>
+                    <p className="mt-5 text-pretty leading-7 text-slate-600">Your constellation connects recurring emotions, habits, goals, people, places, and themes. Select a node to understand why Echo connected it—and return to the supporting entries yourself.</p>
+                    <ul className="mt-6 space-y-3 text-sm text-slate-700">
+                        <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-indigo-600" /> Built only from entries you permit</li>
+                        <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-indigo-600" /> Connections are presented as tentative</li>
+                        <li className="flex gap-2"><Check className="mt-0.5 size-4 shrink-0 text-indigo-600" /> Your corrections shape future context</li>
+                    </ul>
+                </div>
+            </section>
 
+            <section className="border-y border-slate-200 bg-slate-50" aria-labelledby="reports-heading">
+                <div className="mx-auto grid max-w-7xl gap-12 px-6 py-20 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+                    <div>
+                        <p className="text-sm font-semibold text-indigo-700">AI reflection reports</p>
+                        <h2 id="reports-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Suggestions grounded in your own story.</h2>
+                        <p className="mt-5 text-pretty leading-7 text-slate-600">Reports separate observations from interpretation and show the entries behind key conclusions. Suggestions become optional, measurable experiments—not instructions.</p>
+                    </div>
+                    <div className="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5"><div><p className="text-xs font-semibold uppercase text-indigo-700">Monthly reflection</p><h3 className="mt-1 text-balance text-xl font-semibold">A month of protecting your energy</h3></div><FileText className="size-7 text-indigo-600" /></div>
+                        <div className="mt-6 grid gap-6 sm:grid-cols-2">
+                            <div><p className="font-semibold text-slate-900">What seemed helpful</p><p className="mt-2 text-pretty text-sm leading-6 text-slate-600">Short walks and quieter mornings appeared alongside calmer entries.</p><span className="mt-2 inline-block text-xs font-medium text-indigo-700 underline underline-offset-2">View 3 supporting entries</span></div>
+                            <div><p className="font-semibold text-slate-900">What to preserve</p><p className="mt-2 text-pretty text-sm leading-6 text-slate-600">You kept returning to creative work even during demanding weeks.</p><span className="mt-2 inline-block text-xs font-medium text-indigo-700 underline underline-offset-2">View 2 supporting entries</span></div>
+                        </div>
+                        <div className="mt-6 rounded-xl border border-indigo-100 bg-indigo-50 p-5"><p className="text-xs font-semibold uppercase text-indigo-700">Optional 7-day experiment</p><p className="mt-2 font-semibold text-slate-900">Protect ten quiet minutes before work</p><p className="mt-1 text-pretty text-sm text-slate-600">Try it on three mornings, then record whether it helped. Missing a day does not reset anything.</p></div>
+                    </div>
+                </div>
+            </section>
 
-            {/* Final CTA Section */}
-            < section className="relative z-10 container mx-auto px-6 py-20 mb-20" >
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="max-w-4xl mx-auto text-center p-12 rounded-3xl bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 text-white shadow-2xl"
-                >
-                    <h2 className="text-4xl md:text-5xl font-bold mb-6">
-                        Ready to Start Your Journey?
-                    </h2>
-                    <p className="text-xl mb-8 max-w-2xl mx-auto opacity-90">
-                        Join thousands of users who have transformed their mental wellness with Echo.
-                    </p>
-                    <Link
-                        href="/register"
-                        className="inline-block px-10 py-5 rounded-full bg-white text-indigo-600 hover:bg-gray-100 transition-all duration-300 shadow-xl text-xl font-semibold hover:scale-105 transform"
-                    >
-                        Get Started for Free
-                    </Link>
-                </motion.div>
-            </section >
+            <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8" aria-labelledby="voices-heading">
+                <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+                    <div>
+                        <p className="text-sm font-semibold text-indigo-700">Early voices</p>
+                        <h2 id="voices-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">What people said after trying Echo.</h2>
+                    </div>
+                    <div className="flex items-center gap-1 text-indigo-600" aria-label="Five-star feedback">
+                        {[0, 1, 2, 3, 4].map(star => <Star key={star} className="size-5 fill-current" />)}
+                    </div>
+                </div>
+                <div className="mt-10 grid gap-4 md:grid-cols-2">
+                    {testimonials.map(testimonial => (
+                        <figure key={testimonial.name} className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+                            <blockquote className="text-pretty leading-7 text-slate-700">“{testimonial.quote}”</blockquote>
+                            <figcaption className="mt-6 flex items-center gap-3">
+                                <Image src={testimonial.avatar} alt="" width={48} height={48} sizes="48px" className="size-12 rounded-full object-cover" unoptimized={testimonial.avatar.startsWith("http")} />
+                                <div><p className="font-semibold text-slate-950">{testimonial.name}</p><p className="text-sm text-slate-500">{testimonial.role}</p></div>
+                            </figcaption>
+                        </figure>
+                    ))}
+                </div>
+            </section>
 
-        </div >
+            <section className="border-y border-slate-200 bg-slate-50" aria-labelledby="privacy-heading">
+                <div className="mx-auto max-w-7xl px-6 py-20 lg:px-8">
+                <div className="mx-auto max-w-3xl text-center">
+                    <p className="text-sm font-semibold text-indigo-700">Privacy with honest boundaries</p>
+                    <h2 id="privacy-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Your journal should not require blind trust.</h2>
+                    <p className="mt-4 text-pretty text-slate-600">Echo gives you visible controls over AI participation and can run on your own infrastructure.</p>
+                </div>
+                <div className="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                    {privacyPoints.map(point => (
+                        <div key={point.title} className="rounded-xl border border-slate-200 p-6">
+                            <point.icon className="size-6 text-indigo-600" />
+                            <h3 className="mt-5 font-semibold text-slate-950">{point.title}</h3>
+                            <p className="mt-2 text-pretty text-sm leading-6 text-slate-600">{point.text}</p>
+                        </div>
+                    ))}
+                </div>
+                </div>
+            </section>
+
+            <section className="border-y border-slate-200 bg-slate-50" aria-labelledby="faq-heading">
+                <div className="mx-auto max-w-4xl px-6 py-20 lg:px-8">
+                    <h2 id="faq-heading" className="text-balance text-center text-3xl font-bold sm:text-4xl">Questions worth asking</h2>
+                    <div className="mt-10 divide-y divide-slate-200 border-y border-slate-200">
+                        {faqs.map(faq => (
+                            <details key={faq.question} className="group py-5">
+                                <summary className="cursor-pointer text-pretty font-semibold text-slate-950 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:ring-offset-4">{faq.question}</summary>
+                                <p className="mt-3 max-w-3xl text-pretty text-sm leading-6 text-slate-600">{faq.answer}</p>
+                            </details>
+                        ))}
+                    </div>
+                </div>
+            </section>
+
+            <section className="bg-slate-950">
+                <div className="mx-auto max-w-4xl px-6 py-20 text-center lg:px-8">
+                    <h2 className="text-balance text-3xl font-bold text-white sm:text-4xl">Build a relationship with your journal—not with an algorithm.</h2>
+                    <p className="mx-auto mt-4 max-w-2xl text-pretty text-slate-300">Start with one honest entry. Decide how Echo should respond. Everything else can grow at your pace.</p>
+                    <Button asChild size="lg" className="mt-8 bg-none bg-indigo-500 shadow-sm hover:bg-indigo-400 hover:shadow-sm">
+                        <Link href="/register">Begin journaling <ArrowRight className="ml-2 size-4" /></Link>
+                    </Button>
+                </div>
+            </section>
+        </div>
     );
 }

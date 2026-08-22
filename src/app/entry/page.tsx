@@ -4,29 +4,34 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { toast } from 'sonner';
-import { Flame } from 'lucide-react';
+import { ArrowRight, Check, Flame, HeartHandshake, LockKeyhole, Sparkles } from 'lucide-react';
 
 import JournalPrompt from '@/app/components/JournalPrompt';
 import ScanComponent from '@/app/components/ScanComponent';
 import UploadIcon from '@/app/components/UploadIcon';
 import { Button } from "@/components/ui/button";
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 
 const Entry = () => {
-    const [open, setOpen] = useState(false);
-    const [journalEntry, setJournalEntry] = useState('');
-    const [mood, setMood] = useState<string | null>(null);
+    const pathname = usePathname();
+    const isCapture = pathname.startsWith('/ui-capture/');
+    const isReflectionCapture = pathname === '/ui-capture/reflection';
+    const [open, setOpen] = useState(isReflectionCapture);
+    const [journalEntry, setJournalEntry] = useState(isCapture ? 'Today felt heavy, but writing this down helped me slow the moment down.' : '');
+    const [mood, setMood] = useState<string | null>(isReflectionCapture ? 'overwhelmed' : null);
     const [error, setError] = useState<string | null>(null);
-    const [score, setScore] = useState(0);
+    const [score, setScore] = useState(isReflectionCapture ? -2 : 0);
     const [loading, setLoading] = useState(false);
-    const [comment, setComment] = useState<string | null>(null);
+    const [comment, setComment] = useState<string | null>(isReflectionCapture ? 'It sounds like today asked a lot from you. What would feel like a kind, realistic way to give yourself a little space tonight?' : null);
     const [imageUrl, setImageUrl] = useState<string | null>(null);
     const [supportMode, setSupportMode] = useState('reflect');
     const [allowGrowthAnalysis, setAllowGrowthAnalysis] = useState(true);
+    const [riskSeverity, setRiskSeverity] = useState<'none' | 'low' | 'moderate' | 'high'>('none');
 
-    const [streakData, setStreakData] = useState<any>(null);
-    const [todoSuggestions, setTodoSuggestions] = useState<any[]>([]);
+    const [streakData, setStreakData] = useState<any>(isReflectionCapture ? { streak: 4, totalXp: 120, milestoneReached: false, milestoneMessage: null } : null);
+    const [todoSuggestions, setTodoSuggestions] = useState<any[]>(isReflectionCapture ? [{ todo: 'Give yourself ten quiet minutes before the next task.' }] : []);
 
     const handleScannedText = (text: string) => {
         setJournalEntry((prev) => prev + "\n" + text);
@@ -51,12 +56,13 @@ const Entry = () => {
                 allowGrowthAnalysis: supportMode === 'listen' ? false : allowGrowthAnalysis,
             });
 
-            const { mood, comment, score, streakData, todo } = response.data;
+            const { mood, comment, score, streakData, todo, risk } = response.data;
             setMood(mood);
             setComment(comment);
             setScore(score);
             setStreakData(streakData);
             setTodoSuggestions(todo || []);
+            setRiskSeverity(risk?.severity || 'none');
 
             toast.success(`Entry saved! +10 XP earned.`);
             if (streakData?.milestoneReached) {
@@ -170,96 +176,99 @@ const Entry = () => {
             </div>
 
             <Dialog open={open} onOpenChange={setOpen}>
-                <DialogContent className="sm:max-w-md text-center">
-                    <DialogHeader>
-                        <DialogTitle className="text-2xl font-bold text-center mb-4">
-                            {loading ? (supportMode === 'listen' ? 'Saving privately...' : 'Reflecting...') : (supportMode === 'listen' ? 'Entry saved' : 'Your reflection')}
-                        </DialogTitle>
+                <DialogContent className="max-h-[90dvh] overflow-y-auto p-0 sm:max-w-lg">
+                    <DialogHeader className="border-b border-gray-100 px-6 py-5 text-left">
+                        <div className="flex items-center gap-3">
+                            <div className="flex size-10 items-center justify-center rounded-xl bg-indigo-50 text-indigo-700">
+                                {supportMode === 'listen' ? <LockKeyhole className="size-5" /> : <Sparkles className="size-5" />}
+                            </div>
+                            <div>
+                                <DialogTitle className="text-balance text-xl font-semibold text-gray-950">
+                                    {loading ? (supportMode === 'listen' ? 'Saving privately' : 'Making space for this') : (supportMode === 'listen' ? 'Saved without analysis' : 'A moment of reflection')}
+                                </DialogTitle>
+                                <DialogDescription className="mt-1 text-pretty">
+                                    {supportMode === 'listen' ? 'Echo is keeping this entry out of AI analysis and future patterns.' : 'This is a tentative reflection, not a definition of how you feel.'}
+                                </DialogDescription>
+                            </div>
+                        </div>
                     </DialogHeader>
 
-                    <div className="flex flex-col items-center justify-center p-4">
-                        {loading ? (
-                            <div className="space-y-4">
-                                <Image
-                                    src="/assets/loading.png"
-                                    alt="Loading"
-                                    width={120}
-                                    height={120}
-                                    className="animate-bounce object-contain"
-                                />
-                                <p className="text-gray-500 animate-pulse">{supportMode === 'listen' ? 'Keeping this one private...' : 'Considering your chosen support mode...'}</p>
+                    {loading ? (
+                        <div className="space-y-5 px-6 py-8" aria-busy="true">
+                            <div className="flex items-center gap-4">
+                                <div className="size-16 rounded-2xl bg-gray-100" />
+                                <div className="flex-1 space-y-2"><div className="h-4 w-2/3 rounded bg-gray-100" /><div className="h-3 w-1/2 rounded bg-gray-100" /></div>
                             </div>
-                        ) : (
-                            <div className="space-y-6 w-full">
-                                <div className="flex justify-center relative">
+                            <div className="h-28 rounded-xl bg-gray-100" />
+                            <p className="text-center text-sm text-gray-500">{supportMode === 'listen' ? 'Saving your entry…' : 'Responding in the way you chose…'}</p>
+                        </div>
+                    ) : (
+                        <div className="space-y-5 px-6 py-6">
+                            <div className="flex items-center gap-4">
+                                <div className="flex size-20 shrink-0 items-center justify-center rounded-2xl bg-indigo-50">
                                     <Image
                                         src={numericScore < 0 ? "/assets/echo-sad.png" : "/assets/loved-echo.png"}
-                                        alt="Mood Avatar"
-                                        width={120}
-                                        height={120}
-                                        className="object-contain drop-shadow-lg"
+                                        alt="Echo character"
+                                        width={72}
+                                        height={72}
+                                        className="size-[72px] object-contain"
                                     />
-                                    {streakData && (
-                                        <div className="absolute -top-4 -right-2 bg-orange-500 text-white rounded-full p-2 shadow-lg animate-bounce duration-1000">
-                                            <Flame className="w-6 h-6 fill-current" />
-                                        </div>
-                                    )}
                                 </div>
-
-                                {streakData && (
-                                    <div className="bg-gradient-to-r from-orange-400 to-orange-600 rounded-2xl p-4 text-white shadow-md">
-                                        <p className="text-xs font-black uppercase tracking-widest opacity-80">Current Streak</p>
-                                        <h4 className="text-3xl font-black flex items-center gap-2">{streakData.streak} Days <Flame className="w-7 h-7 fill-current" /></h4>
-                                        {streakData.milestoneMessage && (
-                                            <p className="text-sm font-bold mt-1 bg-white/20 px-2 py-0.5 rounded-lg inline-block italic">
-                                                {streakData.milestoneMessage}
-                                            </p>
-                                        )}
-                                    </div>
-                                )}
-
-                                <div className="space-y-2">
-                                    {mood && (
-                                        <h3 className="text-xl font-medium text-gray-800">
-                                            Echo thinks you're feeling <span className="text-indigo-600 font-bold">{mood}</span>
-                                        </h3>
+                                <div className="min-w-0">
+                                    <p className="text-xs font-semibold uppercase text-indigo-700">{supportMode.replace('-', ' ')} mode</p>
+                                    {supportMode === 'listen' ? (
+                                        <p className="mt-1 text-balance text-lg font-semibold text-gray-950">Your words are saved. No interpretation added.</p>
+                                    ) : mood && (
+                                        <p className="mt-1 text-balance text-lg font-semibold text-gray-950">Echo noticed a <span className="text-indigo-700">{mood.toLowerCase()}</span> tone.</p>
                                     )}
-                                    <p className="text-gray-600 text-sm leading-relaxed p-4 bg-gray-50 rounded-xl">
-                                        "{comment || 'Echo is analyzing...'}"
-                                    </p>
-                                </div>
-
-                                {todoSuggestions.length > 0 && (
-                                    <div className="bg-blue-50/50 p-4 rounded-xl border border-blue-100 text-left">
-                                        <p className="text-xs font-bold text-blue-600 uppercase mb-2">Echo's Recommendations</p>
-                                        <ul className="space-y-2">
-                                            {todoSuggestions.slice(0, 2).map((t, i) => (
-                                                <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
-                                                    <div className="w-4 h-4 rounded-full bg-blue-500 mt-1 shrink-0" />
-                                                    {t.task}
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                )}
-
-                                <div className="flex gap-4">
-                                    <Link
-                                        href="/insights"
-                                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-xl transition-all shadow-md hover:shadow-lg"
-                                    >
-                                        View Insights
-                                    </Link>
-                                    <Link
-                                        href="/"
-                                        className="flex-1 bg-white hover:bg-gray-50 text-gray-700 font-bold py-3 rounded-xl border border-gray-200 transition-all"
-                                    >
-                                        Done
-                                    </Link>
                                 </div>
                             </div>
-                        )}
-                    </div>
+
+                            <div className="rounded-xl border border-indigo-100 bg-indigo-50 p-5">
+                                <div className="flex gap-3">
+                                    <HeartHandshake className="mt-0.5 size-5 shrink-0 text-indigo-700" />
+                                    <p className="text-pretty text-sm leading-6 text-gray-700">{comment || 'Your entry has been saved.'}</p>
+                                </div>
+                            </div>
+
+                            {(riskSeverity === 'moderate' || riskSeverity === 'high') && (
+                                <div className="rounded-xl border border-amber-200 bg-amber-50 p-4 text-left">
+                                    <p className="text-sm font-semibold text-amber-950">You deserve human support, too.</p>
+                                    <p className="mt-1 text-pretty text-sm leading-6 text-amber-900">Consider contacting someone you trust or a qualified local professional. If you may be in immediate danger, contact local emergency services now.</p>
+                                </div>
+                            )}
+
+                            {todoSuggestions.length > 0 && (
+                                <div className="rounded-xl border border-gray-200 p-4 text-left">
+                                    <p className="text-sm font-semibold text-gray-900">Small next steps Echo noticed</p>
+                                    <ul className="mt-3 space-y-3">
+                                        {todoSuggestions.slice(0, 2).map((todo, index) => (
+                                            <li key={index} className="flex items-start gap-2 text-pretty text-sm text-gray-600">
+                                                <Check className="mt-0.5 size-4 shrink-0 text-indigo-600" />
+                                                {todo.todo || todo.task}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            )}
+
+                            {streakData && (
+                                <div className="flex items-center justify-between rounded-xl border border-orange-200 bg-orange-50 px-4 py-3">
+                                    <div className="flex items-center gap-3"><Flame className="size-5 text-orange-600" /><div><p className="text-sm font-semibold text-gray-900">{streakData.streak} {streakData.streak === 1 ? 'day' : 'days'} of showing up</p><p className="text-xs text-gray-500">A missed day never erases the reflection.</p></div></div>
+                                    <span className="text-sm font-semibold tabular-nums text-orange-700">+10 XP</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {!loading && (
+                        <DialogFooter className="gap-2 border-t border-gray-100 px-6 py-5 sm:space-x-0">
+                            <Button variant="outline" onClick={() => setOpen(false)}>Back to journal</Button>
+                            <Button asChild className="bg-none bg-indigo-600 shadow-sm hover:bg-indigo-700 hover:shadow-sm">
+                                <Link href="/growth">Open growth workspace <ArrowRight className="ml-2 size-4" /></Link>
+                            </Button>
+                        </DialogFooter>
+                    )}
                 </DialogContent>
             </Dialog>
         </div>

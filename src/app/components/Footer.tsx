@@ -20,8 +20,8 @@ export default function Footer() {
                                 Echo
                             </span>
                         </Link>
-                        <p className="text-gray-500 text-sm max-w-xs leading-relaxed">
-                            Your intelligent journaling companion. Track moods, reflect on days, and grow with AI-powered insights.
+                        <p className="text-gray-500 text-sm max-w-xs leading-relaxed text-pretty">
+                            A private journal for understanding your patterns, connecting memories, and trying gentle changes at your own pace.
                         </p>
                     </div>
 
@@ -34,6 +34,9 @@ export default function Footer() {
                                 </li>
                                 <li>
                                     <Link href="/guide" className="hover:text-indigo-600 transition-colors">Guide</Link>
+                                </li>
+                                <li>
+                                    <Link href="/growth" className="hover:text-indigo-600 transition-colors">Growth</Link>
                                 </li>
                                 <li>
                                     <Link href="/space" className="hover:text-indigo-600 transition-colors">Space</Link>

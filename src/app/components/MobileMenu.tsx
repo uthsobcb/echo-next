@@ -44,6 +44,7 @@ export default function MobileMenu({ session, userData }: MobileMenuProps) {
                                         src={userData.image || "/assets/logo.png"}
                                         alt={userData.name || "User"}
                                         fill
+                                        sizes="48px"
                                         className="object-cover"
                                         unoptimized
                                     />

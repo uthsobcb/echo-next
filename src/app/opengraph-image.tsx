@@ -3,7 +3,7 @@ import { readFile } from "fs/promises";
 import { join } from "path";
 
 export const runtime = "nodejs";
-export const alt = "Echo — Journal Effortlessly";
+export const alt = "Echo — Understand Your Patterns, Gently";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -55,7 +55,7 @@ export default async function Image() {
                 marginBottom: 28,
               }}
             >
-              AI-Powered Journaling
+              Private AI-Assisted Journaling
             </div>
 
             <div
@@ -69,11 +69,11 @@ export default async function Image() {
                 letterSpacing: -1,
               }}
             >
-              Echo — Journal Effortlessly, Reflect &amp; Grow
+              Understand your patterns, gently
             </div>
 
             <div style={{ display: "flex", width: 480, fontSize: 21, color: "#6b7280", lineHeight: 1.5, marginTop: 22 }}>
-              Echo is your AI journaling companion: mood tracking, reflective prompts, and insights to build a lasting habit.
+              Support modes, connected memories, evidence-linked reports, and gentle personal experiments.
             </div>
 
             <div
@@ -134,7 +134,7 @@ export default async function Image() {
               </div>
               <div style={{ display: "flex", fontSize: 44, fontWeight: 700, color: "white" }}>Echo</div>
               <div style={{ display: "flex", fontSize: 20, color: "rgba(255,255,255,0.85)", marginTop: 8, textAlign: "center" }}>
-                Journal Effortlessly. Reflect. Grow.
+                Remember. Reflect. Grow.
               </div>
               <div
                 style={{
