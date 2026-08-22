@@ -22,6 +22,7 @@ import {
     ListTodo,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import ProductPreview from "./ProductPreview";
 
 const supportModes = ["Just listen", "Help me reflect", "Help me reframe", "Find a pattern", "Give me a small step", "I need support"];
 
@@ -117,32 +118,6 @@ const faqs = [
         answer: "Yes. The repository includes a Docker Compose deployment with Caddy, the Next.js application, an authenticated scheduler, and a private MongoDB instance. AI, email, and push providers can be configured separately.",
     },
 ];
-
-function ProductPreview() {
-    return (
-        <div className="lg:-translate-y-8" aria-label="Echo growth workspace preview">
-            <div className="mb-2 ml-auto w-fit max-w-sm rounded-xl border border-indigo-100 bg-white px-4 py-3 text-center shadow-sm">
-                <p className="text-xs font-semibold text-indigo-700 sm:text-sm">Now connected to support modes, Memory Constellation, and growth reports</p>
-            </div>
-            <div className="overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-indigo-950/10">
-                <div className="flex h-8 items-center gap-1.5 border-b border-slate-200 bg-slate-50 px-3" aria-hidden="true">
-                    <span className="size-2 rounded-full bg-rose-400" />
-                    <span className="size-2 rounded-full bg-amber-400" />
-                    <span className="size-2 rounded-full bg-emerald-400" />
-                </div>
-                <Image
-                    src="/assets/ui-growth.png"
-                    alt="Current Echo growth workspace with a reflection profile and Memory Constellation"
-                    width={1325}
-                    height={1000}
-                    sizes="(min-width: 1024px) 55vw, 100vw"
-                    className="h-auto w-full object-contain"
-                    priority
-                />
-            </div>
-        </div>
-    );
-}
 
 export default function LandingPage() {
     return (
