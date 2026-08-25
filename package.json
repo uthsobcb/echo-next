@@ -2,6 +2,7 @@
   "name": "echo-next",
   "version": "0.1.0",
   "private": true,
+  "license": "AGPL-3.0-only",
   "scripts": {
     "dev": "next dev --webpack",
     "build": "next build --webpack",
@@ -12,7 +13,6 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.0",
-    "@google/generative-ai": "^0.21.0",
     "@mui/material": "^6.3.1",
     "@mui/x-charts": "^7.24.1",
     "@radix-ui/react-dialog": "^1.1.15",

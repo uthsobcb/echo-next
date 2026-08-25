@@ -4,6 +4,7 @@ import { connect } from "../../lib/mongodb";
 import { auth } from "@/app/lib/auth";
 import { encrypt, decrypt } from "@/app/lib/encryption";
 import { openrouter as openai } from "@/app/lib/openrouter";
+import { checkAiQuota } from "@/app/lib/rateLimit";
 
 import type { IMessage } from "../../models/Chat";
 
@@ -39,6 +40,10 @@ export async function POST(req: NextRequest) {
         }
 
         await connect();
+
+        if (!(await checkAiQuota(user.id, "chat", 100))) {
+            return NextResponse.json({ error: "Daily AI limit reached. Please try again tomorrow." }, { status: 429 });
+        }
 
         // Fetch or create the current chat
         let chat = chatId

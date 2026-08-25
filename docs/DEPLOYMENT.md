@@ -19,7 +19,7 @@ This guide covers deploying Echo to various platforms and environments. Choose t
 
 ### Required Services
 - [ ] MongoDB database (Atlas recommended)
-- [ ] Google Gemini API key
+- [ ] An OpenRouter API key, or another OpenAI-compatible endpoint
 - [ ] Resend account for emails
 - [ ] Domain name (optional)
 - [ ] SSL certificate (handled by most platforms)
@@ -82,9 +82,11 @@ Vercel provides the easiest deployment experience for Next.js applications.
 
 3. **Configure Environment Variables**
    ```bash
-   vercel env add NEXTAUTH_SECRET
+   vercel env add JWT_SECRET
+   vercel env add ENCRYPTION_SECRET_KEY
+   vercel env add CRON_SECRET
    vercel env add MONGODB_URI
-   vercel env add GEMINI_API
+   vercel env add OPENROUTER_API_KEY
    # Add all other required variables
    ```
 
@@ -372,7 +374,7 @@ docker run -d \
 3. **Set Environment Variables**
    ```bash
    gcloud run services update echo-app \
-     --set-env-vars NEXTAUTH_SECRET=your-secret \
+     --set-env-vars JWT_SECRET=your-secret \
      --set-env-vars MONGODB_URI=your-mongodb-uri
    ```
 
@@ -460,7 +462,7 @@ AWS_REGION=us-east-1
 ### Environment Security
 ```bash
 # Generate secure secrets
-openssl rand -base64 32  # For NEXTAUTH_SECRET
+openssl rand -base64 32  # For JWT_SECRET, ENCRYPTION_SECRET_KEY, CRON_SECRET
 openssl rand -hex 16     # For JWT_SECRET
 ```
 

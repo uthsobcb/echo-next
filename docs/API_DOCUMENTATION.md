@@ -134,11 +134,11 @@ Create a new mood entry with AI analysis.
 ```
 
 **Features:**
-- AI mood analysis using Google Gemini
+- AI mood analysis via the configured OpenAI-compatible provider
 - Automatic mood scoring (1-10 scale)
 - Supportive AI comments
 - Todo suggestions based on mood
-- End-to-end encryption of content
+- Content encrypted at rest (AES-256-GCM, server-held key)
 
 #### GET `/mood-tracker`
 Get user's mood tracking data and badge progress.
@@ -689,14 +689,15 @@ Echo features a progressive badge system to encourage consistent journaling:
 ## Security Features
 
 ### Encryption
-- End-to-end encryption for journal content using AES-256
+- Journal content encrypted **at rest** with AES-256-GCM under a server-held key
+  (not end-to-end — see [SECURITY.md](../SECURITY.md))
 - Encrypted data stored in MongoDB
 - Automatic decryption on retrieval
 
 ### Authentication
 - JWT tokens with 30-day expiration
 - Secure password hashing with bcrypt
-- Session management via NextAuth.js
+- Session management via signed JWT cookies (`jose`)
 
 ### Authorization
 - Route-level authentication checks
@@ -731,9 +732,9 @@ Common HTTP status codes:
 ## Integration Services
 
 ### AI Services
-- **Google Gemini 2.0 Flash** - Primary AI for mood analysis and chat
-- **OpenAI GPT** - Fallback AI service
-- **OpenRouter** - Alternative AI routing
+- **Any OpenAI-compatible endpoint** - configured via `AI_BASE_URL` / `AI_MODEL`
+- **OpenRouter** - the hosted default when only `OPENROUTER_API_KEY` is set
+- **Local inference** (Ollama, llama.cpp, vLLM) - point `AI_BASE_URL` at it
 
 ### Email Services  
 - **Resend** - Email delivery for reports and notifications
@@ -746,9 +747,10 @@ Common HTTP status codes:
 
 ### Environment Variables Required
 ```env
-NEXTAUTH_SECRET=your_nextauth_secret
-GEMINI_API=your_gemini_api_key
-OPENAI_API_KEY=your_openai_key
+JWT_SECRET=your_jwt_secret
+ENCRYPTION_SECRET_KEY=your_encryption_key
+CRON_SECRET=your_cron_secret
+OPENROUTER_API_KEY=your_openrouter_key   # or AI_BASE_URL / AI_MODEL / AI_API_KEY
 RESEND_API_KEY=your_resend_key
 MONGODB_URI=your_mongodb_connection
 GOOGLE_CLIENT_ID=your_google_oauth_id
@@ -759,9 +761,9 @@ GOOGLE_CLIENT_SECRET=your_google_oauth_secret
 - **Framework:** Next.js 16 (App Router)
 - **Database:** MongoDB with Mongoose ODM
 - **Authentication:** Custom JWT with `jose`
-- **AI:** Google Generative AI (Gemini 2.0 Flash), OpenAI
+- **AI:** Any OpenAI-compatible provider (OpenRouter by default)
 - **Email:** Resend
-- **Encryption:** Node.js crypto module (AES-256-CBC)
+- **Encryption:** Node.js crypto module (AES-256-GCM, CBC read-only for legacy data)
 - **Deployment:** Vercel
 
 This API documentation provides a complete reference for integrating with the Echo platform's backend services.

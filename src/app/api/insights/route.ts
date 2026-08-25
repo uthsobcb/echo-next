@@ -5,6 +5,7 @@ import Mood from "@/app/models/Mood";
 import UserModel from "@/app/models/User";
 import { decrypt } from "@/app/lib/encryption";
 import { openrouter } from "@/app/lib/openrouter";
+import { checkAiQuota } from "@/app/lib/rateLimit";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -134,6 +135,10 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
         }
         const userId = session.user.id;
+
+        if (!(await checkAiQuota(userId, "insights", 40))) {
+            return NextResponse.json({ error: "Daily AI limit reached. Please try again tomorrow." }, { status: 429 });
+        }
 
         // Validate range param
         const rawRange = req.nextUrl.searchParams.get("range") ?? "week";

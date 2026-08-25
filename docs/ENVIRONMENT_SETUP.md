@@ -10,25 +10,29 @@ MONGODB_URI=mongodb://localhost:27017/echo
 # =============================================================================
 # AUTHENTICATION & SECURITY
 # =============================================================================
-NEXTAUTH_SECRET=your-super-secret-key-here-make-it-long-and-random
-NEXTAUTH_URL=http://localhost:3000
-# Production: https://your-domain.com
+# Signs session cookies. NEXTAUTH_SECRET is still read as a legacy fallback.
+JWT_SECRET=at-least-32-random-bytes
 
-# JWT Secret for custom API authentication
-JWT_SECRET=another-secret-key-for-jwt-tokens
+# Encrypts journal content at rest. BACK THIS UP — losing it loses the entries.
+ENCRYPTION_SECRET_KEY=at-least-32-random-bytes
+
+# Authorizes the internal /api/cron/* scheduler endpoints.
+CRON_SECRET=at-least-32-random-bytes
 
 # =============================================================================
 # AI SERVICES
 # =============================================================================
 
-# Google Gemini AI (Primary)
-GEMINI_API=your-google-gemini-api-key
-
-# OpenAI (Fallback)
-OPENAI_API_KEY=sk-your-openai-api-key
-
-# OpenRouter (Alternative AI routing)
+# Hosted default: OpenRouter.
 OPENROUTER_API_KEY=sk-or-your-openrouter-api-key
+
+# Or any other OpenAI-compatible endpoint, including local inference.
+# AI_BASE_URL=http://localhost:11434/v1
+# AI_MODEL=qwen3:8b
+# AI_API_KEY=local-no-key
+
+# Per-user daily cap on AI endpoints; 0 disables it (typical for local inference).
+# AI_DAILY_LIMIT=
 
 # =============================================================================
 # EMAIL SERVICE
@@ -77,10 +81,10 @@ NODE_ENV=development
 # 2. Create a new cluster
 # 3. Get connection string from "Connect" button
 
-# GEMINI_API:
-# 1. Go to https://makersuite.google.com/app/apikey
-# 2. Create new API key
-# 3. Copy the generated key
+# OPENROUTER_API_KEY:
+# 1. Sign up at https://openrouter.ai/
+# 2. Go to Keys
+# 3. Create new API key
 
 # RESEND_API_KEY:
 # 1. Sign up at https://resend.com/
@@ -96,11 +100,6 @@ NODE_ENV=development
 #    - http://localhost:3000/api/auth/callback/google (development)
 #    - https://your-domain.com/api/auth/callback/google (production)
 
-# OPENAI_API_KEY (Optional):
-# 1. Sign up at https://platform.openai.com/
-# 2. Go to API Keys section
-# 3. Create new secret key
-
 # =============================================================================
 # SECURITY NOTES
 # =============================================================================
@@ -115,7 +114,7 @@ NODE_ENV=development
 # 🚀 PRODUCTION CHECKLIST:
 # - Set NODE_ENV=production
 # - Use production database URL
-# - Update NEXTAUTH_URL to production domain
+# - Update NEXT_PUBLIC_BASEURL and BASEURL to the production domain
 # - Configure secure CORS settings
 # - Enable rate limiting
 # - Set up monitoring and logging

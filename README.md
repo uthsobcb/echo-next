@@ -3,20 +3,20 @@
 [![Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black)](https://echojournal.life)
 [![Next.js](https://img.shields.io/badge/Built%20with-Next.js%2015-blue)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)](https://www.mongodb.com/)
-[![AI Powered](https://img.shields.io/badge/AI-Google%20Gemini-orange)](https://ai.google.dev/)
+[![AI Powered](https://img.shields.io/badge/AI-OpenAI--compatible-orange)](https://openrouter.ai/)
 
 > **"Duolingo for your mind"** - Making mental wellness and self-reflection accessible, engaging, and habit-forming through intelligent journaling.
 
 ## 🌟 Overview
 
-Echo is an empathetic AI companion that transforms journaling into an intelligent, supportive experience. With advanced mood analysis, personalized insights, and end-to-end encryption, Echo helps users develop consistent self-reflection habits while maintaining complete privacy.
+Echo is an empathetic AI companion that transforms journaling into an intelligent, supportive experience. With advanced mood analysis, personalized insights, and entries encrypted at rest, Echo helps users develop consistent self-reflection habits. It is fully self-hostable, and can run against local inference so your entries never leave your machine.
 
 **Live Demo:** [https://echojournal.life](https://echojournal.life)
 
 ## ✨ Key Features
 
 ### 🧠 AI-Powered Analysis
-- **Smart Mood Detection**: Automatic mood analysis using Google Gemini AI
+- **Smart Mood Detection**: Automatic mood analysis via any OpenAI-compatible model
 - **Personalized Insights**: AI-generated comments and suggestions based on your entries
 - **Conversational AI**: Chat with Echo about your thoughts and feelings
 - **Mood Scoring**: 1-10 scale mood tracking with trend analysis
@@ -28,17 +28,24 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
 - **Badge System**: 5-tier achievement system to encourage consistency
 
 ### 🔒 Privacy & Security
-- **End-to-End Encryption**: AES-256 encryption for all journal entries
-- **Secure Authentication**: NextAuth.js with JWT tokens
-- **Data Privacy**: Your thoughts remain completely private
-- **GDPR Compliant**: Full control over your personal data
+- **Encryption at Rest**: Entries are stored AES-256-GCM encrypted with a server-held key
+- **Secure Authentication**: Custom JWT sessions (`jose`) with bcrypt password hashing
+- **Self-Hostable**: Run the whole stack yourself so your entries never leave your machine
+- **Data Control**: Export and delete your account and entries at any time
+
+> **On encryption, precisely:** entries are encrypted *at rest*, not end-to-end.
+> The key lives on the server (`ENCRYPTION_SECRET_KEY`), so this protects against a
+> leaked database dump or stolen backup — not against whoever operates the server.
+> The server necessarily decrypts entries to display them and to send them to the
+> configured AI provider. If that threat model matters to you, self-host.
+> See [SECURITY.md](SECURITY.md).
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - Node.js 18+ 
 - MongoDB database
-- Google Gemini API key
+- An OpenRouter API key, or any OpenAI-compatible endpoint (local inference works)
 - Resend account (for emails)
 
 ### Installation
@@ -64,14 +71,15 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
    # Database
    MONGODB_URI=your_mongodb_connection_string
    
-   # Authentication
-   NEXTAUTH_SECRET=your_nextauth_secret
-   NEXTAUTH_URL=http://localhost:3000
+   # Authentication & encryption (generate with: openssl rand -base64 32)
+   JWT_SECRET=your_jwt_secret
+   ENCRYPTION_SECRET_KEY=your_encryption_key   # back this up; losing it loses entries
+   CRON_SECRET=your_cron_secret
    
-   # AI Services
-   GEMINI_API=your_gemini_api_key
-   OPENAI_API_KEY=your_openai_key
+   # AI — OpenRouter by default, or any OpenAI-compatible endpoint
    OPENROUTER_API_KEY=your_openrouter_key
+   # AI_BASE_URL=http://localhost:11434/v1
+   # AI_MODEL=qwen3:8b
    
    # Email Service
    RESEND_API_KEY=your_resend_api_key
@@ -113,18 +121,18 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
 ### Backend
 - **API**: Next.js API Routes
 - **Database**: MongoDB with Mongoose ODM
-- **Authentication**: NextAuth.js v5
+- **Authentication**: Custom JWT sessions via `jose` + Google OAuth
 - **File Upload**: Built-in Next.js handling
 - **Email**: Resend
 
 ### AI & Services
-- **Primary AI**: Google Gemini 2.0 Flash
-- **Fallback AI**: OpenAI GPT, OpenRouter
+- **AI**: Any OpenAI-compatible endpoint, via OpenRouter by default
+- **Local inference**: Point `AI_BASE_URL` at Ollama or similar to keep entries on-device
 - **Analytics**: Vercel Analytics
 - **Deployment**: Vercel Platform
 
 ### Security
-- **Encryption**: Node.js crypto module (AES-256)
+- **Encryption at rest**: Node.js `crypto` (AES-256-GCM, server-held key)
 - **Password Hashing**: bcryptjs
 - **JWT**: jose library
 - **Environment**: Secure environment variables
@@ -134,7 +142,7 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
 ### Mood Analysis Pipeline
 1. User writes journal entry
 2. Content encrypted and stored
-3. AI analyzes mood using Gemini
+3. AI analyzes mood via the configured provider
 4. Mood score and supportive comment generated
 5. Optional todo suggestions created
 6. Badge progress updated
@@ -177,7 +185,7 @@ const decryptedContent = decrypt(entry.content);
 - JWT tokens with 30-day expiration
 - Secure password hashing with salt rounds
 - Google OAuth integration
-- Session management via NextAuth.js
+- Session management via signed JWT cookies (`jose`)
 
 ## 📱 API Usage Examples
 
@@ -244,7 +252,7 @@ const { message, chatId } = await response.json();
 
 3. **Configure domains** (optional)
    - Add custom domain in Vercel settings
-   - Update `NEXTAUTH_URL` and `NEXT_PUBLIC_BASEURL`
+   - Update `NEXT_PUBLIC_BASEURL` and `BASEURL`
 
 ### Manual Deployment
 
@@ -311,19 +319,22 @@ We welcome contributions! Please follow these guidelines:
 - [x] Weekly email reports
 - [x] Badge achievement system
 - [x] Advanced mood analytics
-- [x] End-to-end encryption
+- [x] Encryption at rest (AES-256-GCM)
 - [x] AI chat companion
 
 ## 📄 License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+Echo is licensed under the **GNU Affero General Public License v3.0** — see [LICENSE](LICENSE).
+
+In short: you are free to use, modify, and self-host Echo. If you run a modified
+version as a network service, you must make your modified source available to its
+users. See also [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 
 ## 🙏 Acknowledgments
 
-- **Google Gemini** for powerful AI capabilities
+- **OpenRouter** for model routing
 - **Vercel** for seamless deployment platform
 - **MongoDB** for reliable data storage
-- **NextAuth.js** for robust authentication
 - **Tailwind CSS** for beautiful styling
 - **Our users** for their feedback and support
 

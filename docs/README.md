@@ -65,14 +65,14 @@ Developer cheat sheet with:
 ## 🌟 Key Features Documented
 
 ### 🧠 AI Integration
-- Google Gemini mood analysis
+- Mood analysis via any OpenAI-compatible model
 - Conversational AI chat system
 - Automated insights and suggestions
 
 ### 🔒 Security & Privacy
-- End-to-end encryption implementation
-- NextAuth.js authentication flows
-- Data privacy and GDPR compliance
+- Encryption at rest (AES-256-GCM, server-held key — see ../SECURITY.md)
+- Custom JWT authentication flows (`jose`)
+- Data privacy, export, and deletion
 
 ### 📊 Analytics & Tracking
 - Mood tracking and visualization

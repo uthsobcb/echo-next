@@ -47,11 +47,14 @@ src/app/
 ## 🔑 Key Environment Variables
 
 ```env
-NEXTAUTH_SECRET=        # Auth secret
-MONGODB_URI=           # Database connection
-GEMINI_API=            # Google AI key
-RESEND_API_KEY=        # Email service
-GOOGLE_CLIENT_ID=      # OAuth (optional)
+MONGODB_URI=            # Database connection
+JWT_SECRET=             # Signs session cookies
+ENCRYPTION_SECRET_KEY=  # Encrypts entries at rest — back this up
+CRON_SECRET=            # Authorizes /api/cron/* endpoints
+OPENROUTER_API_KEY=     # AI (or AI_BASE_URL / AI_MODEL for local inference)
+AI_DAILY_LIMIT=         # Per-user daily AI cap; 0 disables (optional)
+RESEND_API_KEY=         # Email service
+GOOGLE_CLIENT_ID=       # OAuth (optional)
 ```
 
 ## 📊 Data Models
@@ -288,7 +291,7 @@ rm -rf .next
 rm -rf node_modules && npm install
 
 # Check environment variables
-console.log(process.env.GEMINI_API);
+console.log(process.env.OPENROUTER_API_KEY);
 ```
 
 ## 🧪 Testing Patterns

@@ -7,6 +7,7 @@ import UserModel from "@/app/models/User";
 import { encrypt } from "@/app/lib/encryption";
 import { recordRiskFlagAndMaybeNotify } from "@/app/lib/safety";
 import { openrouter } from "@/app/lib/openrouter";
+import { checkAiQuota } from "@/app/lib/rateLimit";
 
 const RISK_INDICATOR_TAGS = [
     "hopelessness",
@@ -48,6 +49,10 @@ export async function POST(req: Request) {
 
         if (!user) {
             return NextResponse.json({ error: "Unauthorized Request" }, { status: 401 });
+        }
+
+        if (!(await checkAiQuota(user.id, "mood", 60))) {
+            return NextResponse.json({ error: "Daily AI limit reached. Please try again tomorrow." }, { status: 429 });
         }
 
 

@@ -24,7 +24,7 @@ Welcome to Echo! We're excited that you're interested in contributing to making 
 - Node.js 18 or higher
 - Git
 - MongoDB (local or cloud)
-- Google Gemini API key
+- An OpenRouter API key, or any OpenAI-compatible endpoint (local inference works)
 
 ### Development Setup
 
@@ -447,7 +447,7 @@ Contributors are recognized in:
 - [Next.js Documentation](https://nextjs.org/docs)
 - [MongoDB Documentation](https://docs.mongodb.com/)
 - [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [NextAuth.js Documentation](https://next-auth.js.org/)
+- [jose (JWT) Documentation](https://github.com/panva/jose)
 
 ### Community
 - GitHub Discussions for questions and ideas
