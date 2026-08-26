@@ -49,6 +49,7 @@ src/app/
 ```env
 MONGODB_URI=            # Database connection
 JWT_SECRET=             # Signs session cookies
+LEGACY_JWT_SECRET=      # Previous JWT_SECRET, during rotation only
 ENCRYPTION_SECRET_KEY=  # Encrypts entries at rest — back this up
 CRON_SECRET=            # Authorizes /api/cron/* endpoints
 OPENROUTER_API_KEY=     # AI (or AI_BASE_URL / AI_MODEL for local inference)

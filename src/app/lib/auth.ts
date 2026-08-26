@@ -1,13 +1,11 @@
-import { SignJWT, jwtVerify } from "jose";
+import { SignJWT } from "jose";
 import { cookies } from "next/headers";
+import { signingKey, verifyWithRotation } from "./jwtKeys";
 
-const secret = process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET;
+// Fail fast at import time if no secret is configured, rather than at the first
+// login attempt.
+signingKey();
 
-if (!secret) {
-    throw new Error("Please define the JWT_SECRET environment variable inside .env.local");
-}
-
-const JWT_SECRET = new TextEncoder().encode(secret);
 const TOKEN_NAME = "auth_token";
 
 export interface Session {
@@ -30,7 +28,7 @@ export async function createToken(payload: any, expiresIn = "30d") {
         .setProtectedHeader({ alg: "HS256" })
         .setIssuedAt()
         .setExpirationTime(expiresIn)
-        .sign(JWT_SECRET);
+        .sign(signingKey());
     return token;
 }
 
@@ -38,12 +36,7 @@ export async function createToken(payload: any, expiresIn = "30d") {
  * Verify and decode a JWT token
  */
 export async function verifyToken(token: string) {
-    try {
-        const { payload } = await jwtVerify(token, JWT_SECRET);
-        return payload;
-    } catch (error) {
-        return null;
-    }
+    return verifyWithRotation(token);
 }
 
 /**

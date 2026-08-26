@@ -64,7 +64,19 @@ export const decrypt = (encryptedText: string) => {
         try {
             return decryptGcm(encryptedText, key);
         } catch {
-            // Tampered, corrupted, or encrypted under a rotated key - fall through to as-is below.
+            // Wrong key, tampered, or corrupted - try the legacy key before giving up.
+        }
+
+        // Entries written before ENCRYPTION_SECRET_KEY was rotated still decrypt
+        // under the outgoing key. Without this, rotating the key would silently
+        // hand users raw ciphertext instead of their entries.
+        const legacyKey = getLegacyKey();
+        if (legacyKey) {
+            try {
+                return decryptGcm(encryptedText, legacyKey);
+            } catch {
+                // Neither key works - fall through to as-is below.
+            }
         }
         return encryptedText;
     }

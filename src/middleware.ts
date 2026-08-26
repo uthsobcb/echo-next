@@ -1,10 +1,6 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { jwtVerify } from "jose";
-
-const JWT_SECRET = new TextEncoder().encode(
-    process.env.JWT_SECRET || process.env.NEXTAUTH_SECRET || ""
-);
+import { verifyWithRotation } from "@/app/lib/jwtKeys";
 
 const protectedRoutes = [
     "/entry",
@@ -38,12 +34,9 @@ export async function middleware(req: NextRequest) {
     let isAuthenticated = false;
 
     if (token) {
-        try {
-            await jwtVerify(token, JWT_SECRET);
-            isAuthenticated = true;
-        } catch {
-            // Token invalid or expired
-        }
+        // Accepts the legacy secret too, so rotating JWT_SECRET does not sign
+        // every active user out mid-session.
+        isAuthenticated = (await verifyWithRotation(token)) !== null;
     }
 
     const isProtectedRoute = protectedRoutes.some(
