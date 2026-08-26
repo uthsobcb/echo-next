@@ -39,6 +39,15 @@ Generate secrets with `openssl rand -hex 32`. Treat `ENCRYPTION_SECRET_KEY` as d
 
 For LAN-only evaluation, set `SITE_ADDRESS=:80`, set `NEXT_PUBLIC_BASEURL` to the server's HTTP address, and access port 80. Rebuild the app after changing a `NEXT_PUBLIC_*` variable because Next.js embeds those values in the browser bundle.
 
+## Mobile app
+
+The Echo mobile app can point at a self-hosted instance. Open `https://your-host/connect` on the phone
+and tap *Open in the Echo app*, or enter the instance address manually under sign-in → *Use your own
+server*. The app normalises the address to `<origin>/api`, verifies `/api/health`, and drops any token
+from the previous server, so the user signs in again against this instance.
+
+Push notifications still go through Expo's push service; only the API traffic moves to your host.
+
 ## Operations
 
 ### Backups
