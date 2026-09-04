@@ -341,7 +341,7 @@ users. See also [SECURITY.md](SECURITY.md) for how to report a vulnerability.
 ## 📞 Support
 
 - **Documentation**: [API Docs](./docs/API_DOCUMENTATION.md) | [Design Guide](./docs/DESIGN_GUIDE.md) | [Quick Reference](./docs/QUICK_REFERENCE.md)
-- **Issues**: [GitHub Issues](https://github.com/your-username/echo-next/issues)
+- **Issues**: [GitHub Issues](https://github.com/uthsobcb/echo-next/issues)
 - **Email**: support@echojournal.life
 - **Website**: [https://echojournal.life](https://echojournal.life)
 
