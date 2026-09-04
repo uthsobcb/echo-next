@@ -1,5 +1,8 @@
+export const dynamic = "force-dynamic";
 import Image from "next/image";
 import Link from "next/link";
+import { connect } from "@/app/lib/mongodb";
+import Post from "@/app/models/Post";
 import {
     ArrowRight,
     Brain,
@@ -8,6 +11,7 @@ import {
     Check,
     Compass,
     FileText,
+    Github,
     HeartHandshake,
     Heart,
     KeyRound,
@@ -119,9 +123,25 @@ const faqs = [
     },
 ];
 
-export default function LandingPage() {
+async function getRecentPosts() {
+    await connect();
+    return Post.find({ published: true }).sort({ createdAt: -1 }).limit(2).lean();
+}
+
+export default async function LandingPage() {
+    const posts = await getRecentPosts();
     return (
         <div className="overflow-hidden bg-white text-slate-950">
+            <a
+                href="https://github.com/uthsobcb/echo-next"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-indigo-600 py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-indigo-700"
+            >
+                <span className="inline-flex items-center gap-1.5">
+                    <Github className="size-4" /> Echo is now open source — view the code on GitHub <ArrowRight className="size-3.5" />
+                </span>
+            </a>
             <section className="border-b border-slate-200 bg-slate-50">
                 <div className="mx-auto grid max-w-7xl items-center gap-12 px-6 py-20 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:py-28">
                     <div>
@@ -324,6 +344,40 @@ export default function LandingPage() {
                 </div>
                 </div>
             </section>
+
+            {posts.length > 0 && (
+                <section className="mx-auto max-w-7xl px-6 py-20 lg:px-8" aria-labelledby="posts-heading">
+                    <div className="flex flex-col items-start justify-between gap-5 sm:flex-row sm:items-end">
+                        <div>
+                            <p className="text-sm font-semibold text-indigo-700">From the guide</p>
+                            <h2 id="posts-heading" className="mt-3 text-balance text-3xl font-bold sm:text-4xl">Fresh from the blog.</h2>
+                        </div>
+                        <Link href="/guide" className="inline-flex items-center gap-1 text-sm font-semibold text-indigo-700 hover:text-indigo-800">
+                            View all posts <ArrowRight className="size-4" />
+                        </Link>
+                    </div>
+                    <div className="mt-10 grid gap-6 sm:grid-cols-2">
+                        {posts.map((post: any) => (
+                            <Link
+                                href={`/guide/${post.slug}`}
+                                key={post._id.toString()}
+                                className="group rounded-2xl border border-slate-200 bg-white p-6 shadow-sm transition-shadow hover:shadow-md"
+                            >
+                                {post.tags?.length > 0 && (
+                                    <div className="flex flex-wrap gap-2 text-xs font-semibold uppercase tracking-wide text-indigo-600">
+                                        {post.tags.slice(0, 2).map((tag: string) => <span key={tag}>{tag}</span>)}
+                                    </div>
+                                )}
+                                <h3 className="mt-4 text-balance text-xl font-semibold text-slate-950 group-hover:text-indigo-700">{post.title}</h3>
+                                <p className="mt-2 text-pretty text-sm leading-6 text-slate-600">{post.excerpt}</p>
+                                <span className="mt-4 inline-flex items-center gap-1 text-sm font-semibold text-indigo-700">
+                                    Read post <ArrowRight className="size-3.5 transition-transform group-hover:translate-x-0.5" />
+                                </span>
+                            </Link>
+                        ))}
+                    </div>
+                </section>
+            )}
 
             <section className="border-y border-slate-200 bg-slate-50" aria-labelledby="faq-heading">
                 <div className="mx-auto max-w-4xl px-6 py-20 lg:px-8">

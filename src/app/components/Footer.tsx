@@ -21,7 +21,7 @@ export default function Footer() {
                             </span>
                         </Link>
                         <p className="text-gray-500 text-sm max-w-xs leading-relaxed text-pretty">
-                            A private journal for understanding your patterns, connecting memories, and trying gentle changes at your own pace.
+                            A private journal for understanding your patterns, connecting memories, and trying gentle changes at your own pace. Open source and self-hostable.
                         </p>
                     </div>
 
@@ -46,6 +46,9 @@ export default function Footer() {
                         <div>
                             <h2 className="mb-4 text-sm font-semibold text-gray-900 uppercase">Follow us</h2>
                             <ul className="text-gray-600 font-medium space-y-3">
+                                <li>
+                                    <Link href="https://github.com/uthsobcb/echo-next" target="_blank" className="hover:text-indigo-600 transition-colors">GitHub</Link>
+                                </li>
                                 <li>
                                     <Link href="#" className="hover:text-indigo-600 transition-colors">Twitter / X</Link>
                                 </li>

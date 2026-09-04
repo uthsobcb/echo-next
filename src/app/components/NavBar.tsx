@@ -6,6 +6,7 @@ import MobileMenu from './MobileMenu';
 import { Button } from "@/components/ui/button";
 import { Suspense } from 'react';
 import UserMenu from './UserMenu';
+import { Github } from 'lucide-react';
 
 function UserMenuSkeleton() {
     return (
@@ -44,6 +45,15 @@ export default async function NavBar() {
                     <span className="hidden sm:inline-block px-2 py-0.5 text-[10px] font-bold tracking-wider text-indigo-500 bg-indigo-50 rounded-full border border-indigo-100 uppercase">
                         Beta
                     </span>
+                    <Link
+                        href="https://github.com/uthsobcb/echo-next"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label="View Echo on GitHub"
+                        className="flex items-center justify-center size-9 rounded-full text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 transition-colors"
+                    >
+                        <Github className="size-5" />
+                    </Link>
                 </div>
 
                 {/* Desktop Menu */}
