@@ -17,7 +17,7 @@ const protectedRoutes = [
 
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/guide", "/a-landing"];
 
-export async function middleware(req: NextRequest) {
+export async function proxy(req: NextRequest) {
     const { pathname } = req.nextUrl;
 
     // Skip API routes, static files, and public routes
