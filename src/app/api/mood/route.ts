@@ -8,17 +8,7 @@ import { encrypt } from "@/app/lib/encryption";
 import { recordRiskFlagAndMaybeNotify } from "@/app/lib/safety";
 import { openrouter } from "@/app/lib/openrouter";
 import { checkAiQuota } from "@/app/lib/rateLimit";
-
-const RISK_INDICATOR_TAGS = [
-    "hopelessness",
-    "worthlessness",
-    "passive-ideation",
-    "active-ideation",
-    "self-harm-urge",
-    "plan-or-method",
-    "previous-attempt-mentioned",
-    "substance-use-crisis",
-] as const;
+import { RISK_INDICATOR_TAGS, normalizeRisk, normalizeStatus, extractJson } from "@/app/lib/moodNormalize";
 
 const SUPPORT_MODES = ["listen", "reflect", "reframe", "act", "patterns", "support"] as const;
 type SupportMode = typeof SUPPORT_MODES[number];
@@ -88,14 +78,6 @@ Analyze the following journal entry and provide the requested JSON response: "${
             status: string;
         }
 
-        function normalizeRisk(raw: any): { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } {
-            const severity = ["none", "low", "moderate", "high"].includes(raw?.severity) ? raw.severity : "none";
-            const indicators = Array.isArray(raw?.indicators)
-                ? raw.indicators.filter((tag: unknown) => (RISK_INDICATOR_TAGS as readonly string[]).includes(tag as string))
-                : [];
-            return { severity, indicators };
-        }
-
         let mood: string | undefined, parsedMood: any, todos: TodoItem[] = [];
         let risk: { severity: "none" | "low" | "moderate" | "high"; indicators: string[] } = { severity: "none", indicators: [] };
         if (supportMode === "listen") {
@@ -120,22 +102,6 @@ Analyze the following journal entry and provide the requested JSON response: "${
         } catch (error) {
             console.error("Error with OpenRouter API:", error);
             return NextResponse.json({ error: "Failed to process mood analysis." }, { status: 500 });
-        }
-
-        function extractJson(response: string): string {
-            const start = response.indexOf('{');
-            const end = response.lastIndexOf('}');
-            if (start !== -1 && end !== -1 && end > start) {
-                return response.slice(start, end + 1);
-            }
-            return response.replace(/```json|```/g, '').trim();
-        }
-
-        function normalizeStatus(status: string): string {
-            const s = status?.toLowerCase().trim();
-            if (s === 'in progress' || s === 'in_progress') return 'in-progress';
-            if (s === 'completed' || s === 'done') return 'completed';
-            return 'pending';
         }
 
         try {

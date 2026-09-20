@@ -73,7 +73,7 @@ function cleanStringArray(value: unknown, maxItems = 5, maxLength = 300): string
         : [];
 }
 
-function parseJsonObject(raw: string): Record<string, unknown> {
+export function parseJsonObject(raw: string): Record<string, unknown> {
     const cleaned = raw.replace(/```json|```/g, "").trim();
     const start = cleaned.indexOf("{");
     const end = cleaned.lastIndexOf("}");
@@ -99,7 +99,7 @@ async function getEntries(userId: string, days: number): Promise<EntryForAnalysi
     }));
 }
 
-function normalizeProfile(raw: Record<string, unknown>, validEntryIds: Set<string>): ReflectionProfileData {
+export function normalizeProfile(raw: Record<string, unknown>, validEntryIds: Set<string>): ReflectionProfileData {
     const observationsRaw = Array.isArray(raw.observations) ? raw.observations : [];
     const categories = new Set(["value", "stressor", "restorative", "goal", "relationship", "preference"]);
     const observations: ProfileObservation[] = observationsRaw.slice(0, 10).map(item => {
@@ -149,7 +149,7 @@ function normalizeProfile(raw: Record<string, unknown>, validEntryIds: Set<strin
     };
 }
 
-function normalizeReport(raw: Record<string, unknown>, validEntryIds: Set<string>): GrowthReportData {
+export function normalizeReport(raw: Record<string, unknown>, validEntryIds: Set<string>): GrowthReportData {
     const evidenceItems = (value: unknown): EvidenceItem[] => Array.isArray(value)
         ? value.slice(0, 5).map(item => {
             const record = (item && typeof item === "object" ? item : { text: item }) as Record<string, unknown>;
@@ -166,7 +166,10 @@ function normalizeReport(raw: Record<string, unknown>, validEntryIds: Set<string
             title: cleanText(record.title, 100),
             rationale: cleanText(record.rationale, 320),
             tinyAction: cleanText(record.tinyAction, 220),
-            durationDays: Math.max(3, Math.min(14, Number(record.durationDays) || 7)),
+            // Number(x) || 7 would silently replace a legitimate 0 with the
+            // default instead of clamping it to the floor — Number.isFinite
+            // is what "non-numeric -> 7, otherwise clamp" actually requires.
+            durationDays: Math.max(3, Math.min(14, Number.isFinite(Number(record.durationDays)) ? Number(record.durationDays) : 7)),
             evidenceEntryIds: cleanStringArray(record.evidenceEntryIds, 5, 40).filter(id => validEntryIds.has(id)),
         };
     }).filter(item => item.title && item.tinyAction);
