@@ -2,7 +2,7 @@ import { getUserProfile } from "@/app/lib/user-data";
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
-import { Brain, Compass, PenTool, Sparkles } from "lucide-react";
+import { Brain, Compass, HeartPulse, PenTool, Sparkles } from "lucide-react";
 import SignOut from "./SignOut";
 import { Session } from "@/app/lib/auth";
 
@@ -40,6 +40,13 @@ export default async function UserMenu({ session }: { session: Session }) {
                 <Button variant="ghost" className="rounded-full text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 gap-2">
                     <Compass className="w-4 h-4" />
                     Growth
+                </Button>
+            </Link>
+
+            <Link href="/screening">
+                <Button variant="ghost" className="rounded-full text-gray-600 hover:text-indigo-600 hover:bg-indigo-50 gap-2">
+                    <HeartPulse className="w-4 h-4" />
+                    Check-in
                 </Button>
             </Link>
 

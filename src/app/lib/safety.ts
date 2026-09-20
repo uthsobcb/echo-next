@@ -1,5 +1,4 @@
 import mongoose from "mongoose";
-import Mood from "@/app/models/Mood";
 import UserModel from "@/app/models/User";
 import RiskAlertModel, { RiskSeverity } from "@/app/models/RiskAlert";
 import NotificationModel, { NotificationType } from "@/app/models/Notification";
@@ -20,11 +19,12 @@ const CRISIS_RESOURCE_BODY =
  */
 export async function recordRiskFlagAndMaybeNotify(params: {
     userId: string;
-    moodEntryId: mongoose.Types.ObjectId;
     severity: Exclude<RiskSeverity, never> | "none";
     indicators: string[];
+    moodEntryId?: mongoose.Types.ObjectId;
+    screeningId?: mongoose.Types.ObjectId;
 }) {
-    const { userId, moodEntryId, severity, indicators } = params;
+    const { userId, moodEntryId, screeningId, severity, indicators } = params;
     if (severity === "none") return;
 
     try {
@@ -43,9 +43,11 @@ export async function recordRiskFlagAndMaybeNotify(params: {
             shouldNotify = !cooldownActive;
         } else {
             const windowStart = new Date(Date.now() - THRESHOLD_WINDOW_DAYS * 24 * 60 * 60 * 1000);
-            const recentFlagCount = await Mood.countDocuments({
+            // Counted against RiskAlert (not just Mood) so a screening-triggered flag
+            // and a journal-entry-triggered flag both count toward the same threshold.
+            const recentFlagCount = await RiskAlertModel.countDocuments({
                 userId,
-                riskSeverity: { $in: ["low", "moderate", "high"] },
+                severity: { $in: ["low", "moderate", "high"] },
                 createdAt: { $gte: windowStart },
             });
             triggerType = "threshold";
@@ -55,6 +57,7 @@ export async function recordRiskFlagAndMaybeNotify(params: {
         await RiskAlertModel.create({
             userId,
             moodEntryId,
+            screeningId,
             severity,
             indicators,
             triggerType,

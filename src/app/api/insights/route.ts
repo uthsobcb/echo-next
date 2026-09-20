@@ -6,6 +6,8 @@ import UserModel from "@/app/models/User";
 import { decrypt } from "@/app/lib/encryption";
 import { openrouter } from "@/app/lib/openrouter";
 import { checkAiQuota } from "@/app/lib/rateLimit";
+import { computeLinguisticMarkers } from "@/app/lib/linguisticMarkers";
+import { detectMoodTrend } from "@/app/lib/moodTrend";
 
 // ─── Config ───────────────────────────────────────────────────────────────────
 
@@ -285,6 +287,22 @@ export async function GET(req: NextRequest) {
 
         const aiInsights = await getAiInsights(userId, moodSummary, topTopics);
 
+        // ── Mood Trend Signal (statistical, not LLM) ───────────────────────────
+        const moodTrend = detectMoodTrend(currentEntries.map(e => e.score ?? 0));
+
+        // ── Linguistic Signal (deterministic, not LLM) ─────────────────────────
+        const linguisticTimeline = decryptedEntries.map(e => ({
+            date: getLocalDateStr(e.createdAt, tz),
+            ...computeLinguisticMarkers(e.content),
+        }));
+        const linguisticAverage = linguisticTimeline.length === 0
+            ? { absolutistRatio: 0, firstPersonRatio: 0, negationRatio: 0 }
+            : {
+                absolutistRatio: linguisticTimeline.reduce((s, m) => s + m.absolutistRatio, 0) / linguisticTimeline.length,
+                firstPersonRatio: linguisticTimeline.reduce((s, m) => s + m.firstPersonRatio, 0) / linguisticTimeline.length,
+                negationRatio: linguisticTimeline.reduce((s, m) => s + m.negationRatio, 0) / linguisticTimeline.length,
+            };
+
         // ── Badge Progress ─────────────────────────────────────────────────────
         const BADGE_MILESTONES = [
             { name: "Echo Sunshine", threshold: 1 },
@@ -332,6 +350,8 @@ export async function GET(req: NextRequest) {
             writingTrendComparison,
             badgeProgress,
             xpStatus,
+            moodTrend,
+            linguisticSignal: { timeline: linguisticTimeline, average: linguisticAverage },
         });
 
     } catch (error) {

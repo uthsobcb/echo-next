@@ -13,6 +13,7 @@ const protectedRoutes = [
     "/memory",
     "/growth",
     "/space",
+    "/screening",
 ];
 
 const publicRoutes = ["/login", "/register", "/forgot-password", "/reset-password", "/guide", "/a-landing"];

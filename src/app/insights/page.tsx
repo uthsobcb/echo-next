@@ -57,7 +57,9 @@ export default function InsightsPage() {
         activityCalendar,
         aiInsights,
         writingTrendComparison,
-        badgeProgress
+        badgeProgress,
+        moodTrend,
+        linguisticSignal
     } = data || {};
 
     return (
@@ -193,6 +195,48 @@ export default function InsightsPage() {
                         </div>
                     </div>
                 </div>
+
+                {/* Statistical Wellbeing Signals — deterministic, not LLM-generated */}
+                {(moodTrend || linguisticSignal) && (
+                    <div className="bg-white rounded-3xl p-8 shadow-sm border border-gray-100 mb-10">
+                        <h3 className="text-xl font-bold text-gray-900 mb-1 flex items-center gap-2">
+                            Wellbeing Signals
+                        </h3>
+                        <p className="text-xs text-gray-400 font-medium mb-6">
+                            Statistical signals computed directly from your entries — not model-generated.
+                        </p>
+                        <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
+                            {moodTrend && (
+                                <div className="sm:col-span-1">
+                                    <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Mood trend</p>
+                                    <span className={`inline-block px-3 py-1 rounded-full text-xs font-bold capitalize ${
+                                        moodTrend.direction === "declining" ? "bg-red-50 text-red-700" :
+                                        moodTrend.direction === "improving" ? "bg-green-50 text-green-700" :
+                                        "bg-gray-50 text-gray-600"
+                                    }`}>
+                                        {moodTrend.zScore === null ? "not enough data yet" : moodTrend.direction}
+                                    </span>
+                                </div>
+                            )}
+                            {linguisticSignal && (
+                                <>
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Absolutist language</p>
+                                        <p className="text-2xl font-black text-gray-900">{(linguisticSignal.average.absolutistRatio * 100).toFixed(1)}%</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Self-focus (first-person)</p>
+                                        <p className="text-2xl font-black text-gray-900">{(linguisticSignal.average.firstPersonRatio * 100).toFixed(1)}%</p>
+                                    </div>
+                                    <div>
+                                        <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-2">Negation</p>
+                                        <p className="text-2xl font-black text-gray-900">{(linguisticSignal.average.negationRatio * 100).toFixed(1)}%</p>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
 
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-10">
                     {/* Top Topics Radar */}

@@ -4,7 +4,8 @@ export type RiskSeverity = "low" | "moderate" | "high";
 
 export interface IRiskAlert extends Document {
     userId: mongoose.Types.ObjectId;
-    moodEntryId: mongoose.Types.ObjectId;
+    moodEntryId?: mongoose.Types.ObjectId;
+    screeningId?: mongoose.Types.ObjectId;
     severity: RiskSeverity;
     indicators: string[];
     triggerType: "immediate" | "threshold";
@@ -21,10 +22,15 @@ const RiskAlertSchema = new Schema<IRiskAlert>({
         required: true,
         index: true,
     },
+    // Exactly one of moodEntryId / screeningId is set, depending on what triggered
+    // the flag — a journal entry's risk assessment, or a PHQ-9/GAD-7 screening.
     moodEntryId: {
         type: Schema.Types.ObjectId,
         ref: "Mood",
-        required: true,
+    },
+    screeningId: {
+        type: Schema.Types.ObjectId,
+        ref: "Screening",
     },
     severity: {
         type: String,
