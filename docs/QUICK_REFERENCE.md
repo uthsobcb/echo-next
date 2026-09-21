@@ -148,6 +148,13 @@ PUT  /api/profile        # Update profile
 ### Analytics
 ```
 GET /api/mood-tracker    # Get mood data + badges
+GET /api/insights        # Get analytics, mood trend & linguistic signal
+```
+
+### Screening
+```
+POST /api/screening      # Submit PHQ-9/GAD-7 screening
+GET  /api/screening      # Get screening history
 ```
 
 ## 🧠 AI Integration

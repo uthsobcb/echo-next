@@ -164,6 +164,99 @@ Get user's mood tracking data and badge progress.
 
 ---
 
+### 📊 Insights Endpoints
+
+#### GET `/insights`
+Get personalized journaling analytics for the authenticated user.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Query Parameters:**
+```
+range?: 'week' | 'month' | 'year'   // Default: 'week'
+```
+
+**Response:** `200 OK`
+```json
+{
+  "stats": { "totalEntries": 12, "allTimeEntries": 87, "currentStreak": 4, "bestStreak": 9, "totalXp": 340, "avgWordCount": 68 },
+  "moodTimeline": [{ "day": "Mon", "date": "2026-03-01", "mood": "happy", "score": 8 }],
+  "writingTrend": [{ "label": "Mar 1", "count": 1 }],
+  "weeklyEntries": [{ "label": "W1", "count": 5 }],
+  "topTopics": [{ "topic": "Work", "count": 3 }],
+  "commonWords": [{ "word": "grateful", "frequency": 4 }],
+  "activityCalendar": [{ "date": "2026-03-01", "hasEntry": true }],
+  "aiInsights": ["🔥 You're on a roll this week!", "💡 Try writing about your goals more often."],
+  "writingTrendComparison": "+23%",
+  "badgeProgress": { "earned": ["Echo Sunshine"], "nextBadge": "Pen Whisperer", "nextBadgeAt": 7, "entriesUntilNext": 3, "milestones": [] },
+  "xpStatus": { "totalXp": 340, "currentStreak": 4, "maxStreak": 9, "subscription": "free" },
+  "moodTrend": { "baselineMean": 6.2, "baselineStdDev": 1.1, "recentMean": 4.8, "zScore": -1.27, "direction": "declining", "alert": false },
+  "linguisticSignal": {
+    "timeline": [{ "date": "2026-03-01", "wordCount": 62, "absolutistRatio": 0.02, "firstPersonRatio": 0.08, "negationRatio": 0.03 }],
+    "average": { "absolutistRatio": 0.02, "firstPersonRatio": 0.08, "negationRatio": 0.03 }
+  }
+}
+```
+
+**Features:**
+- AI insights via GPT-4o-mini, cached once per day per user
+- `moodTrend`: statistical (non-LLM) z-score comparison of recent mood scores against the user's own baseline — flags `alert: true` only on a real decline, not routine day-to-day variation
+- `linguisticSignal`: deterministic (non-LLM) absolutist / first-person / negation word-ratio markers computed from entry plaintext at read time (never stored)
+- `activityCalendar` always spans a full year regardless of `range`
+
+---
+
+### 🧭 Mental Health Screening Endpoints
+
+#### POST `/screening`
+Submit a PHQ-9 (depression) or GAD-7 (anxiety) self-report screening. Scoring is deterministic and follows the standard published cutoffs — these are validated screening instruments, not a diagnosis.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Request Body:** `application/json`
+```typescript
+{
+  type: 'phq9' | 'gad7';
+  answers: number[];   // 9 items (phq9) or 7 items (gad7), each 0-3
+}
+```
+
+**Response:** `201 Created`
+```json
+{
+  "id": "screening_id",
+  "type": "phq9",
+  "totalScore": 12,
+  "severity": "moderate"
+}
+```
+
+**Features:**
+- Severity bands: `minimal` | `mild` | `moderate` | `moderately-severe` | `severe`
+- PHQ-9 item 9 (self-harm/suicidal ideation) always feeds the crisis-response path (see [Risk Detection](#risk-detection--crisis-response)) independent of the total score
+- Errors: `400` invalid `type` or `answers` don't match the instrument's question count / 0-3 range, `401` unauthorized
+
+#### GET `/screening`
+Get the authenticated user's screening history (most recent first, max 50).
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Query Parameters:**
+```
+type?: 'phq9' | 'gad7'   // Filter to one instrument
+```
+
+**Response:** `200 OK`
+```json
+{
+  "history": [
+    { "type": "phq9", "totalScore": 12, "severity": "moderate", "createdAt": "2026-03-01T00:00:00.000Z" }
+  ]
+}
+```
+
+---
+
 ### 📖 Entry Management
 
 #### GET `/entries`
@@ -641,6 +734,18 @@ interface ITodo {
 }
 ```
 
+### Screening Schema
+```typescript
+interface IScreening {
+  userId: ObjectId;
+  type: 'phq9' | 'gad7';
+  answers: number[];
+  totalScore: number;
+  severity: 'minimal' | 'mild' | 'moderate' | 'moderately-severe' | 'severe';
+  createdAt: Date;
+}
+```
+
 ### Blog Post Schema
 ```typescript
 interface IPost {
@@ -703,6 +808,12 @@ Echo features a progressive badge system to encourage consistent journaling:
 - Route-level authentication checks
 - User-specific data isolation
 - Admin-only endpoint protection
+
+### Risk Detection & Crisis Response
+- A `RiskAlert` is recorded whenever a journal entry or `/screening` submission carries a risk indicator (e.g. PHQ-9 item 9 self-harm ideation)
+- **High** severity notifies the user immediately (subject to a 6-hour cooldown); **low/moderate** severity notifies once 3+ flags land within a 14-day window
+- Notification is a push message pointing to crisis resources (findahelpline.com, 988 in the US) — never a diagnosis or clinical claim
+- This logic fails soft: an error here is logged, never allowed to block saving the entry/screening
 
 ## Rate Limiting
 

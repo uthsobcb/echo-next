@@ -170,6 +170,7 @@ export const openApiSpec: any = {
         { name: 'Space', description: 'Community kindness exchange' },
         { name: 'Blog Posts', description: 'Guide/blog post management' },
         { name: 'Insights', description: 'Journaling analytics and AI insights' },
+        { name: 'Screening', description: 'PHQ-9 / GAD-7 mental health self-report screenings' },
         { name: 'Admin', description: 'Admin-only user and notification management' },
         { name: 'Cron Jobs', description: 'Scheduled background tasks (require CRON_SECRET)' },
     ],
@@ -1095,6 +1096,45 @@ export const openApiSpec: any = {
                                                 maxStreak: { type: 'integer' },
                                                 subscription: { type: 'string' }
                                             }
+                                        },
+                                        moodTrend: {
+                                            type: 'object',
+                                            description: 'Statistical (non-LLM) signal: recent-window mean mood score vs. the user\'s own baseline mean/stddev',
+                                            properties: {
+                                                baselineMean: { type: 'number' },
+                                                baselineStdDev: { type: 'number' },
+                                                recentMean: { type: 'number', nullable: true },
+                                                zScore: { type: 'number', nullable: true },
+                                                direction: { type: 'string', enum: ['declining', 'improving', 'stable'] },
+                                                alert: { type: 'boolean', description: 'True when zScore <= -1.5' }
+                                            }
+                                        },
+                                        linguisticSignal: {
+                                            type: 'object',
+                                            description: 'Deterministic (non-LLM) word-ratio markers computed from entry plaintext at read time, never stored',
+                                            properties: {
+                                                timeline: {
+                                                    type: 'array',
+                                                    items: {
+                                                        type: 'object',
+                                                        properties: {
+                                                            date: { type: 'string', example: '2026-03-01' },
+                                                            wordCount: { type: 'integer' },
+                                                            absolutistRatio: { type: 'number' },
+                                                            firstPersonRatio: { type: 'number' },
+                                                            negationRatio: { type: 'number' }
+                                                        }
+                                                    }
+                                                },
+                                                average: {
+                                                    type: 'object',
+                                                    properties: {
+                                                        absolutistRatio: { type: 'number' },
+                                                        firstPersonRatio: { type: 'number' },
+                                                        negationRatio: { type: 'number' }
+                                                    }
+                                                }
+                                            }
                                         }
                                     }
                                 }
@@ -1104,6 +1144,101 @@ export const openApiSpec: any = {
                     '400': { description: 'Invalid range parameter' },
                     '401': { description: 'Unauthorized' },
                     '404': { description: 'User not found' }
+                }
+            }
+        },
+
+        // ─── SCREENING ─────────────────────────────────────────────────────────────
+        '/screening': {
+            post: {
+                tags: ['Screening'],
+                summary: 'Submit a PHQ-9 or GAD-7 screening',
+                description: `Scores a standard, publicly available self-report screening instrument. Scoring is deterministic (not LLM-based) and follows published cutoffs — this is a validated self-report tool, not a diagnosis.
+
+**PHQ-9** (depression, 9 items) and **GAD-7** (anxiety, 7 items) each answer 0-3 ("Not at all" to "Nearly every day").
+
+A positive answer on PHQ-9 item 9 (self-harm/suicidal ideation) always feeds the same crisis-response path as a flagged journal entry, independent of the total score.`,
+                security: [{ bearerAuth: [] }],
+                requestBody: {
+                    required: true,
+                    content: {
+                        'application/json': {
+                            schema: {
+                                type: 'object',
+                                required: ['type', 'answers'],
+                                properties: {
+                                    type: { type: 'string', enum: ['phq9', 'gad7'] },
+                                    answers: {
+                                        type: 'array',
+                                        description: '9 integers (0-3) for phq9, 7 integers (0-3) for gad7',
+                                        items: { type: 'integer', minimum: 0, maximum: 3 }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                },
+                responses: {
+                    '201': {
+                        description: 'Screening scored and saved',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        id: { type: 'string' },
+                                        type: { type: 'string', enum: ['phq9', 'gad7'] },
+                                        totalScore: { type: 'integer' },
+                                        severity: { type: 'string', enum: ['minimal', 'mild', 'moderate', 'moderately-severe', 'severe'] }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '400': { description: "Invalid type, or answers don't match the instrument's question count / 0-3 range" },
+                    '401': { description: 'Unauthorized' }
+                }
+            },
+            get: {
+                tags: ['Screening'],
+                summary: 'Get screening history',
+                description: "Returns up to 50 of the authenticated user's past screenings, most recent first.",
+                security: [{ bearerAuth: [] }],
+                parameters: [
+                    {
+                        name: 'type',
+                        in: 'query',
+                        required: false,
+                        schema: { type: 'string', enum: ['phq9', 'gad7'] },
+                        description: 'Filter history to one instrument type'
+                    }
+                ],
+                responses: {
+                    '200': {
+                        description: 'Screening history',
+                        content: {
+                            'application/json': {
+                                schema: {
+                                    type: 'object',
+                                    properties: {
+                                        history: {
+                                            type: 'array',
+                                            items: {
+                                                type: 'object',
+                                                properties: {
+                                                    type: { type: 'string', enum: ['phq9', 'gad7'] },
+                                                    totalScore: { type: 'integer' },
+                                                    severity: { type: 'string', enum: ['minimal', 'mild', 'moderate', 'moderately-severe', 'severe'] },
+                                                    createdAt: { type: 'string', format: 'date-time' }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    '401': { description: 'Unauthorized' }
                 }
             }
         },

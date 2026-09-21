@@ -26,6 +26,11 @@ Echo is an empathetic AI companion that transforms journaling into an intelligen
 - **Progress Charts**: Track mood patterns over time
 - **Weekly Reports**: Automated email summaries of your journey
 - **Badge System**: 5-tier achievement system to encourage consistency
+- **Wellbeing Signals**: Statistical mood-trend detection and linguistic markers, computed without an LLM call
+
+### 🩺 Mental Health Screening
+- **PHQ-9 & GAD-7**: Standard, publicly available self-report screenings for depression and anxiety
+- **Crisis Response**: Self-harm indicators (and repeated risk flags) trigger a push notification with crisis resources
 
 ### 🔒 Privacy & Security
 - **Encryption at Rest**: Entries are stored AES-256-GCM encrypted with a server-held key
