@@ -4,6 +4,7 @@
 [![Next.js](https://img.shields.io/badge/Built%20with-Next.js%2015-blue)](https://nextjs.org/)
 [![MongoDB](https://img.shields.io/badge/Database-MongoDB-green)](https://www.mongodb.com/)
 [![AI Powered](https://img.shields.io/badge/AI-OpenAI--compatible-orange)](https://openrouter.ai/)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22871224.svg)](https://doi.org/10.5281/zenodo.22871224)
 
 > **"Duolingo for your mind"** - Making mental wellness and self-reflection accessible, engaging, and habit-forming through intelligent journaling.
 
@@ -326,6 +327,29 @@ We welcome contributions! Please follow these guidelines:
 - [x] Advanced mood analytics
 - [x] Encryption at rest (AES-256-GCM)
 - [x] AI chat companion
+
+## 📚 Citation
+
+If you use Echo in your research, please cite the software archive on Zenodo:
+
+- **All versions (concept DOI):** [10.5281/zenodo.22871224](https://doi.org/10.5281/zenodo.22871224)
+- **Version 1.0.0:** [10.5281/zenodo.22871225](https://doi.org/10.5281/zenodo.22871225)
+
+```bibtex
+@software{chakraborty_echo_2026,
+  author    = {Chakraborty, Uthsob},
+  title     = {Echo: An Open-Source, Privacy-Preserving Journaling Platform},
+  year      = {2026},
+  version   = {1.0.0},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22871224},
+  url       = {https://github.com/uthsobcb/echo-next}
+}
+```
+
+A software paper describing Echo (Chakraborty, Ahmed, and Arman) is under
+review at *SoftwareX*. This section will be updated with the article
+reference once it is published.
 
 ## 📄 License
 

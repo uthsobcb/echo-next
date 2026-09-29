@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Echo: An Open-Source, Privacy-Preserving Journaling Platform"
+authors:
+  - family-names: Chakraborty
+    given-names: Uthsob
+version: 1.0.0
+date-released: 2026-09-21
+doi: 10.5281/zenodo.22871224
+license: AGPL-3.0-only
+repository-code: "https://github.com/uthsobcb/echo-next"
+url: "https://echojournal.life"
